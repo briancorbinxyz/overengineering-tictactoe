@@ -3,41 +3,25 @@
  */
 package org.example;
 
-import java.util.Random;
-import java.util.List;
-
 public class App {
     
-    private final GameBoard board;
-
-    private final List<String> playerMarkers;
+    private final Game game;
 
     public App() {
-        this.board = new GameBoard(10);
-        this.playerMarkers = List.of("X", "O");
+        this.game = new Game();
+    }
+
+    public void run() throws InterruptedException {
+        game.play();
     }
 
     public String getGreeting() {
         return "Welcome to Tic-Tac-Toe!";
     }
 
-    public void play() throws InterruptedException {
-        while (!hasWinner()) {
-            System.out.println(board);
-            System.out.println();
-            System.out.println(board.validBoardPlacementsAsString());
-            Thread.sleep(1000);
-        }
-    }
-
-
-    private boolean hasWinner() {
-        return new Random().nextBoolean();
-    }
-
     public static void main(String[] args) throws InterruptedException {
         App app = new App();
         System.out.println(app.getGreeting());
-        app.play();
+        app.run();
     }
 }

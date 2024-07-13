@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Arrays;
+
 public class GameBoard {
     private final int dimension;
     private final String [] content;
@@ -41,17 +43,72 @@ public class GameBoard {
         return location >= 0 && location < content.length && content[location] == null;
     }
 
-    public boolean placeAnCheckWinner(int location) {
-
+    public boolean checkWinner(String playerMarker) {
+        // check rows
+        for (int i = 0; i < dimension; i++) {
+            int chain = 0;
+            for (int j = 0; j < dimension; j++) {
+                if (playerMarker.equals(content[i * dimension + j])) {
+                    chain++;
+                }
+                if (chain == dimension) {
+                    return true;
+                }
+            }
+        }
+        // check columns
+        for (int i = 0; i < dimension; i++) {
+            int chain = 0;
+            for (int j = 0; j < dimension; j++) {
+                if (playerMarker.equals(content[j * dimension + i])) {
+                    chain++;
+                }
+                if (chain == dimension) {
+                    return true;
+                }
+            }
+        }
+        // check diagonals
+        {
+            int chain = 0;
+            for (int i = 0; i < dimension; i++) {
+                if (playerMarker.equals(content[i+(dimension*(i+1))-dimension])) {
+                    chain++;
+                }
+                if (chain == dimension) {
+                    return true;
+                }
+            }
+        }
+        {
+            int chain = 0;
+            for (int i = 0; i < dimension; i++) {
+                if (playerMarker.equals(content[(dimension*(i+1))-(i+1)])) {
+                    chain++;
+                }
+                if (chain == dimension) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
+    public boolean hasMovesAvailable() {
+        return Arrays.stream(content).anyMatch(m -> m == null);
+    }
+
     private String contentElseBlank(String unit) {
-        return unit == null ? "\uFF3F" : unit;
+        return unit == null ? "\u005F" : unit;
     }
 
     private String blankElseIndex(String unit, int index) {
-        return unit == null ? String.valueOf(index) : "\uFF3F";
+        return unit == null ? String.valueOf(index) : "\u005F";
+    }
+
+    public void placePlayerMarker(String playerMarker, int location) {
+        // TODO: Defense
+        this.content[location] = playerMarker;
     }
 
 }
