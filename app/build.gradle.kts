@@ -9,11 +9,13 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    id("org.graalvm.buildtools.native") version "0.10.2"
 }
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
@@ -36,7 +38,28 @@ java {
     }
 }
 
+// Allow GraalVM native AOT compilation
+graalvmNative {
+    binaries {
+        all {
+            javaLauncher = javaToolchains.launcherFor {
+                // NB: On MacOS ARM ARCH the native-image implementation is not available
+                // for the versions of GRAAL_VM Community edition - selecting Oracle
+                languageVersion = JavaLanguageVersion.of(22)
+                vendor = JvmVendorSpec.matching("Oracle")
+                // languageVersion = JavaLanguageVersion.of(17)
+                // vendor = JvmVendorSpec.GRAAL_VM
+            }
+        }
+    }
+}
+
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
+}
+
+tasks.run.configure {
+    // Override the empty stream to allow for interactive runs with gradlew run
+    standardInput = System.`in`
 }
