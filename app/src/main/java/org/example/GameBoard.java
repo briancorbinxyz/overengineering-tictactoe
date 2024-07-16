@@ -107,7 +107,9 @@ public class GameBoard {
     }
 
     public void placePlayerMarker(String playerMarker, int location) {
-        // TODO: Defense
+        if (!isValidMove(location)) {
+            throw new InvalidMoveException();
+        }
         this.content[location] = playerMarker;
     }
 
