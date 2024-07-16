@@ -1,16 +1,22 @@
 package org.example;
 
-import java.util.Random;
+import java.security.SecureRandom;
+import java.util.random.RandomGenerator;
 
 public class BotPlayer implements Player {
 
     private final String playerMarker;
 
-    private final Random random;
+    private final RandomGenerator random;
+
+    public BotPlayer(String playerMarker, RandomGenerator randomGenerator) {
+        this.playerMarker = playerMarker;
+        this.random = randomGenerator;
+    }
 
     public BotPlayer(String playerMarker) {
-        this.playerMarker = playerMarker;
-        this.random = new Random();
+        // OVER-ENGINEER: Cryptographically secure by default
+        this(playerMarker, new SecureRandom());
     }
 
     public String getPlayerMarker() {
