@@ -1,13 +1,12 @@
 package org.example;
 
 import java.util.List;
-import java.util.Random;
 
 public class Game {
 
     private final GameBoard board;
 
-    private final List<String> playerMarkers;
+    private final List<Player> players;
 
     private int dimension;
 
@@ -18,7 +17,7 @@ public class Game {
     public Game(int dimension) {
         this.dimension = dimension;
         this.board = new GameBoard(dimension);
-        this.playerMarkers = List.of("X", "O");
+        this.players = List.of(new BotPlayer("X"), new BotPlayer("O"));
     }
 
     public void play() throws InterruptedException {
@@ -29,12 +28,9 @@ public class Game {
         System.out.println();
         while (!hasWinner && movesAvailable) {
             Thread.sleep(10);
-            String playerMarker = playerMarkers.get(playerIndex);
-            Random r = new Random();
-            int location;
-            do { 
-                location = r.nextInt(dimension*dimension);
-            } while (!board.isValidMove(location));
+            Player player = players.get(playerIndex);
+            String playerMarker = player.getPlayerMarker();
+            int location = player.nextMove(board);
             board.placePlayerMarker(playerMarker, location);
             hasWinner = board.checkWinner(playerMarker);
             if (hasWinner) {
@@ -42,7 +38,7 @@ public class Game {
             } else {
                 movesAvailable = board.hasMovesAvailable();
                 playerIndex = playerIndex + 1;
-                if (playerIndex >= playerMarkers.size()) {
+                if (playerIndex >= players.size()) {
                     playerIndex = 0;
                 }
             }

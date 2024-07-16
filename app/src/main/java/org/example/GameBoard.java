@@ -111,4 +111,8 @@ public class GameBoard {
         this.content[location] = playerMarker;
     }
 
+    public int getDimension() {
+        return dimension;
+    }
+
 }
