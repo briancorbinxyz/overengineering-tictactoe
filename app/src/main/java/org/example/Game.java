@@ -8,16 +8,13 @@ public class Game {
 
     private final List<Player> players;
 
-    private int dimension;
-
     public Game() {
         this(3);
     }
 
     public Game(int dimension) {
-        this.dimension = dimension;
         this.board = new GameBoard(dimension);
-        this.players = List.of(new BotPlayer("X"), new BotPlayer("O"));
+        this.players = List.of(new HumanPlayer("X"), new BotPlayer("O"));
     }
 
     public void play() throws InterruptedException {
