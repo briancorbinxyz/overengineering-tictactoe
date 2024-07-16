@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.Scanner;
 
-public class HumanPlayer implements Player {
+public final class HumanPlayer implements Player {
 
     private final String playerMarker;
 

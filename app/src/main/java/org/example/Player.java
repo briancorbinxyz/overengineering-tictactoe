@@ -1,6 +1,6 @@
 package org.example;
 
-public interface Player {
+public sealed interface Player permits HumanPlayer, BotPlayer {
     
     String getPlayerMarker();
 

@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.Random;
 
-public class BotPlayer implements Player {
+public final class BotPlayer implements Player {
 
     private final String playerMarker;
 
