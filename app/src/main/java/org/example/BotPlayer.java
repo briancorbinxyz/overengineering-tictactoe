@@ -3,7 +3,7 @@ package org.example;
 import java.security.SecureRandom;
 import java.util.random.RandomGenerator;
 
-public class BotPlayer implements Player {
+public final class BotPlayer implements Player {
 
     private final String playerMarker;
 
