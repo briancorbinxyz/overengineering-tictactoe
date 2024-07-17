@@ -8,6 +8,11 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Represents a game of Tic-Tac-Toe, including the game board, players, and game state.
+ * The game can be serialized and persisted to a file, and loaded from a file.
+ * The game can be played by alternating moves between human and bot players.
+ */
 public class Game implements Serializable {
 
     private static final long serialVersionUID = 1L;

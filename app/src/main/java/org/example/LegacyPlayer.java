@@ -3,6 +3,13 @@ package org.example;
 import java.io.Serializable;
 import java.util.Scanner;
 
+/**
+ * A legacy implementation of the `Player` interface that uses a console-based input mechanism.
+ * This class is deprecated and should not be used in new code. It is provided for backward compatibility
+ * with older versions of the application that may have relied on this implementation.
+ *
+ * @deprecated Since JDK 17, for a deserialization rejection use case.
+ */
 @Deprecated(since = "JDK17 for a deserialization rejection use case")
 public final class LegacyPlayer implements Player, Serializable {
 

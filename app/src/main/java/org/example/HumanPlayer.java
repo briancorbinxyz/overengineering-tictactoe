@@ -3,6 +3,10 @@ package org.example;
 import java.io.Serializable;
 import java.util.Scanner;
 
+/**
+ * Represents a human player in the game.
+ * The human player interacts with the game by providing their next move through the console.
+ */
 public final class HumanPlayer implements Player, Serializable {
 
     private final String playerMarker;

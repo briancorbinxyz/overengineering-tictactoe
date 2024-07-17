@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.random.RandomGenerator;
 
+/**
+ * Represents a bot player in the game. The bot player uses a random number generator to make moves on the game board.
+ */
 public final class BotPlayer implements Player, Serializable {
 
     private final String playerMarker;
