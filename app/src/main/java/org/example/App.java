@@ -31,7 +31,7 @@ public class App {
 
     /**
      * Runs the game.
-     * @throws Exception
+     * @throws Exception if there is an error whilst playing the game
      */
     public void run() throws Exception {
         game.play();

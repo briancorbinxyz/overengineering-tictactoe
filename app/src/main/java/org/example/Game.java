@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,6 +51,7 @@ public class Game implements Serializable {
         File persistenceDir = Files.createTempDirectory(String.valueOf(gameId)).toFile();
         boolean hasWinner = false;
         boolean movesAvailable = board.hasMovesAvailable();
+        renderPlayers();
         while (!hasWinner && movesAvailable) {
             renderBoard();
             moveNumber = moveNumber + 1;
@@ -73,6 +73,14 @@ public class Game implements Serializable {
         }
         if (!hasWinner && !movesAvailable) {
            System.out.println("Tie game!"); 
+        }
+        renderBoard();
+    }
+
+    private void renderPlayers() {
+        PlayerPrinter printer = new PlayerPrinter();
+        for (Player player : players) {
+            System.out.println("- " + printer.getPlayerIdentifier(player));
         }
     }
 
