@@ -1,3 +1,4 @@
+```
     .::::     .::         .::.::::::::.:::::::          .::::::::.:::     .::   .::::   .::.:::     .::.::::::::.::::::::.:::::::    .::.:::     .::   .::::   
   .::    .::   .::       .:: .::      .::    .::        .::      .: .::   .:: .:    .:: .::.: .::   .::.::      .::      .::    .::  .::.: .::   .:: .:    .:: 
 .::        .::  .::     .::  .::      .::    .::        .::      .:: .::  .::.::        .::.:: .::  .::.::      .::      .::    .::  .::.:: .::  .::.::        
@@ -13,11 +14,11 @@
      .::    .::.::                  .::      .:::::: .::  .::                  .::    .::        .::.::                                                        
      .::    .:: .::   .::           .::     .::       .::  .::   .::           .::      .::     .:: .::                                                        
      .::    .::   .::::             .::    .::         .::   .::::             .::        .::::     .::::::::                                                  
-
+```
 
 Over-Engineering Tic-Tac-Toe
 ---
 
 Tic-Tac-Toe in Java deliberately over-engineered to apply features of Java introduced over time - so judge this code with a large helping of context!
 
-Pairs with the blog post: https://thelifeof.briancorbin.xyz/Library/03-Resources/Road-to-JDK-25---Over-Engineering-Tic-Tac-Toe!
+Pairs with the blog post: [Road to JDK 25 - Over-Engineering Tic-Tac-Toe](https://thelifeof.briancorbin.xyz/Library/03-Resources/Road-to-JDK-25---Over-Engineering-Tic-Tac-Toe!)

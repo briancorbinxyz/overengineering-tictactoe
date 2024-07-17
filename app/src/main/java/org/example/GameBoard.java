@@ -1,9 +1,14 @@
 package org.example;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class GameBoard {
+public class GameBoard implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
     private final int dimension;
+
     private final String [] content;
 
     public GameBoard(int dimension) {
