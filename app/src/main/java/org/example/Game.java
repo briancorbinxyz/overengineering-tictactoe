@@ -12,7 +12,7 @@ import java.util.UUID;
  * The game can be serialized and persisted to a file, and loaded from a file.
  * The game can be played by alternating moves between human and bot players.
  */
-public class Game implements Serializable {
+public class Game implements Serializable, AutoCloseable {
 
     private static final long serialVersionUID = 1L;
 
@@ -91,6 +91,15 @@ public class Game implements Serializable {
     private void renderBoard() {
         System.out.println(board);
         System.out.println();
+    }
+
+    @Override
+    public void close() throws Exception {
+        for (Player p : players) {
+            if (p instanceof AutoCloseable) {
+                ((AutoCloseable) p).close();
+            }
+        }
     }
 
 
