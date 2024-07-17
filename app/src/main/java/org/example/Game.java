@@ -29,6 +29,7 @@ public class Game implements Serializable {
     public Game(int dimension) {
         this.board = new GameBoard(dimension);
         this.players = List.of(
+            //new LegacyPlayer("X"),
             new HumanPlayer("X"),
             new BotPlayer("O")
         );

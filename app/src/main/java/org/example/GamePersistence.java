@@ -31,7 +31,6 @@ public class GamePersistence {
     }
 
     private static class GamePersistenceFilter implements ObjectInputFilter {
-
         // OVER-ENGINEER Reject any loaded classes games > 1000 object references
         private static final long MAX_REFERENCES = 1000;
 
@@ -40,11 +39,13 @@ public class GamePersistence {
                 return Status.REJECTED;
             }
             if (null != filterInfo.serialClass()) {
+                if (LegacyPlayer.class.equals(filterInfo.serialClass())) {
+                    return Status.REJECTED;
+                }
                 return Status.ALLOWED;
             }
             return Status.UNDECIDED;
         }
-
     }
 
 }
