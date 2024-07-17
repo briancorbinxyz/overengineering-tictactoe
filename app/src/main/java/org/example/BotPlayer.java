@@ -9,6 +9,8 @@ import java.util.random.RandomGenerator;
  */
 public final class BotPlayer implements Player, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private final String playerMarker;
 
     private final RandomGenerator random;

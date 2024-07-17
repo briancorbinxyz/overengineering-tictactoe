@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Scanner;
 
@@ -9,7 +10,11 @@ import java.util.Scanner;
  */
 public final class HumanPlayer implements Player, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private final String playerMarker;
+
+    private transient Scanner io = new Scanner(System.in);
 
     public HumanPlayer(String playerMarker) {
         this.playerMarker = playerMarker;
@@ -23,11 +28,15 @@ public final class HumanPlayer implements Player, Serializable {
     @Override
     public int nextMove(GameBoard board) {
         int location;
-        Scanner io = new Scanner(System.in);
         do {
             System.out.print("Player '" + playerMarker + "' choose an available location between [0-" + (board.getDimension()*board.getDimension()-1) + "]: ");
             location = io.nextInt();
         } while (!board.isValidMove(location));
         return location;
+    }
+
+    private void readObject(ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        io = new Scanner(System.in);
     }
 }
