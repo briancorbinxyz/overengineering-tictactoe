@@ -1,9 +1,10 @@
 package org.example;
 
+import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.random.RandomGenerator;
 
-public final class BotPlayer implements Player {
+public final class BotPlayer implements Player, Serializable {
 
     private final String playerMarker;
 

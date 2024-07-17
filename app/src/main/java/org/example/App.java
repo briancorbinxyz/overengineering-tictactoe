@@ -3,6 +3,9 @@
  */
 package org.example;
 
+import java.io.File;
+import java.io.IOException;
+
 public class App {
     
     private final Game game;
@@ -11,7 +14,11 @@ public class App {
         this.game = new Game();
     }
 
-    public void run() throws InterruptedException {
+    public App(File gameFile) throws Exception {
+        this.game = Game.from(gameFile);
+    }
+
+    public void run() throws Exception {
         game.play();
     }
 
@@ -19,8 +26,13 @@ public class App {
         return "Welcome to Tic-Tac-Toe!";
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        App app = new App();
+    public static void main(String[] args) throws Exception {
+        App app;
+        if (args.length > 0) {
+            app = new App(new File(args[0]));
+        } else {
+            app = new App();
+        }
         System.out.println(app.getGreeting());
         app.run();
     }
