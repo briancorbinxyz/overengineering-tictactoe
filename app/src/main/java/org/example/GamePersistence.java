@@ -48,9 +48,6 @@ public class GamePersistence {
                 return Status.REJECTED;
             }
             if (null != filterInfo.serialClass()) {
-                if (LegacyPlayer.class.equals(filterInfo.serialClass())) {
-                    return Status.REJECTED;
-                }
                 return Status.ALLOWED;
             }
             return Status.UNDECIDED;
