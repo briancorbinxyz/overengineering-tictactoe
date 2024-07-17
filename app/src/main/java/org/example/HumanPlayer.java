@@ -23,7 +23,6 @@ public final class HumanPlayer implements Player, Serializable, AutoCloseable {
         .register(this, () -> {
             if (io != null) {
                 io.close();
-            } else {
                 io = null;
             }
         });
