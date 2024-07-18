@@ -4,36 +4,54 @@
 package org.example;
 
 import java.io.File;
-import java.io.IOException;
 
+/**
+ * A simple java tic-tac-toe game.
+ */
 public class App {
     
-    private final Game game;
-
-    public App() {
-        this.game = new Game();
-    }
-
-    public App(File gameFile) throws Exception {
-        this.game = Game.from(gameFile);
-    }
-
+    /**
+     * Runs the game.
+     * @throws Exception if there is an error whilst playing the game
+     */
     public void run() throws Exception {
-        game.play();
+        try (var game = new Game()) {
+            game.play();
+        };
     }
 
+    /**
+     * Runs the game from the specified file.
+     * @param gameFile the file containing the saved game state to load
+     * @throws Exception if there is an error whilst playing the game or loading the game state from the file
+     */
+    public void runFrom(File gameFile) throws Exception {
+        try (var game = Game.from(gameFile)) {
+            game.play();
+        };
+    }
+
+    /**
+     * Returns a greeting message for the Tic-Tac-Toe game.
+     * @return the greeting message
+     */
     public String getGreeting() {
         return "Welcome to Tic-Tac-Toe!";
     }
 
+    /**
+     * The main entry point for the Tic-Tac-Toe application.
+     * 
+     * If command-line arguments are provided, it will load a saved game state from the specified file.
+     * Otherwise, it will start a new game.
+     */
     public static void main(String[] args) throws Exception {
-        App app;
-        if (args.length > 0) {
-            app = new App(new File(args[0]));
-        } else {
-            app = new App();
-        }
+        App app = new App();
         System.out.println(app.getGreeting());
-        app.run();
+        if (args.length > 0) {
+            app.runFrom(new File(args[0]));
+        } else {
+            app.run();
+        }
     }
 }

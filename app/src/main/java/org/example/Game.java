@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-public class Game implements Serializable {
+/**
+ * Represents a game of Tic-Tac-Toe, including the game board, players, and game state.
+ * The game can be serialized and persisted to a file, and loaded from a file.
+ * The game can be played by alternating moves between human and bot players.
+ */
+public class Game implements Serializable, AutoCloseable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +51,7 @@ public class Game implements Serializable {
         File persistenceDir = Files.createTempDirectory(String.valueOf(gameId)).toFile();
         boolean hasWinner = false;
         boolean movesAvailable = board.hasMovesAvailable();
+        renderPlayers();
         while (!hasWinner && movesAvailable) {
             renderBoard();
             moveNumber = moveNumber + 1;
@@ -69,6 +74,14 @@ public class Game implements Serializable {
         if (!hasWinner && !movesAvailable) {
            System.out.println("Tie game!"); 
         }
+        renderBoard();
+    }
+
+    private void renderPlayers() {
+        PlayerPrinter printer = new PlayerPrinter();
+        for (Player player : players) {
+            System.out.println("- " + printer.getPlayerIdentifier(player));
+        }
     }
 
     public UUID getGameId() {
@@ -78,6 +91,15 @@ public class Game implements Serializable {
     private void renderBoard() {
         System.out.println(board);
         System.out.println();
+    }
+
+    @Override
+    public void close() throws Exception {
+        for (Player p : players) {
+            if (p instanceof AutoCloseable) {
+                ((AutoCloseable) p).close();
+            }
+        }
     }
 
 

@@ -3,6 +3,12 @@ package org.example;
 import java.io.Serializable;
 import java.util.Arrays;
 
+/**
+ * Represents a game board for a game, such as tic-tac-toe.
+ * The board has a specified dimension, and stores the current state of the game
+ * in a 1D array. Provides methods to check the validity of moves, place player
+ * markers, check for a winner, and get a string representation of the board.
+ */
 public class GameBoard implements Serializable {
     
     private static final long serialVersionUID = 1L;

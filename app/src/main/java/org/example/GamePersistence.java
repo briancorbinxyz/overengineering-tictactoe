@@ -8,6 +8,15 @@ import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+/**
+ * Provides methods for saving and loading a {@link Game} object to/from a file.
+ * 
+ * The {@link #saveTo(File, Game)} method writes the provided {@link Game} object to the specified file.
+ * The {@link #loadFrom(File)} method reads a {@link Game} object from the specified file and returns it.
+ * 
+ * The {@link GamePersistenceFilter} class is used to filter the objects that can be loaded from the file,
+ * rejecting any loaded classes with more than 1000 object references to prevent deserialization attacks.
+ */
 public class GamePersistence {
 
     public void saveTo(File gameFile, Game game) throws IOException {
