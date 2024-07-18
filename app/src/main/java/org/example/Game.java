@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,11 +19,9 @@ public class Game implements Serializable, AutoCloseable {
 
     private final GameBoard board;
 
-    private final List<Player> players;
+    private final PlayerList players;
 
     private int moveNumber;
-
-    private int playerIndex;
 
     public Game() {
         this(3);
@@ -32,8 +29,7 @@ public class Game implements Serializable, AutoCloseable {
 
     public Game(int dimension) {
         this.board = new GameBoard(dimension);
-        this.players = List.of(
-            //new LegacyPlayer("X"),
+        this.players = PlayerList.of(
             new HumanPlayer("X"),
             new BotPlayer("O")
         );
@@ -51,11 +47,11 @@ public class Game implements Serializable, AutoCloseable {
         File persistenceDir = Files.createTempDirectory(String.valueOf(gameId)).toFile();
         boolean hasWinner = false;
         boolean movesAvailable = board.hasMovesAvailable();
-        renderPlayers();
+        players.render();
         while (!hasWinner && movesAvailable) {
             renderBoard();
             moveNumber = moveNumber + 1;
-            Player player = players.get(playerIndex);
+            Player player = players.nextPlayer();
             String playerMarker = player.getPlayerMarker();
             int location = player.nextMove(board);
             board.placePlayerMarker(playerMarker, location);
@@ -64,10 +60,6 @@ public class Game implements Serializable, AutoCloseable {
                 System.out.println("Winner: Player '" + playerMarker + "'!");
             } else {
                 movesAvailable = board.hasMovesAvailable();
-                playerIndex = playerIndex + 1;
-                if (playerIndex >= players.size()) {
-                    playerIndex = 0;
-                }
             }
             persistence.saveTo(new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game"), this);
         }
@@ -75,13 +67,6 @@ public class Game implements Serializable, AutoCloseable {
            System.out.println("Tie game!"); 
         }
         renderBoard();
-    }
-
-    private void renderPlayers() {
-        PlayerPrinter printer = new PlayerPrinter();
-        for (Player player : players) {
-            System.out.println("- " + printer.getPlayerIdentifier(player));
-        }
     }
 
     public UUID getGameId() {
@@ -95,11 +80,7 @@ public class Game implements Serializable, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        for (Player p : players) {
-            if (p instanceof AutoCloseable) {
-                ((AutoCloseable) p).close();
-            }
-        }
+        players.close();
     }
 
 
