@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.SequencedSet;
 
-public class PlayerList implements Serializable, AutoCloseable {
+public class PlayerList implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,15 +57,6 @@ public class PlayerList implements Serializable, AutoCloseable {
         System.out.println("Players: " + playerMarkers());
         for (Player player : players) {
             System.out.println("- " + printer.getPlayerIdentifier(player));
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        for (Player p : players) {
-            if (p instanceof AutoCloseable) {
-                ((AutoCloseable) p).close();
-            }
         }
     }
 

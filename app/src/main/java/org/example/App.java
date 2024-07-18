@@ -15,9 +15,8 @@ public class App {
      * @throws Exception if there is an error whilst playing the game
      */
     public void run() throws Exception {
-        try (var game = new Game()) {
-            game.play();
-        };
+        var game = new Game();
+        game.play();
     }
 
     /**
@@ -26,9 +25,8 @@ public class App {
      * @throws Exception if there is an error whilst playing the game or loading the game state from the file
      */
     public void runFrom(File gameFile) throws Exception {
-        try (var game = Game.from(gameFile)) {
-            game.play();
-        };
+        var game = Game.from(gameFile);
+        game.play();
     }
 
     /**
