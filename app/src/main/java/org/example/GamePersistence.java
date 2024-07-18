@@ -44,13 +44,11 @@ public class GamePersistence {
         private static final long MAX_REFERENCES = 1000;
 
         public Status checkInput(FilterInfo filterInfo) {
-            if (filterInfo.references() > MAX_REFERENCES) {
-                return Status.REJECTED;
-            }
-            if (null != filterInfo.serialClass()) {
-                return Status.ALLOWED;
-            }
-            return Status.UNDECIDED;
+            return switch (filterInfo) {
+                case FilterInfo fi when fi.references() > MAX_REFERENCES -> Status.REJECTED;
+                case FilterInfo fi when fi.serialClass() != null -> Status.ALLOWED;
+                default -> Status.UNDECIDED;
+            };
         }
     }
 
