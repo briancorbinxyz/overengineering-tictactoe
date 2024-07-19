@@ -9,17 +9,18 @@ import java.util.Arrays;
  * in a 1D array. Provides methods to check the validity of moves, place player
  * markers, check for a winner, and get a string representation of the board.
  */
-public class GameBoard implements Serializable {
+public record GameBoard(int dimension, String[] content) implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    private final int dimension;
-
-    private final String [] content;
-
     public GameBoard(int dimension) {
-        this.dimension = dimension;
-        this.content = new String[dimension * dimension];
+        this(dimension, new String[dimension * dimension]);
+    }
+
+    public GameBoard {
+        if (content.length != dimension * dimension) {
+            throw new IllegalArgumentException("Content must be of length " + dimension * dimension);
+        }
     }
 
     public String toString() {
@@ -54,7 +55,7 @@ public class GameBoard implements Serializable {
         return location >= 0 && location < content.length && content[location] == null;
     }
 
-    public boolean checkWinner(String playerMarker) {
+    public boolean hasChain(String playerMarker) {
         // check rows
         for (int i = 0; i < dimension; i++) {
             int chain = 0;
@@ -117,11 +118,19 @@ public class GameBoard implements Serializable {
         return unit == null ? String.valueOf(index) : "\u005F";
     }
 
-    public void placePlayerMarker(String playerMarker, int location) {
+    public GameBoard withMove(String playerMarker, int location) {
         if (!isValidMove(location)) {
             throw new InvalidMoveException();
         }
-        this.content[location] = playerMarker;
+        String[] boardCopy = getBoardCopy();
+        boardCopy[location] = playerMarker;
+        return new GameBoard(dimension, boardCopy);
+    }
+
+    private String[] getBoardCopy() {
+        String[] boardCopy = new String[dimension * dimension];
+        System.arraycopy(content, 0, boardCopy, 0, boardCopy.length);
+        return boardCopy;
     }
 
     public int getDimension() {

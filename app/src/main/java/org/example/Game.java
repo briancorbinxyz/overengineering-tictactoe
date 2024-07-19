@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.UUID;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.Optional;
 
 /**
  * Represents a game of Tic-Tac-Toe, including the game board, players, and game state.
@@ -17,9 +20,11 @@ public class Game implements Serializable {
 
     private final UUID gameId;
 
-    private final GameBoard board;
+    private final Deque<GameBoard> boards;
 
-    private final PlayerList players;
+    private final Players players;
+
+    private Player currentPlayer;
 
     private int moveNumber;
 
@@ -27,9 +32,10 @@ public class Game implements Serializable {
         this(3);
     }
 
-    public Game(int dimension) {
-        this.board = new GameBoard(dimension);
-        this.players = PlayerList.of(
+    public Game(int size) {
+        this.boards = new ArrayDeque<>();
+        this.boards.add(new GameBoard(size));
+        this.players = Players.of(
             new HumanPlayer("X"),
             new BotPlayer("O")
         );
@@ -44,29 +50,46 @@ public class Game implements Serializable {
 
     public void play() throws Exception {
         GamePersistence persistence = new GamePersistence();
-        File persistenceDir = Files.createTempDirectory(String.valueOf(gameId)).toFile();
-        boolean hasWinner = false;
+        File persistenceDir = gameFileDirectory();
+        GameBoard board = activeGameBoard();
         boolean movesAvailable = board.hasMovesAvailable();
+        currentPlayer = players.nextPlayer();
+        Optional<Player> winningPlayer = checkWon(board, currentPlayer);
+
+        // Print Initial Setup
         players.render();
-        while (!hasWinner && movesAvailable) {
+        while (winningPlayer.isEmpty() && movesAvailable);
+        { 
             renderBoard();
             moveNumber = moveNumber + 1;
-            Player player = players.nextPlayer();
-            String playerMarker = player.getPlayerMarker();
-            int location = player.nextMove(board);
-            board.placePlayerMarker(playerMarker, location);
-            hasWinner = board.checkWinner(playerMarker);
-            if (hasWinner) {
-                System.out.println("Winner: Player '" + playerMarker + "'!");
-            } else {
-                movesAvailable = board.hasMovesAvailable();
-            }
+            int location = currentPlayer.nextMove(board);
+            board = pushGameBoard(board.withMove(currentPlayer.getPlayerMarker(), location));
             persistence.saveTo(new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game"), this);
-        }
-        if (!hasWinner && !movesAvailable) {
+            winningPlayer = checkWon(board, currentPlayer);
+            movesAvailable = board.hasMovesAvailable();
+            currentPlayer = players.nextPlayer();
+        };
+
+        if (!winningPlayer.isEmpty() && !movesAvailable) {
            System.out.println("Tie game!"); 
         }
+        winningPlayer.ifPresent((player) -> System.out.println("Winner: Player '" + player.getPlayerMarker() + "'!"));
         renderBoard();
+    }
+
+    private Optional<Player> checkWon(GameBoard board, Player player) {
+        return board.hasChain(player.getPlayerMarker())
+            ? Optional.of(player)
+            : Optional.empty();
+    }
+
+    private File gameFileDirectory() throws IOException {
+        return Files.createTempDirectory(String.valueOf(gameId)).toFile();
+    }
+
+    private GameBoard pushGameBoard(GameBoard board) {
+        boards.add(board);
+        return board;
     }
 
     public UUID getGameId() {
@@ -74,8 +97,12 @@ public class Game implements Serializable {
     }
 
     private void renderBoard() {
-        System.out.println(board);
+        System.out.println(activeGameBoard());
         System.out.println();
+    }
+
+    private GameBoard activeGameBoard() {
+        return boards.peekLast();
     }
 
 
