@@ -24,7 +24,7 @@ public class Game implements Serializable {
 
     private final Players players;
 
-    private Player currentPlayer;
+    private int currentPlayerIdx;
 
     private int moveNumber;
 
@@ -41,6 +41,7 @@ public class Game implements Serializable {
         );
         this.gameId = UUID.randomUUID();
         this.moveNumber = 0;
+        this.currentPlayerIdx = 0;
     }
 
     public static Game from(File gameFile) throws IOException, ClassNotFoundException {
@@ -53,21 +54,20 @@ public class Game implements Serializable {
         File persistenceDir = gameFileDirectory();
         GameBoard board = activeGameBoard();
         boolean movesAvailable = board.hasMovesAvailable();
-        currentPlayer = players.nextPlayer();
+        Player currentPlayer = players.byIndex(currentPlayerIdx);
         Optional<Player> winningPlayer = checkWon(board, currentPlayer);
 
         // Print Initial Setup
         players.render();
-        while (winningPlayer.isEmpty() && movesAvailable);
-        { 
+        while (winningPlayer.isEmpty() && movesAvailable) { 
             renderBoard();
-            moveNumber = moveNumber + 1;
-            int location = currentPlayer.nextMove(board);
-            board = pushGameBoard(board.withMove(currentPlayer.getPlayerMarker(), location));
-            persistence.saveTo(new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game"), this);
+            moveNumber += 1;
+            board = pushGameBoard(board.withMove(currentPlayer.getPlayerMarker(), currentPlayer.nextMove(board)));
+            persistence.saveTo(gameFile(persistenceDir), this);
             winningPlayer = checkWon(board, currentPlayer);
             movesAvailable = board.hasMovesAvailable();
-            currentPlayer = players.nextPlayer();
+            currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
+            currentPlayer = players.byIndex(currentPlayerIdx);
         };
 
         if (!winningPlayer.isEmpty() && !movesAvailable) {
@@ -85,6 +85,10 @@ public class Game implements Serializable {
 
     private File gameFileDirectory() throws IOException {
         return Files.createTempDirectory(String.valueOf(gameId)).toFile();
+    }
+
+    private File gameFile(File persistenceDir) {
+        return new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game");
     }
 
     private GameBoard pushGameBoard(GameBoard board) {
