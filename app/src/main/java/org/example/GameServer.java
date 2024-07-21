@@ -11,9 +11,10 @@ public class GameServer {
     public static void main(String[] args) throws Exception {
         GameServer server = new GameServer();
         try (
-            ServerSocket serverSocket = new ServerSocket(9090);
+            ServerSocket serverSocket = new ServerSocket(args.length > 0 ? Integer.parseInt(args[0]) : 9090);
             ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
         ) {
+            System.out.println("Starting game server at " + serverSocket);
             server.listenForPlayers(executor, serverSocket);
             executor.shutdown();
             executor.awaitTermination(10, java.util.concurrent.TimeUnit.MINUTES);

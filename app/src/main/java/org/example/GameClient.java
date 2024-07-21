@@ -11,15 +11,18 @@ public class GameClient {
 
     private final int maxGames;
 
-    public GameClient(int maxGames) {
+    private final int serverSocket;
+
+    public GameClient(int maxGames, int serverSocket) {
         this.maxGames = maxGames;
+        this.serverSocket = serverSocket;
     }
 
     public static void main(String[] args) throws Exception {
         ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
         System.out.println("Client connecting for Tic-Tac-Toe.");
         long elapsed = System.currentTimeMillis();
-        GameClient client = new GameClient(1000);
+        GameClient client = new GameClient(1000, args.length > 0 ? Integer.parseInt(args[0]) : 9090);
         client.connectToServer(executor);
         executor.shutdown();
         executor.awaitTermination(10, TimeUnit.MINUTES);
@@ -31,7 +34,7 @@ public class GameClient {
         for (int i = 0; i < 2 * maxGames; i++) {
             executor.submit(() -> {
                 try (
-                    Socket socket = new Socket("localhost", 9090);
+                    Socket socket = new Socket("localhost", serverSocket);
                     Client client = new Client(socket);
                 ) {
                     System.out.println("Connected " + client);

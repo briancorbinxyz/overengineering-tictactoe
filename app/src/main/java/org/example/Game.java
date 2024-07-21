@@ -67,10 +67,9 @@ public class Game implements Serializable {
             currentPlayer = players.byIndex(currentPlayerIdx);
         };
 
-        if (!winningPlayer.isEmpty() && !movesAvailable) {
-           System.out.println("Tie game!"); 
-        }
-        winningPlayer.ifPresent((player) -> System.out.println("Winner: Player '" + player.getPlayerMarker() + "'!"));
+        winningPlayer.ifPresentOrElse(
+            player -> System.out.println("Winner: Player '" + player.getPlayerMarker() + "'!"),
+            () -> { System.out.println("Tie Game!"); }        );
         renderBoard();
     }
 
