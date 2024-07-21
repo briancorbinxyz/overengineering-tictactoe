@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.util.UUID;
-import java.util.Deque;
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Represents a game of Tic-Tac-Toe, including the game board, players, and game state.
@@ -24,21 +24,24 @@ public class Game implements Serializable {
 
     private final Players players;
 
+    private final boolean persistenceEnabled;
+
     private int currentPlayerIdx;
 
     private int moveNumber;
 
     public Game() {
-        this(3, new HumanPlayer("X"), new BotPlayer("O"));
+        this(3, true, new HumanPlayer("X"), new BotPlayer("O"));
     }
 
-    public Game(int size, Player... players) {
+    public Game(int size, boolean persistenceEnabled, Player... players) {
         this.boards = new ArrayDeque<>();
         this.boards.add(new GameBoard(size));
         this.players = Players.of(players);
         this.gameId = UUID.randomUUID();
         this.moveNumber = 0;
         this.currentPlayerIdx = 0;
+        this.persistenceEnabled = persistenceEnabled;
     }
 
     public static Game from(File gameFile) throws IOException, ClassNotFoundException {
@@ -60,7 +63,9 @@ public class Game implements Serializable {
             renderBoard();
             moveNumber += 1;
             board = pushGameBoard(board.withMove(currentPlayer.getPlayerMarker(), currentPlayer.nextMove(board)));
-            persistence.saveTo(gameFile(persistenceDir), this);
+            if (persistenceEnabled) {
+                persistence.saveTo(gameFile(persistenceDir), this);
+            }
             winningPlayer = checkWon(board, currentPlayer);
             movesAvailable = board.hasMovesAvailable();
             currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);

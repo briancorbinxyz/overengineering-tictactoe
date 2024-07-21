@@ -1,8 +1,5 @@
 package org.example;
 
-import org.testng.annotations.Ignore;
-import org.testng.annotations.Test;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,12 +7,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
+import org.testng.annotations.Ignore;
+import org.testng.annotations.Test;
+
 @Ignore
 public class GamePerformanceTest {
 
     @Test public void testGameBotPerformanceInSerial() throws Exception {
         for (int i = 0; i < 1000; i++) {
-            Game game = new Game(3, new BotPlayer("X"), new BotPlayer("O"));
+            Game game = new Game(3, false, new BotPlayer("X"), new BotPlayer("O"));
             game.play();
         }
     }
@@ -24,7 +24,7 @@ public class GamePerformanceTest {
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         IntStream.range(0, 1000).forEach(i -> executor.submit(() -> {
             try {
-                Game game = new Game(3, new BotPlayer("X"), new BotPlayer("O"));
+                Game game = new Game(3, false, new BotPlayer("X"), new BotPlayer("O"));
                 game.play();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -38,7 +38,7 @@ public class GamePerformanceTest {
         ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
         IntStream.range(0, 1000).forEach(i -> executor.submit(() -> {
             try {
-                Game game = new Game(3, new BotPlayer("X"), new BotPlayer("O"));
+                Game game = new Game(3, false, new BotPlayer("X"), new BotPlayer("O"));
                 game.play();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -84,7 +84,7 @@ public class GamePerformanceTest {
                     var playerX = new ClientServerBotPlayer("X", playerOne);
                     var playerO = new ClientServerBotPlayer("O", playerTwo)
                 ) {
-                    Game game = new Game(3, playerX, playerO);
+                    Game game = new Game(3, false, playerX, playerO);
                     game.play();
                 } catch (Exception e) {
                     System.out.println(e);
