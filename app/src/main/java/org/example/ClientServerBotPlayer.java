@@ -53,6 +53,7 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
 
     @Override
     public void close() throws Exception {
+        out.println(ClientServerProtocol.EXIT_CODE);
         out.close();
         in.close();
     };
@@ -67,7 +68,7 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
             try {
                 // For now read the board and send a random move
                 String serverMessage;
-                while ((serverMessage = in.readLine()) != null) {
+                while ((serverMessage = in.readLine()) != null && !serverMessage.equals(ClientServerProtocol.EXIT_CODE)) {
                     // System.out.println("DEBUG: " + serverMessage);
                     int nextMove = randomGenerator.nextInt(9);
                     // System.out.println(this + " sending move: " + nextMove);

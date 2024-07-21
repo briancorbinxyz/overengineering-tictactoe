@@ -1,9 +1,11 @@
 package org.example;
 
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.LongAdder;
 
 import org.example.ClientServerBotPlayer.Client;
 
@@ -14,6 +16,10 @@ public class GameClient {
     private final String serverHost;
 
     private final int serverSocket;
+
+    private final LongAdder submittedClients = new LongAdder();
+
+    private final LongAdder startedClients = new LongAdder();
 
     public GameClient(int maxGames, String serverHost, int serverPort) {
         this.maxGames = maxGames;
@@ -34,19 +40,27 @@ public class GameClient {
     }
 
     private void connectToServer(ExecutorService executor) {
-        for (int i = 0; i < 2 * maxGames; i++) {
+        while (startedClients.sum() < 2 * maxGames) {
+            submittedClients.increment();
             executor.submit(() -> {
                 try (
+                    // Contention will cause SocketException, down Server ConnectException
                     Socket socket = new Socket(serverHost, serverSocket);
                     Client client = new Client(socket);
                 ) {
-                    System.out.println("Connected " + client);
+                    startedClients.increment();
+                    System.out.println("Connected " + startedClients.sum());
                     client.connectAndPlay(socket);
+                } catch (ConnectException e) {
+                    System.out.println("Connect exception, server down.");
+                    System.exit(-1);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             });
         }
+        System.out.println("Finished.");
+        System.out.println("Submitted " + submittedClients.sum() + " clients for " + maxGames + " games.");
+        System.out.println("Started " + startedClients.sum() + " clients for " + maxGames + " games.");
     }
 }
