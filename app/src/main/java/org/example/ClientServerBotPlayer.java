@@ -21,8 +21,6 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
 
     private final String playerMarker;
 
-    private final RandomGenerator randomGenerator;
-
     private transient BufferedReader in;
 
     private transient PrintWriter out;
@@ -36,7 +34,6 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
         this.playerMarker = playerMarker;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true);
-        this.randomGenerator = new SecureRandom();
         System.out.println("Server connecting client to socket " + socket + " for Tic-Tac-Toe.");
     }
 
