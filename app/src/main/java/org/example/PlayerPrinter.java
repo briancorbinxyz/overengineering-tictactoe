@@ -1,5 +1,7 @@
 package org.example;
 
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.random.RandomGenerator;;
@@ -28,6 +30,7 @@ public class PlayerPrinter {
         return switch (player) {
             case HumanPlayer(String playerMarker) -> "Human" + " (" + playerMarker + ")";
             case BotPlayer(String playerMarker, RandomGenerator r) -> "Bot" + " (" + playerMarker + ")";
+            case ClientServerBotPlayer p -> "BotClient" + " (" + p.getPlayerMarker() + ")";
         };
     }
 

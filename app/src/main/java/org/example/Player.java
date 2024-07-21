@@ -10,7 +10,7 @@ package org.example;
  * int validBoardLocation = player.nextMove(gameBoard); // @end
  * }
  */
-public sealed interface Player permits HumanPlayer, BotPlayer {
+public sealed interface Player permits HumanPlayer, BotPlayer, ClientServerBotPlayer {
     
     String getPlayerMarker();
 

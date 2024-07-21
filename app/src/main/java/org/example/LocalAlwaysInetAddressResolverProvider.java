@@ -3,14 +3,14 @@ package org.example;
 import java.net.spi.InetAddressResolver;
 import java.net.spi.InetAddressResolverProvider;
 
-public class ExampleOrgInetAddressResolverProvider extends InetAddressResolverProvider {
+public class LocalAlwaysInetAddressResolverProvider extends InetAddressResolverProvider {
     @Override
     public InetAddressResolver get(Configuration configuration) {
-        return new ExampleOrgInetAddressResolver();
+        return new LocalAlwaysInetAddressResolver();
     }
 
     @Override
     public String name() {
-        return "Example.org Inet Address Resolver Provider";
+        return "Local Always Inet Address Resolver Provider";
     }
 }

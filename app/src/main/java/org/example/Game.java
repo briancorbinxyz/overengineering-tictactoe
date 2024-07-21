@@ -29,16 +29,13 @@ public class Game implements Serializable {
     private int moveNumber;
 
     public Game() {
-        this(3);
+        this(3, new HumanPlayer("X"), new BotPlayer("O"));
     }
 
-    public Game(int size) {
+    public Game(int size, Player... players) {
         this.boards = new ArrayDeque<>();
         this.boards.add(new GameBoard(size));
-        this.players = Players.of(
-            new HumanPlayer("X"),
-            new BotPlayer("O")
-        );
+        this.players = Players.of(players);
         this.gameId = UUID.randomUUID();
         this.moveNumber = 0;
         this.currentPlayerIdx = 0;
