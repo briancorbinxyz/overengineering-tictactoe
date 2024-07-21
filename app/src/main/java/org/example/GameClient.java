@@ -31,7 +31,7 @@ public class GameClient {
         ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
         System.out.println("Client connecting for Tic-Tac-Toe.");
         long elapsed = System.currentTimeMillis();
-        GameClient client = new GameClient(1000, "localhost", args.length > 0 ? Integer.parseInt(args[0]) : 9090);
+        GameClient client = new GameClient(1000, "corbinm1mac.local", args.length > 0 ? Integer.parseInt(args[0]) : 9090);
         client.connectToServer(executor);
         executor.shutdown();
         executor.awaitTermination(10, TimeUnit.MINUTES);
