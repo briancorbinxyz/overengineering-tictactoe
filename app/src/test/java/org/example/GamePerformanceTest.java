@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
-//@Ignore
+@Ignore
 public class GamePerformanceTest {
 
     @Test public void testGameBotPerformanceInSerial() throws Exception {

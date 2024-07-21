@@ -3,9 +3,6 @@ package org.example;
 import java.io.Serializable;
 import java.net.Socket;
 import java.security.SecureRandom;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -24,7 +21,6 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
     private transient BufferedReader in;
 
     private transient PrintWriter out;
-
 
     public String getPlayerMarker() {
         return playerMarker;
@@ -90,30 +86,6 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
             in.close();
         };
 
-        public static void main(String[] args) throws Exception {
-            ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
-            // Create enough threads to simulate 1000 players 
-            System.out.println("Client connecting for Tic-Tac-Toe.");
-            long elapsed = System.currentTimeMillis();
-            for (int i = 0; i < 20000; i++) {
-                executor.submit(() -> {
-                    try (
-                        Socket socket = new Socket("localhost", 9090);
-                        Client client = new Client(socket);
-                    ) {
-                        System.out.println("Connected " + client);
-                        client.connectAndPlay(socket);
-                    } catch (Exception e) {
-                        System.out.println(e);
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-            executor.shutdown();
-            executor.awaitTermination(10, TimeUnit.MINUTES);
-            elapsed = System.currentTimeMillis() - elapsed;
-            System.out.println("Elapsed: " + elapsed);
-        }
     }
     
 }
