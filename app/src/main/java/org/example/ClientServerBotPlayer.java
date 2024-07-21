@@ -73,7 +73,8 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
                     int nextMove = randomGenerator.nextInt(9);
                     // System.out.println(this + " sending move: " + nextMove);
                     out.println(nextMove);
-                }
+                };
+                System.out.println("Done!");
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);

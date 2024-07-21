@@ -2,6 +2,7 @@ package org.example;
 
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,8 @@ public class GameClient {
     private final int serverSocket;
 
     private final LongAdder submittedClients = new LongAdder();
+    
+    private final LongAdder failedClients = new LongAdder();
 
     private final LongAdder startedClients = new LongAdder();
 
@@ -31,17 +34,26 @@ public class GameClient {
         ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
         System.out.println("Client connecting for Tic-Tac-Toe.");
         long elapsed = System.currentTimeMillis();
-        GameClient client = new GameClient(1000, "corbinm1mac.local", args.length > 0 ? Integer.parseInt(args[0]) : 9090);
-        client.connectToServer(executor);
-        executor.shutdown();
-        executor.awaitTermination(10, TimeUnit.MINUTES);
-        elapsed = System.currentTimeMillis() - elapsed;
-        System.out.println("Elapsed: " + elapsed);
+        GameClient client = new GameClient(
+            1000,
+            args.length > 0 ? args[0] : "localhost",
+            args.length > 1 ? Integer.parseInt(args[1]) : 9090);
+        try {
+            client.connectToServer(executor);
+            executor.shutdown();
+            executor.awaitTermination(10, TimeUnit.MINUTES);
+            elapsed = System.currentTimeMillis() - elapsed;
+            System.out.println("Elapsed: " + elapsed);
+        } finally {
+            System.out.println("Finished.");
+            System.out.println("Submitted " + client.submittedClients.sum() + " clients for " + client.maxGames + " games.");
+            System.out.println("Started " + client.startedClients.sum() + " clients for " + client.maxGames + " games.");
+            System.out.println("Failed " + client.failedClients.sum() + " clients for " + client.maxGames + " games.");
+        }
     }
 
     private void connectToServer(ExecutorService executor) {
-        while (startedClients.sum() < 2 * maxGames) {
-            submittedClients.increment();
+        while (submittedClients.sum() < 2 * maxGames) {
             executor.submit(() -> {
                 try (
                     // Contention will cause SocketException, down Server ConnectException
@@ -52,15 +64,17 @@ public class GameClient {
                     System.out.println("Connected " + startedClients.sum());
                     client.connectAndPlay(socket);
                 } catch (ConnectException e) {
+                    failedClients.increment();
                     System.out.println("Connect exception, server down.");
-                    System.exit(-1);
+                } catch (SocketException e) {
+                    failedClients.increment();
+                    System.out.println("Socket exception, server disconnected.");
                 } catch (Exception e) {
+                    failedClients.increment();
                     throw new RuntimeException(e);
                 }
             });
+            submittedClients.increment();
         }
-        System.out.println("Finished.");
-        System.out.println("Submitted " + submittedClients.sum() + " clients for " + maxGames + " games.");
-        System.out.println("Started " + startedClients.sum() + " clients for " + maxGames + " games.");
     }
 }
