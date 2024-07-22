@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.regex.Pattern;
 
-public class ClientServerProtocol {
+public class RemoteProtocol {
 
     public static final String EXIT_CODE = "{}";
 

@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 /**
  * Represents a bot player in the game. The bot player uses a random number generator to make moves on the game board.
  */
-public final class ClientServerBotPlayer implements Player, Serializable, AutoCloseable {
+public final class RemoteBotPlayer implements Player, Serializable, AutoCloseable {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,11 +29,11 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
         return playerMarker;
     };
 
-    public ClientServerBotPlayer(String playerMarker, Socket socket) throws Exception {
+    public RemoteBotPlayer(String playerMarker, Socket socket) throws Exception {
         this.playerMarker = playerMarker;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true);
-        this.out.println(String.format(ClientServerProtocol.GAME_STARTED_JSON_FORMAT, playerMarker));
+        this.out.println(String.format(RemoteProtocol.GAME_STARTED_JSON_FORMAT, playerMarker));
         System.out.println("Server connecting client to socket " + socket + " for Tic-Tac-Toe.");
     }
 
@@ -41,7 +41,7 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
         int location = -1;
         do { 
             try {
-                out.println(String.format(ClientServerProtocol.NEXT_MOVE_JSON_FORMAT, json.asJson(board)));
+                out.println(String.format(RemoteProtocol.NEXT_MOVE_JSON_FORMAT, json.asJson(board)));
                 String clientMessage = in.readLine();
                 location = Integer.parseInt(clientMessage);
             } catch (NumberFormatException e) {
@@ -56,7 +56,7 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
 
     @Override
     public void close() throws Exception {
-        out.println(ClientServerProtocol.EXIT_CODE);
+        out.println(RemoteProtocol.EXIT_CODE);
         out.close();
         in.close();
     };
@@ -72,9 +72,9 @@ public final class ClientServerBotPlayer implements Player, Serializable, AutoCl
             try {
                 // For now read the board and send a random move
                 String serverMessage;
-                while ((serverMessage = in.readLine()) != null && !serverMessage.equals(ClientServerProtocol.EXIT_CODE)) {
+                while ((serverMessage = in.readLine()) != null && !serverMessage.equals(RemoteProtocol.EXIT_CODE)) {
                     //System.out.println("DEBUG: " + serverMessage);
-                    matcher = ClientServerProtocol.NEXT_MOVE_JSON_PATTERN.matcher(serverMessage);
+                    matcher = RemoteProtocol.NEXT_MOVE_JSON_PATTERN.matcher(serverMessage);
                     if (matcher.matches()) {
                         int dimension = Integer.valueOf(matcher.group(3));
                         int nextMove = randomGenerator.nextInt(dimension * dimension);

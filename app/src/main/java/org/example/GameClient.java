@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import org.example.ClientServerBotPlayer.Client;
+import org.example.RemoteBotPlayer.Client;
 
 public class GameClient {
 

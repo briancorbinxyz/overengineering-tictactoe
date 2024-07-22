@@ -48,8 +48,8 @@ public class GameServer {
             Socket socketPlayerTwo = serverSocket.accept();
             executor.submit(() -> {
                 try (
-                    var playerX = new ClientServerBotPlayer("X", socketPlayerOne);
-                    var playerO = new ClientServerBotPlayer("O", socketPlayerTwo)
+                    var playerX = new RemoteBotPlayer("X", socketPlayerOne);
+                    var playerO = new RemoteBotPlayer("O", socketPlayerTwo)
                 ) {
                     System.out.println(updateStatsAndGetConcurrentGames() + " concurrent games in progress.");
                     Game game = new Game(3, false, playerX, playerO);

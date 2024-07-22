@@ -28,7 +28,7 @@ public class PlayerPrinter {
         return switch (player) {
             case HumanPlayer(String playerMarker) -> "Human" + " (" + playerMarker + ")";
             case BotPlayer(String playerMarker, RandomGenerator r) -> "Bot" + " (" + playerMarker + ")";
-            case ClientServerBotPlayer p -> "BotClient" + " (" + p.getPlayerMarker() + ")";
+            case RemoteBotPlayer p -> "BotClient" + " (" + p.getPlayerMarker() + ")";
         };
     }
 
