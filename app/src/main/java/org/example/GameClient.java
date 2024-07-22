@@ -20,6 +20,8 @@ public class GameClient {
 
     private final LongAdder submittedClients = new LongAdder();
     
+    private final LongAdder completedClients = new LongAdder();
+    
     private final LongAdder failedClients = new LongAdder();
 
     private final LongAdder startedClients = new LongAdder();
@@ -49,6 +51,7 @@ public class GameClient {
             System.out.println("Submitted " + client.submittedClients.sum() + " clients for " + client.maxGames + " games.");
             System.out.println("Started " + client.startedClients.sum() + " clients for " + client.maxGames + " games.");
             System.out.println("Failed " + client.failedClients.sum() + " clients for " + client.maxGames + " games.");
+            System.out.println("Completed " + client.failedClients.sum() + " clients for " + client.maxGames + " games.");
         }
     }
 
@@ -63,6 +66,7 @@ public class GameClient {
                     startedClients.increment();
                     System.out.println("Connected " + startedClients.sum());
                     client.connectAndPlay(socket);
+                    completedClients.increment();
                 } catch (ConnectException e) {
                     failedClients.increment();
                     System.out.println("Connect exception, server down.");
