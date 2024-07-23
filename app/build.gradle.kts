@@ -19,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    // JDK21: KEM SPI (Third-Party)
+    // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
 }
 
 testing {
