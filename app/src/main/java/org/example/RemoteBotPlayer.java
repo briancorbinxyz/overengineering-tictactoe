@@ -31,10 +31,14 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
     public RemoteBotPlayer(String playerMarker, Socket socket) throws Exception {
         this.playerMarker = playerMarker;
+        initConnection(playerMarker, socket);
+        System.out.println("Server connecting client to socket " + socket + " for Tic-Tac-Toe.");
+    }
+
+    private void initConnection(String playerMarker, Socket socket) throws IOException {
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true);
         this.out.println(String.format(RemoteProtocol.GAME_STARTED_JSON_FORMAT, playerMarker));
-        System.out.println("Server connecting client to socket " + socket + " for Tic-Tac-Toe.");
     }
 
     public int nextMove(GameBoard board) {
