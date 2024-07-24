@@ -1,4 +1,4 @@
-package org.example;
+package org.example.security;
 
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.HashMap;
@@ -9,13 +9,15 @@ import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 
 /**
  * Unify the bouncy castle kyber parameters, spec and JDK {@code AlgorithmParameterSpec}
+
+ * @author Brian Corbin
  */
-public enum KyberConfigs {
+public enum KyberParams {
     Kyber512(KyberParameters.kyber512),
     Kyber768(KyberParameters.kyber768),
     Kyber1024(KyberParameters.kyber1024);
 
-    private static Map<KyberParameterSpec, KyberConfigs> paramsBySpec;
+    private static Map<KyberParameterSpec, KyberParams> paramsBySpec;
 
     private static Map<Class<? extends KyberParameterSpec>, KyberParameterSpec> specsBySpecClass;
 
@@ -33,7 +35,7 @@ public enum KyberConfigs {
         specsBySpecClass.put(KyberParameterSpec.kyber1024.getClass(), KyberParameterSpec.kyber1024);
     }
 
-    public static KyberConfigs byKyberParameterSpec(KyberParameterSpec spec) {
+    public static KyberParams byKyberParameterSpec(KyberParameterSpec spec) {
         return paramsBySpec.get(spec);
     }
 
@@ -41,7 +43,7 @@ public enum KyberConfigs {
         return spec.cast(specsBySpecClass.get(spec));
     }
 
-    KyberConfigs(KyberParameters params) {
+    KyberParams(KyberParameters params) {
         this.params = params;
     }
 
@@ -49,7 +51,7 @@ public enum KyberConfigs {
         return this.params;
     }
 
-    public static KyberConfigs fromEncoded(byte[] encodedParams) {
+    public static KyberParams fromEncoded(byte[] encodedParams) {
         return valueOf(new String(encodedParams));
     }
 

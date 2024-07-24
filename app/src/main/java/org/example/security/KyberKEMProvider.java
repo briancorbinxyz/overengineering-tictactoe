@@ -1,7 +1,13 @@
-package org.example;
+package org.example.security;
 
 import java.security.Provider;
 
+/**
+ * A provider for the KyberKEM key encapsulation mechanism.
+ * This provider registers the "Kyber" KEM and "Kyber" algorithm parameters.
+
+ * @author Brian Corbin
+ */
 public class KyberKEMProvider extends Provider {
 
     public KyberKEMProvider() {

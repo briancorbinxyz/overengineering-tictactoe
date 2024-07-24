@@ -1,4 +1,4 @@
-package org.example;
+package org.example.security;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -21,7 +21,14 @@ import org.bouncycastle.jcajce.spec.KEMGenerateSpec;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 
 /**
+ * Implements the Kyber Key Encapsulation Mechanism (KEM) as a Java Cryptography Extension (JCE) provider.
+ * The `KyberKEMSpi` class provides the implementation of the `KEMSpi` interface, which allows for the
+ * creation of Kyber-based encapsulators and decapsulators.
+ *
+ * The `KyberEncapsulatorDecapsulatorSpi` inner class implements the actual encapsulation and decapsulation
+ * logic, using the Bouncy Castle provider for the underlying Kyber algorithm implementation.
  * 
+ * @author Brian Corbin
  */
 public class KyberKEMSpi implements KEMSpi {
 
@@ -32,7 +39,7 @@ public class KyberKEMSpi implements KEMSpi {
             throw new InvalidKeyException("input key is null");
         }
         return switch(spec) {
-            case KyberParameterSpec kSpec -> new KyberEncapsulatorDecapsulatorSpi(publicKey, kSpec);
+            case KyberParameterSpec kSpec -> new KyberEncapsulatorDecapsulatorSpi(publicKey, kSpec, secureRandom);
             default -> throw new InvalidAlgorithmParameterException("Incompatible spec " + spec.getClass() + " for Kyber.");
         };
     }
@@ -57,9 +64,12 @@ public class KyberKEMSpi implements KEMSpi {
 
         private KyberParameterSpec parameterSpec; 
 
-        public KyberEncapsulatorDecapsulatorSpi(PublicKey publicKey, KyberParameterSpec parameterSpec) {
+        private SecureRandom random;
+
+        public KyberEncapsulatorDecapsulatorSpi(PublicKey publicKey, KyberParameterSpec parameterSpec, SecureRandom random) {
             this.publicKey = publicKey;
             this.parameterSpec = parameterSpec;
+            this.random = random;
         }
 
         public KyberEncapsulatorDecapsulatorSpi(PrivateKey privateKey, KyberParameterSpec parameterSpec) {
@@ -72,9 +82,13 @@ public class KyberKEMSpi implements KEMSpi {
             try {
                 KeyGenerator keyGenerator = KeyGenerator.getInstance("Kyber", "BCPQC");
                 KEMGenerateSpec kemGenerateSpec = new KEMGenerateSpec(publicKey, parameterSpec.getName());
-                keyGenerator.init(kemGenerateSpec);
+                if (random == null) {
+                    keyGenerator.init(kemGenerateSpec);
+                } else {
+                    keyGenerator.init(kemGenerateSpec, random);
+                }
                 SecretKeyWithEncapsulation key = (SecretKeyWithEncapsulation) keyGenerator.generateKey(); 
-                return new Encapsulated(key, key.getEncapsulation(), KyberConfigs.byKyberParameterSpec(parameterSpec).encode());
+                return new Encapsulated(key, key.getEncapsulation(), KyberParams.byKyberParameterSpec(parameterSpec).encode());
             } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
                 throw new UnsupportedOperationException(e); 
             }
@@ -95,14 +109,14 @@ public class KyberKEMSpi implements KEMSpi {
 
         @Override
         public int engineSecretSize() {
-            return KyberConfigs.byKyberParameterSpec(parameterSpec)
+            return KyberParams.byKyberParameterSpec(parameterSpec)
                 .parameters()
                 .getSessionKeySize();
         }
 
         @Override
         public int engineEncapsulationSize() {
-            return KyberConfigs.byKyberParameterSpec(parameterSpec)
+            return KyberParams.byKyberParameterSpec(parameterSpec)
                 .parameters()
                 .getSessionKeySize();
         }

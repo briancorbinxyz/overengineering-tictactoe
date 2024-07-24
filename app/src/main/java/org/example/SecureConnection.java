@@ -1,5 +1,6 @@
 package org.example;
 
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -34,11 +35,14 @@ import javax.crypto.spec.IvParameterSpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
+import org.example.security.KyberKEMProvider;
 
 /**
- * Secure KEM Connection using BouncyCastle Provider and Kyber
+ * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key
+ * generation and exchange and AES for symmetric encryption of messages with
+ * a random IV per message.
  * 
- * Per: https://openjdk.org/jeps/452
+ * Per: https://openjdk.org/jeps/452:
  * 
  * // Receiver side
  * KeyPairGenerator g = KeyPairGenerator.getInstance("ABC");
@@ -71,64 +75,11 @@ import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
  * 2. Key Encapsulation: Client encapsulates a symmetric key with server’s public key and sends it.
  * 3. Key Decapsulation: Server decapsulates the symmetric key with its private key.
  * 4. Secure Communication: Use the symmetric key for encrypting and decrypting data over the TCP connection.
+
+ * @author Brian Corbin
  */
 @SuppressWarnings("unused")
 public class SecureConnection {
-
-    private abstract static class Remote {
-
-        protected ObjectOutputStream out;
-
-        protected ObjectInputStream in;
-
-        void sendBytes(byte[] bytes) throws IOException {
-            out.writeInt(bytes.length);
-            out.write(bytes);
-            out.flush();
-        }
-
-        byte[] receiveBytes() throws IOException, ClassNotFoundException {
-            int sz = in.readInt();
-            System.out.println("Reading: " + sz + " bytes.");
-            byte[] data = new byte[sz];
-            in.readFully(data);
-            return data;
-        }
-
-        void sendMessage(String message, SecretKey secretKey) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException, InvalidAlgorithmParameterException {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
-            byte[] iv = new byte[16];
-            SecureRandom random = new SecureRandom();
-            random.nextBytes(iv);
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
-
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
-            byte[] ciphertext = cipher.doFinal(message.getBytes());
-            byte[] ivAndCiphertext = new byte[iv.length + ciphertext.length];
-            System.arraycopy(iv, 0, ivAndCiphertext, 0, iv.length);
-            System.arraycopy(ciphertext, 0, ivAndCiphertext, iv.length, ciphertext.length);
-
-            sendBytes(ivAndCiphertext);
-        } 
-
-        String receiveMessage(SecretKey secretKey) throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ClassNotFoundException, IOException {
-            byte[] ivAndCiphertext = receiveBytes();
-            byte[] iv = new byte[16];
-            System.arraycopy(ivAndCiphertext, 0, iv, 0, iv.length);
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
-
-            // Extract encrypted part
-            int ciphertestSize = ivAndCiphertext.length - iv.length;
-            byte[] ciphertext = new byte[ciphertestSize];
-            System.arraycopy(ivAndCiphertext, iv.length, ciphertext, 0, ciphertestSize);
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
-            byte[] decryptedText = cipher.doFinal(ciphertext);
-            String decrypted = new String(decryptedText);
-            return decrypted;
-        } 
-    }
 
     private static class Server extends Remote implements Runnable {
 
@@ -286,6 +237,61 @@ public class SecureConnection {
             }
         }
 
+    }
+
+    private abstract static class Remote {
+
+        protected ObjectOutputStream out;
+
+        protected ObjectInputStream in;
+
+        void sendBytes(byte[] bytes) throws IOException {
+            out.writeInt(bytes.length);
+            out.write(bytes);
+            out.flush();
+        }
+
+        byte[] receiveBytes() throws IOException, ClassNotFoundException {
+            int sz = in.readInt();
+            System.out.println("Reading: " + sz + " bytes.");
+            byte[] data = new byte[sz];
+            in.readFully(data);
+            return data;
+        }
+
+        void sendMessage(String message, SecretKey secretKey) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException, InvalidAlgorithmParameterException {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
+            byte[] iv = new byte[16];
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(iv);
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
+            byte[] ciphertext = cipher.doFinal(message.getBytes());
+            byte[] ivAndCiphertext = new byte[iv.length + ciphertext.length];
+            System.arraycopy(iv, 0, ivAndCiphertext, 0, iv.length);
+            System.arraycopy(ciphertext, 0, ivAndCiphertext, iv.length, ciphertext.length);
+
+            sendBytes(ivAndCiphertext);
+        } 
+
+        String receiveMessage(SecretKey secretKey) throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ClassNotFoundException, IOException {
+            byte[] ivAndCiphertext = receiveBytes();
+            byte[] iv = new byte[16];
+            System.arraycopy(ivAndCiphertext, 0, iv, 0, iv.length);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+
+            // Extract encrypted part
+            int ciphertestSize = ivAndCiphertext.length - iv.length;
+            byte[] ciphertext = new byte[ciphertestSize];
+            System.arraycopy(ivAndCiphertext, iv.length, ciphertext, 0, ciphertestSize);
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+            byte[] decryptedText = cipher.doFinal(ciphertext);
+            String decrypted = new String(decryptedText);
+            return decrypted;
+        } 
     }
 
 }

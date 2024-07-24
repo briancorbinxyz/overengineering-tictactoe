@@ -1,4 +1,4 @@
-package org.example;
+package org.example.security;
 
 import java.io.IOException;
 import java.security.AlgorithmParametersSpi;
@@ -7,26 +7,32 @@ import java.security.spec.InvalidParameterSpecException;
 
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 
+/**
+ * An implementation of the {@link AlgorithmParametersSpi} interface for Kyber parameters.
+ * This class is responsible for handling the initialization and retrieval of Kyber algorithm parameters.
+
+ * @author Brian Corbin
+ */
 public class KyberParametersSpi extends AlgorithmParametersSpi {
 
-    private KyberConfigs paramEngine;
+    private KyberParams params;
 
     @Override
     protected void engineInit(AlgorithmParameterSpec paramSpec) throws InvalidParameterSpecException {
-        this.paramEngine = switch(paramSpec) {
-            case KyberParameterSpec p -> KyberConfigs.byKyberParameterSpec(p);
+        this.params = switch(paramSpec) {
+            case KyberParameterSpec p -> KyberParams.byKyberParameterSpec(p);
             default -> throw new InvalidParameterSpecException(paramSpec + " is not a supported paramtere spec.");
         };
     }
 
     @Override
     protected void engineInit(byte[] params) throws IOException {
-        this.paramEngine = KyberConfigs.fromEncoded(params);
+        this.params = KyberParams.fromEncoded(params);
     }
 
     @Override
     protected void engineInit(byte[] params, String format) throws IOException {
-        this.paramEngine = KyberConfigs.fromEncoded(params);
+        this.params = KyberParams.fromEncoded(params);
     }
 
     @Override
@@ -35,22 +41,22 @@ public class KyberParametersSpi extends AlgorithmParametersSpi {
         if (!KyberParameterSpec.class.isAssignableFrom(paramSpec)) {
             throw new InvalidParameterSpecException(paramSpec + " is not a supporeted parameter spec.");
         }
-        return KyberConfigs.newParameterSpec(paramSpec);
+        return KyberParams.newParameterSpec(paramSpec);
     }
 
     @Override
     protected byte[] engineGetEncoded() throws IOException {
-        return paramEngine.encode();
+        return params.encode();
     }
 
     @Override
     protected byte[] engineGetEncoded(String format) throws IOException {
-        return paramEngine.encode();
+        return params.encode();
     }
 
     @Override
     protected String engineToString() {
-        return paramEngine.toString();
+        return params.toString();
     }
 
 }
