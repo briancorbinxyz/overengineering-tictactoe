@@ -23,7 +23,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
     private final transient JsonPrinter json = new JsonPrinter();
 
-    private transient IOConnection connection;
+    private transient RemoteMessageHandler connection;
 
     public String getPlayerMarker() {
         return playerMarker;
@@ -36,7 +36,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
     }
 
     private void initConnection(String playerMarker, Socket socket) throws IOException {
-        this.connection  = new IOConnection(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream()));
+        this.connection  = new RemoteMessageHandler(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream()));
         this.connection.sendMessage(String.format(RemoteProtocol.GAME_STARTED_JSON_FORMAT, playerMarker));
     }
 
@@ -63,10 +63,10 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
         connection.close();
     };
 
-    public static record Client(IOConnection connection, RandomGenerator randomGenerator) implements Serializable, AutoCloseable {
+    public static record Client(RemoteMessageHandler connection, RandomGenerator randomGenerator) implements Serializable, AutoCloseable {
 
         public Client(Socket socket) throws Exception {
-            this(new IOConnection(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream())), new SecureRandom());
+            this(new RemoteMessageHandler(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream())), new SecureRandom());
         }
         
         public void connectAndPlay(Socket socket) {
