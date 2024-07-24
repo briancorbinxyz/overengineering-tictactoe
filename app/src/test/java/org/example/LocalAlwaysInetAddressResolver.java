@@ -5,7 +5,7 @@ import java.net.spi.InetAddressResolver;
 import java.util.stream.Stream;
 import java.net.UnknownHostException;
 
-public class ExampleOrgInetAddressResolver implements InetAddressResolver {
+public class LocalAlwaysInetAddressResolver implements InetAddressResolver {
     @Override
     public Stream<InetAddress> lookupByName(String host, LookupPolicy lookupPolicy)
             throws UnknownHostException {
@@ -14,6 +14,6 @@ public class ExampleOrgInetAddressResolver implements InetAddressResolver {
 
     @Override
     public String lookupByAddress(byte[] addr) {
-        return "www.example.org";
+        return "localhost";
     }
 }

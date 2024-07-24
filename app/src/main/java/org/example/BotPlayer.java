@@ -7,18 +7,9 @@ import java.util.random.RandomGenerator;
 /**
  * Represents a bot player in the game. The bot player uses a random number generator to make moves on the game board.
  */
-public final class BotPlayer implements Player, Serializable {
+public record BotPlayer(String playerMarker, RandomGenerator random) implements Player, Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private final String playerMarker;
-
-    private final RandomGenerator random;
-
-    public BotPlayer(String playerMarker, RandomGenerator randomGenerator) {
-        this.playerMarker = playerMarker;
-        this.random = randomGenerator;
-    }
 
     public BotPlayer(String playerMarker) {
         // OVER-ENGINEER: Cryptographically secure by default
@@ -37,6 +28,5 @@ public final class BotPlayer implements Player, Serializable {
         } while (!board.isValidMove(location));
         return location;
     };
-
     
 }

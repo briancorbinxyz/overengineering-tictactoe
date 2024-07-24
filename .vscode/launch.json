@@ -1,0 +1,106 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "SecureConnectionTest$Client",
+            "request": "launch",
+            "mainClass": "org.example.SecureConnectionTest$Client",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "SecureConnection$Client",
+            "request": "launch",
+            "mainClass": "org.example.SecureConnection$Client",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "SecureConnection$Server",
+            "request": "launch",
+            "mainClass": "org.example.SecureConnection$Server",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "SecureConnection",
+            "request": "launch",
+            "mainClass": "org.example.SecureConnection",
+            "projectName": "app"
+        },
+        {
+            "name": "Java",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "jdkPath": "${env:JAVA_HOME}/bin",
+            "cwd": "${fileDirname}",
+            "startupClass": "${fileBasenameNoExtension}",
+            "classpath": [
+                ".",
+                "${fileDirname}"
+            ]
+        },
+        {
+            "name": "Java Console App",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "jdkPath": "${env:JAVA_HOME}/bin",
+            "cwd": "${fileDirname}",
+            "startupClass": "${fileBasenameNoExtension}",
+            "classpath": [
+                ".",
+                "${fileDirname}"
+            ],
+            "externalConsole": true
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "org.example.App",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "GameClient",
+            "request": "launch",
+            "mainClass": "org.example.GameClient",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "GameClient (on ZGC)",
+            "request": "launch",
+            "vmArgs": "-XX:+UseZGC -XX:+ZGenerational",
+            "mainClass": "org.example.GameClient",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "GameServer",
+            "request": "launch",
+            "mainClass": "org.example.GameServer",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "GameServer (on ZGC)",
+            "request": "launch",
+            "vmArgs": "-XX:+UseZGC -XX:+ZGenerational",
+            "mainClass": "org.example.GameServer",
+            "projectName": "app"
+        }
+    ]
+}

@@ -2,6 +2,7 @@ package org.example;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.random.RandomGenerator;;
 
 public class PlayerPrinter {
 
@@ -15,20 +16,19 @@ public class PlayerPrinter {
             String ipAddress = localHost.getHostAddress();
             String hostName = localHost.getHostName();
 
-            return String.format("TicTacToeClient[%s]/1.0 '%s' (IP: %s; Host: %s; Java: %s; OS: %s %s)",
-                    playerToType(player), player.getPlayerMarker(), ipAddress, hostName, javaVersion, osName, osVersion);
+            return String.format("TicTacToeClient/1.0 [%s] (IP: %s; Host: %s; Java: %s; OS: %s %s)",
+                    playerToType(player), ipAddress, hostName, javaVersion, osName, osVersion);
         } catch (UnknownHostException e) {
-            return String.format("TicTacToeClient[%s]/1.0 '%s' (IP: unknown; Host: unknown; Java: %s; OS: %s %s)",
-                playerToType(player), player.getPlayerMarker(), javaVersion, osName, osVersion);
+            return String.format("TicTacToeClient/1.0 [%s] (IP: unknown; Host: unknown; Java: %s; OS: %s %s)",
+                playerToType(player), javaVersion, osName, osVersion);
         }
     }
 
     private String playerToType(Player player) {
-        return switch (player.getClass().getSimpleName()) {
-            case "HumanPlayer" -> "Human";
-            case "BotPlayer" -> "Bot";
-            case "LegacyPlayer" -> "Legacy";
-            default -> "Unknown";
+        return switch (player) {
+            case HumanPlayer(String playerMarker) -> "Human" + " (" + playerMarker + ")";
+            case BotPlayer(String playerMarker, RandomGenerator r) -> "Bot" + " (" + playerMarker + ")";
+            case RemoteBotPlayer p -> "BotClient" + " (" + p.getPlayerMarker() + ")";
         };
     }
 
