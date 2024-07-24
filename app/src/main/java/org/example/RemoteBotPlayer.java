@@ -3,6 +3,8 @@ package org.example;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
@@ -19,11 +21,9 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
     private final String playerMarker;
 
-    private transient BufferedReader in;
+    private final transient JsonPrinter json = new JsonPrinter();
 
-    private transient PrintWriter out;
-
-    private final JsonPrinter json = new JsonPrinter();
+    private transient IOConnection connection;
 
     public String getPlayerMarker() {
         return playerMarker;
@@ -36,17 +36,16 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
     }
 
     private void initConnection(String playerMarker, Socket socket) throws IOException {
-        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.out = new PrintWriter(socket.getOutputStream(), true);
-        this.out.println(String.format(RemoteProtocol.GAME_STARTED_JSON_FORMAT, playerMarker));
+        this.connection  = new IOConnection(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream()));
+        this.connection.sendMessage(String.format(RemoteProtocol.GAME_STARTED_JSON_FORMAT, playerMarker));
     }
 
     public int nextMove(GameBoard board) {
         int location = -1;
         do { 
             try {
-                out.println(String.format(RemoteProtocol.NEXT_MOVE_JSON_FORMAT, json.asJson(board)));
-                String clientMessage = in.readLine();
+                connection.sendMessage(String.format(RemoteProtocol.NEXT_MOVE_JSON_FORMAT, json.asJson(board)));
+                String clientMessage = connection.receiveMessage();
                 location = Integer.parseInt(clientMessage);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
@@ -60,15 +59,14 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
     @Override
     public void close() throws Exception {
-        out.println(RemoteProtocol.EXIT_CODE);
-        out.close();
-        in.close();
+        connection.sendMessage(RemoteProtocol.EXIT_CODE);
+        connection.close();
     };
 
-    public static record Client(BufferedReader in, PrintWriter out, RandomGenerator randomGenerator) implements Serializable, AutoCloseable {
+    public static record Client(IOConnection connection, RandomGenerator randomGenerator) implements Serializable, AutoCloseable {
 
         public Client(Socket socket) throws Exception {
-            this(new BufferedReader(new InputStreamReader(socket.getInputStream())), new PrintWriter(socket.getOutputStream(), true), new SecureRandom());
+            this(new IOConnection(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream())), new SecureRandom());
         }
         
         public void connectAndPlay(Socket socket) {
@@ -76,13 +74,13 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
             try {
                 // For now read the board and send a random move
                 String serverMessage;
-                while ((serverMessage = in.readLine()) != null && !serverMessage.equals(RemoteProtocol.EXIT_CODE)) {
+                while ((serverMessage = connection.receiveMessage()) != null && !serverMessage.equals(RemoteProtocol.EXIT_CODE)) {
                     //System.out.println("DEBUG: " + serverMessage);
                     matcher = RemoteProtocol.NEXT_MOVE_JSON_PATTERN.matcher(serverMessage);
                     if (matcher.matches()) {
                         int dimension = Integer.valueOf(matcher.group(3));
                         int nextMove = randomGenerator.nextInt(dimension * dimension);
-                        out.println(nextMove);
+                        connection.sendMessage(String.valueOf(nextMove));
                     }
                     // System.out.println(this + " sending move: " + nextMove);
                 };
@@ -95,8 +93,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
         @Override
         public void close() throws Exception {
-            out.close();
-            in.close();
+            connection.close();
         };
 
     }
