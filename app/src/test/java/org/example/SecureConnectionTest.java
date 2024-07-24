@@ -18,7 +18,6 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -29,13 +28,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KEM;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 import org.example.security.KyberKEMProvider;
+import org.testng.annotations.Ignore;
 
 /**
  * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key
@@ -78,8 +77,8 @@ import org.example.security.KyberKEMProvider;
 
  * @author Brian Corbin
  */
-@SuppressWarnings("unused")
-public class SecureConnection {
+@Ignore
+public class SecureConnectionTest {
 
     private static class Server extends Remote implements Runnable {
 
@@ -293,5 +292,4 @@ public class SecureConnection {
             return decrypted;
         } 
     }
-
 }
