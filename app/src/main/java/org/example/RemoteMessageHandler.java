@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class RemoteMessageHandler implements MessageHandler, AutoCloseable {
+public class RemoteMessageHandler implements MessageHandler {
 
     private final ObjectOutputStream out;
 
@@ -19,46 +19,14 @@ public class RemoteMessageHandler implements MessageHandler, AutoCloseable {
 
 	@Override
 	public void sendMessage(String message) throws IOException {
+		checkInitialized();
         sendBytes(message.getBytes());
 	}
 
 	@Override
 	public String receiveMessage() throws IOException {
+		checkInitialized();
         return new String(receiveBytes());
-	}
-
-	void sendObject(Object object) throws IOException {
-		if (!initialized) {
-			throw new IllegalStateException("MessageHandler has not been initialized.");
-		}
-        out.writeObject(object);
-        out.flush();
-	};
-
-	Object receiveObject() throws IOException, ClassNotFoundException {
-		if (!initialized) {
-			throw new IllegalStateException("MessageHandler has not been initialized.");
-		}
-        return in.readObject();
-	}
-
-	void sendBytes(byte[] bytes) throws IOException {
-		if (!initialized) {
-			throw new IllegalStateException("MessageHandler has not been initialized.");
-		}
-        out.writeInt(bytes.length);
-        out.write(bytes);
-        out.flush();
-	}
-
-	byte[] receiveBytes() throws IOException {
-		if (!initialized) {
-			throw new IllegalStateException("MessageHandler has not been initialized.");
-		}
-        int sz = in.readInt();
-        byte[] data = new byte[sz];
-        in.readFully(data);
-        return data;
 	}
 
 	@Override
@@ -69,7 +37,39 @@ public class RemoteMessageHandler implements MessageHandler, AutoCloseable {
 
 	@Override
 	public void init() {
-		// nothing to initialize
 		initialized = true;
 	}
+
+	void sendObject(Object object) throws IOException {
+		checkInitialized();
+        out.writeObject(object);
+        out.flush();
+	}
+
+	Object receiveObject() throws IOException, ClassNotFoundException {
+		checkInitialized();
+        return in.readObject();
+	}
+
+	void sendBytes(byte[] bytes) throws IOException {
+		checkInitialized();
+        out.writeInt(bytes.length);
+        out.write(bytes);
+        out.flush();
+	}
+
+	byte[] receiveBytes() throws IOException {
+		checkInitialized();
+        int sz = in.readInt();
+        byte[] data = new byte[sz];
+        in.readFully(data);
+        return data;
+	}
+
+	private void checkInitialized() {
+		if (!initialized) {
+			throw new IllegalStateException("MessageHandler has not been initialized.");
+		}
+	};
+
 }

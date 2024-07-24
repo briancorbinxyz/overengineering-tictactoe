@@ -1,11 +1,8 @@
 package org.example;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
 import java.security.SecureRandom;
@@ -23,7 +20,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
     private final transient JsonPrinter json = new JsonPrinter();
 
-    private transient RemoteMessageHandler connection;
+    private transient MessageHandler connection;
 
     public String getPlayerMarker() {
         return playerMarker;
@@ -36,7 +33,12 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
     }
 
     private void initConnection(String playerMarker, Socket socket) throws IOException {
-        this.connection  = new RemoteMessageHandler(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream()));
+        this.connection  = new SecureMessageHandler.Server(
+            new RemoteMessageHandler(
+                new ObjectOutputStream(socket.getOutputStream()),
+                new ObjectInputStream(socket.getInputStream())
+            )); 
+        this.connection.init();
         this.connection.sendMessage(String.format(RemoteProtocol.GAME_STARTED_JSON_FORMAT, playerMarker));
     }
 
@@ -63,10 +65,16 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
         connection.close();
     };
 
-    public static record Client(RemoteMessageHandler connection, RandomGenerator randomGenerator) implements Serializable, AutoCloseable {
+    public static record Client(MessageHandler connection, RandomGenerator randomGenerator) implements Serializable, AutoCloseable {
 
         public Client(Socket socket) throws Exception {
-            this(new RemoteMessageHandler(new ObjectOutputStream(socket.getOutputStream()), new ObjectInputStream(socket.getInputStream())), new SecureRandom());
+            this(new SecureMessageHandler.Client(
+                new RemoteMessageHandler(
+                    new ObjectOutputStream(socket.getOutputStream()),
+                    new ObjectInputStream(socket.getInputStream()))),
+                new SecureRandom()
+            );
+            this.connection.init();
         }
         
         public void connectAndPlay(Socket socket) {
