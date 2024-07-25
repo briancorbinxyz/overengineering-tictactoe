@@ -5,13 +5,12 @@ package org.example;
 
 import java.io.File;
 
-/**
- * A simple java tic-tac-toe game.
- */
+/** A simple java tic-tac-toe game. */
 public class App {
-    
+
     /**
      * Runs the game.
+     *
      * @throws Exception if there is an error whilst playing the game
      */
     public void run() throws Exception {
@@ -21,8 +20,10 @@ public class App {
 
     /**
      * Runs the game from the specified file.
+     *
      * @param gameFile the file containing the saved game state to load
-     * @throws Exception if there is an error whilst playing the game or loading the game state from the file
+     * @throws Exception if there is an error whilst playing the game or loading the game state from
+     *     the file
      */
     public void runFrom(File gameFile) throws Exception {
         var game = Game.from(gameFile);
@@ -31,6 +32,7 @@ public class App {
 
     /**
      * Returns a greeting message for the Tic-Tac-Toe game.
+     *
      * @return the greeting message
      */
     public String getGreeting() {
@@ -39,9 +41,9 @@ public class App {
 
     /**
      * The main entry point for the Tic-Tac-Toe application.
-     * 
-     * If command-line arguments are provided, it will load a saved game state from the specified file.
-     * Otherwise, it will start a new game.
+     *
+     * <p>If command-line arguments are provided, it will load a saved game state from the specified
+     * file. Otherwise, it will start a new game.
      */
     public static void main(String[] args) throws Exception {
         App app = new App();
