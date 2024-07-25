@@ -22,7 +22,14 @@ repositories {
 dependencies {
     // JDK21: KEM SPI (Third-Party)
     // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
+    // -> JDK -> Bouncycastle
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+
+    // JDK9: Platform Logging (Third-Party)
+    // -> JDK -> SLF4J -> Logback
+    implementation("ch.qos.logback:logback-classic:1.5.6")
+    implementation("org.slf4j:slf4j-api:2.0.13")
+    implementation("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
 }
 
 testing {

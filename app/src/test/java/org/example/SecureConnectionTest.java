@@ -75,36 +75,42 @@ public class SecureConnectionTest {
     @Test
     public void testSecureConnection() {
         ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
-        var serverTask = new Runnable() {
-            public void run() {
-                try (var serverSocket = new ServerSocket(9090)) {
-                    System.out.println("Server accepting connections on " + serverSocket + "...");
-                    var serverSession = service.submit(new Server(serverSocket));
-                    serverSession.get();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-        var clientTask = new Runnable() {
-            public void run() {
-                try (var clientSocket = new Socket("localhost", 9090)) {
-                    System.out.println("Client accepting connections on " + clientSocket + "...");
-                    var clientSession = service.submit(new Client(clientSocket));
-                    clientSession.get();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
+        var serverTask =
+                new Runnable() {
+                    public void run() {
+                        try (var serverSocket = new ServerSocket(9090)) {
+                            LOG.log(
+                                    Level.INFO,
+                                    "Server accepting connections on " + serverSocket + "...");
+                            var serverSession = service.submit(new Server(serverSocket));
+                            serverSession.get();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+        var clientTask =
+                new Runnable() {
+                    public void run() {
+                        try (var clientSocket = new Socket("localhost", 9090)) {
+                            LOG.log(
+                                    Level.INFO,
+                                    "Client accepting connections on " + clientSocket + "...");
+                            var clientSession = service.submit(new Client(clientSocket));
+                            clientSession.get();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
 
         try {
             var serverSesion = service.submit(serverTask);
@@ -156,11 +162,12 @@ public class SecureConnectionTest {
                 KEM.Decapsulator d = kemR.newDecapsulator(kp.getPrivate(), specR);
                 SecretKey secR = d.decapsulate(em);
                 LOG.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
-                System.out.println("SERVER: RCVR Secret Key: " + secR);
-                System.out.println(Arrays.toString(secR.getEncoded()));
+                LOG.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
+                LOG.log(Level.DEBUG, Arrays.toString(secR.getEncoded()));
                 sendMessage("Hi, I'm the SERVER!", secR);
                 String decrypted = receiveMessage(secR);
-                System.out.println(
+                LOG.log(
+                        Level.DEBUG,
                         "SERVER: RCVR Message: " + decrypted + " Length: " + decrypted.length());
 
             } catch (NoSuchAlgorithmException e) {
@@ -171,7 +178,8 @@ public class SecureConnectionTest {
         }
 
         private void publishKey(PublicKey key) throws IOException {
-            System.out.println(
+            LOG.log(
+                    Level.DEBUG,
                     "SERVER: SNDR -> Public Key: " + key + " Length: " + key.getEncoded().length);
             out.writeObject(key);
             out.flush();
@@ -180,7 +188,7 @@ public class SecureConnectionTest {
         public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (ServerSocket serverSocket = new ServerSocket(9090)) {
-                System.out.println("Accepting connections on " + serverSocket + "...");
+                LOG.log(Level.DEBUG, "Accepting connections on " + serverSocket + "...");
                 service.submit(new Server(serverSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
@@ -219,16 +227,18 @@ public class SecureConnectionTest {
                 KEM.Encapsulator e = kemS.newEncapsulator(pkR, specS, null);
                 KEM.Encapsulated enc = e.encapsulate();
                 SecretKey secS = enc.key();
-                System.out.println("CLIENT: NOOP Secret Key: " + secS);
-                System.out.println(Arrays.toString(secS.getEncoded()));
+                LOG.log(Level.DEBUG, "CLIENT: NOOP Secret Key: " + secS);
+                LOG.log(Level.DEBUG, Arrays.toString(secS.getEncoded()));
                 sendBytes(enc.encapsulation());
-                System.out.println(
+                LOG.log(
+                        Level.DEBUG,
                         "CLIENT: SNDR Secret Key (Encap): "
                                 + enc.encapsulation()
                                 + " Length: "
                                 + enc.encapsulation().length);
                 sendBytes(enc.params());
-                System.out.println(
+                LOG.log(
+                        Level.DEBUG,
                         "CLIENT: SNDR Secret Key (Params): "
                                 + enc.params()
                                 + " Length: "
@@ -236,7 +246,8 @@ public class SecureConnectionTest {
 
                 sendMessage("Hi, I'm the CLIENT!", secS);
                 String decrypted = receiveMessage(secS);
-                System.out.println(
+                LOG.log(
+                        Level.DEBUG,
                         "CLIENT: RCVR Message: " + decrypted + " Length: " + decrypted.length());
 
             } catch (NoSuchAlgorithmException e) {
@@ -262,7 +273,8 @@ public class SecureConnectionTest {
 
         private PublicKey retrieveKey() throws ClassNotFoundException, IOException {
             PublicKey serverPublicKey = (PublicKey) in.readObject();
-            System.out.println(
+            LOG.log(
+                    Level.DEBUG,
                     "CLIENT: RCVR Server Public Key: "
                             + serverPublicKey
                             + " Length: "
@@ -273,7 +285,7 @@ public class SecureConnectionTest {
         public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (Socket clientSocket = new Socket("localhost", 9090)) {
-                System.out.println("Connecting to server on " + clientSocket + "...");
+                LOG.log(Level.DEBUG, "Connecting to server on " + clientSocket + "...");
                 service.submit(new Client(clientSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
@@ -299,7 +311,7 @@ public class SecureConnectionTest {
 
         byte[] receiveBytes() throws IOException, ClassNotFoundException {
             int sz = in.readInt();
-            System.out.println("Reading: " + sz + " bytes.");
+            LOG.log(Level.DEBUG, "Reading: " + sz + " bytes.");
             byte[] data = new byte[sz];
             in.readFully(data);
             return data;
