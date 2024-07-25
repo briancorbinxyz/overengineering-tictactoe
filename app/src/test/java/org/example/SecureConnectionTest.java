@@ -167,7 +167,7 @@ public class SecureConnectionTest {
                 sendMessage("Hi, I'm the SERVER!", secR);
                 String decrypted = receiveMessage(secR);
                 LOG.log(
-                        Level.DEBUG,
+                        Level.INFO,
                         "SERVER: RCVR Message: " + decrypted + " Length: " + decrypted.length());
 
             } catch (NoSuchAlgorithmException e) {
@@ -247,7 +247,7 @@ public class SecureConnectionTest {
                 sendMessage("Hi, I'm the CLIENT!", secS);
                 String decrypted = receiveMessage(secS);
                 LOG.log(
-                        Level.DEBUG,
+                        Level.INFO,
                         "CLIENT: RCVR Message: " + decrypted + " Length: " + decrypted.length());
 
             } catch (NoSuchAlgorithmException e) {
