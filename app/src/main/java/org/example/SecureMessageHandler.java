@@ -1,6 +1,8 @@
 package org.example;
 
 import java.io.IOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -12,6 +14,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.spec.InvalidParameterSpecException;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.DecapsulateException;
@@ -20,12 +23,15 @@ import javax.crypto.KEM;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 import org.example.security.KyberKEMProvider;
 
 public abstract sealed class SecureMessageHandler implements MessageHandler {
+
+    private static final Logger LOG = System.getLogger(SecureMessageHandler.class.getName());
 
     protected final RemoteMessageHandler handler;
 
@@ -100,8 +106,6 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
             System.arraycopy(iv, 0, ivAndCiphertext, 0, iv.length);
             System.arraycopy(ciphertext, 0, ivAndCiphertext, iv.length, ciphertext.length);
             handler.sendBytes(ivAndCiphertext);
-            // System.out.println("SENT ENCRYPTED: " +
-            // Base64.getEncoder().encodeToString(ivAndCiphertext));
         } catch (NoSuchAlgorithmException
                 | NoSuchProviderException
                 | NoSuchPaddingException
@@ -144,14 +148,10 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
             var ciphertext = new byte[ciphertextSize];
             System.arraycopy(ivAndCiphertext, iv.length, ciphertext, 0, ciphertextSize);
 
-            // System.out.println("RECEIVED ENCRYPTED: " +
-            // Base64.getEncoder().encodeToString(ivAndCiphertext));
             var cipher = newCipherInstance();
             cipher.init(Cipher.DECRYPT_MODE, sharedKey, ivParameterSpec);
             var decryptedText = cipher.doFinal(ciphertext);
-            String decrypted = new String(decryptedText);
-            // System.out.println("RECEIVED DECRYPTED: " + decrypted);
-            return decrypted;
+            return new String(decryptedText);
         } catch (NoSuchAlgorithmException
                 | NoSuchProviderException
                 | NoSuchPaddingException
@@ -211,7 +211,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 handler.init();
                 sharedKey = exchangeSharedKey();
                 initialized = true;
-                System.out.println(
+                LOG.log(Level.INFO,
                         "Secure connection for "
                                 + getClass().getSimpleName()
                                 + " established with "
@@ -317,7 +317,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 handler.init();
                 sharedKey = exchangeSharedKey();
                 initialized = true;
-                System.out.println(
+                LOG.log(Level.INFO, 
                         "Secure connection for "
                                 + getClass().getSimpleName()
                                 + " established with "

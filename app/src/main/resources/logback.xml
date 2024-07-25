@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration>
+  <import class="ch.qos.logback.classic.encoder.JsonEncoder"/>
+  <import class="ch.qos.logback.core.ConsoleAppender"/>
+  <import class="ch.qos.logback.core.FileAppender"/>
+
+  <appender name="CONSOLE" class="ConsoleAppender">
+    <encoder>
+      <pattern>%boldWhite(%date) %yellow([%thread]) %highlight(%-5level) %cyan(%-20logger{20}) - %msg %n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="FileAppender">
+    <file>tic-tac-toe.log.json</file>
+    <rollingPolicy class="TimeBasedRollingPolicy">
+      <fileNamePattern>tic-tac-toe.log.json.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
+    <encoder class="JsonEncoder">
+      <withFormattedMessage>false</withFormattedMessage>
+      <withMessage>true</withMessage>
+      <withArguments>false</withArguments>
+      <withContext>false</withContext>
+      <withMDC>false</withMDC>
+    </encoder>
+  </appender>
+
+  <root>
+    <level value="DEBUG"/>
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+  <logger name="org.example">
+    <level value="INFO"/>
+    <appender-ref ref="FILE"/>
+  </logger>
+</configuration>

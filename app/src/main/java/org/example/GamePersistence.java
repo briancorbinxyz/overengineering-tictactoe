@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 
 /**
  * Provides methods for saving and loading a {@link Game} object to/from a file.
@@ -21,12 +23,14 @@ import java.io.ObjectOutputStream;
  */
 public class GamePersistence {
 
+    private static final Logger LOG = System.getLogger(GamePersistence.class.getName());
+
     public void saveTo(File gameFile, Game game) throws IOException {
         try (FileOutputStream os = new FileOutputStream(gameFile);
                 ObjectOutputStream o = new ObjectOutputStream(os)) {
             o.writeObject(game);
         }
-        System.out.println("[Saved to " + gameFile + "]");
+        LOG.log(Level.INFO, "[Saved to " + gameFile + "]");
     }
 
     public Game loadFrom(File gameFile) throws IOException, ClassNotFoundException {

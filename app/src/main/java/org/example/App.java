@@ -4,9 +4,13 @@
 package org.example;
 
 import java.io.File;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 
 /** A simple java tic-tac-toe game. */
 public class App {
+
+    private static final Logger LOG = System.getLogger(App.class.getName());
 
     /**
      * Runs the game.
@@ -47,7 +51,7 @@ public class App {
      */
     public static void main(String[] args) throws Exception {
         App app = new App();
-        System.out.println(app.getGreeting());
+        LOG.log(Level.INFO, app.getGreeting());
         if (args.length > 0) {
             app.runFrom(new File(args[0]));
         } else {
