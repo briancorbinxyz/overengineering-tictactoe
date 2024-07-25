@@ -3,6 +3,8 @@ package org.example;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -17,9 +19,11 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -27,11 +31,12 @@ import javax.crypto.KEM;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 import org.example.security.KyberKEMProvider;
-import org.testng.annotations.Ignore;
+import org.testng.annotations.Test;
 
 /**
  * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key generation and
@@ -62,8 +67,57 @@ import org.testng.annotations.Ignore;
  *
  * @author Brian Corbin
  */
-@Ignore
+@SuppressWarnings("unused")
 public class SecureConnectionTest {
+
+    private static final Logger LOG = System.getLogger(SecureConnectionTest.class.getName());
+
+    @Test
+    public void testSecureConnection() {
+        ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
+        var serverTask = new Runnable() {
+            public void run() {
+                try (var serverSocket = new ServerSocket(9090)) {
+                    System.out.println("Server accepting connections on " + serverSocket + "...");
+                    var serverSession = service.submit(new Server(serverSocket));
+                    serverSession.get();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        var clientTask = new Runnable() {
+            public void run() {
+                try (var clientSocket = new Socket("localhost", 9090)) {
+                    System.out.println("Client accepting connections on " + clientSocket + "...");
+                    var clientSession = service.submit(new Client(clientSocket));
+                    clientSession.get();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        try {
+            var serverSesion = service.submit(serverTask);
+            var clientSession = service.submit(clientTask);
+
+            serverSesion.get();
+            clientSession.get();
+            service.shutdown();
+            service.awaitTermination(10, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private static class Server extends Remote implements Runnable {
 
@@ -101,6 +155,7 @@ public class SecureConnectionTest {
                 KyberParameterSpec specR = algParams.getParameterSpec(KyberParameterSpec.class);
                 KEM.Decapsulator d = kemR.newDecapsulator(kp.getPrivate(), specR);
                 SecretKey secR = d.decapsulate(em);
+                LOG.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
                 System.out.println("SERVER: RCVR Secret Key: " + secR);
                 System.out.println(Arrays.toString(secR.getEncoded()));
                 sendMessage("Hi, I'm the SERVER!", secR);
@@ -108,8 +163,6 @@ public class SecureConnectionTest {
                 System.out.println(
                         "SERVER: RCVR Message: " + decrypted + " Length: " + decrypted.length());
 
-                //
-                in.read();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -185,9 +238,6 @@ public class SecureConnectionTest {
                 String decrypted = receiveMessage(secS);
                 System.out.println(
                         "CLIENT: RCVR Message: " + decrypted + " Length: " + decrypted.length());
-
-                //
-                in.read();
 
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
