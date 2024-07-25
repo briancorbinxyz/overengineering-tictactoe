@@ -1,10 +1,10 @@
 package org.example;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.SequencedMap;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.SequencedMap;
 
 public class Players implements Serializable {
 
@@ -24,7 +24,12 @@ public class Players implements Serializable {
             players.put(player.getPlayerMarker(), player);
             playerMarkers.add(player.getPlayerMarker());
         } else {
-            throw new RuntimeException("Unable to add player " + player + " as player with marker '" + player.getPlayerMarker() + "' already exists.");
+            throw new RuntimeException(
+                    "Unable to add player "
+                            + player
+                            + " as player with marker '"
+                            + player.getPlayerMarker()
+                            + "' already exists.");
         }
     }
 
@@ -59,6 +64,4 @@ public class Players implements Serializable {
     public String playerMarkers() {
         return String.join(", ", players.sequencedKeySet());
     }
-
-
 }

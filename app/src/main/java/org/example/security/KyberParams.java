@@ -3,13 +3,12 @@ package org.example.security;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bouncycastle.pqc.crypto.crystals.kyber.KyberParameters;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 
 /**
  * Unify the bouncy castle kyber parameters, spec and JDK {@code AlgorithmParameterSpec}
-
+ *
  * @author Brian Corbin
  */
 public enum KyberParams {
@@ -58,5 +57,4 @@ public enum KyberParams {
     public byte[] encode() {
         return name().getBytes();
     }
-
 }

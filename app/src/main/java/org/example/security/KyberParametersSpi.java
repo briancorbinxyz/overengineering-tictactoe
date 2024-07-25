@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.security.AlgorithmParametersSpi;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
-
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 
 /**
- * An implementation of the {@link AlgorithmParametersSpi} interface for Kyber parameters.
- * This class is responsible for handling the initialization and retrieval of Kyber algorithm parameters.
-
+ * An implementation of the {@link AlgorithmParametersSpi} interface for Kyber parameters. This
+ * class is responsible for handling the initialization and retrieval of Kyber algorithm parameters.
+ *
  * @author Brian Corbin
  */
 public class KyberParametersSpi extends AlgorithmParametersSpi {
@@ -18,11 +17,15 @@ public class KyberParametersSpi extends AlgorithmParametersSpi {
     private KyberParams params;
 
     @Override
-    protected void engineInit(AlgorithmParameterSpec paramSpec) throws InvalidParameterSpecException {
-        this.params = switch(paramSpec) {
-            case KyberParameterSpec p -> KyberParams.byKyberParameterSpec(p);
-            default -> throw new InvalidParameterSpecException(paramSpec + " is not a supported paramtere spec.");
-        };
+    protected void engineInit(AlgorithmParameterSpec paramSpec)
+            throws InvalidParameterSpecException {
+        this.params =
+                switch (paramSpec) {
+                    case KyberParameterSpec p -> KyberParams.byKyberParameterSpec(p);
+                    default ->
+                            throw new InvalidParameterSpecException(
+                                    paramSpec + " is not a supported paramtere spec.");
+                };
     }
 
     @Override
@@ -39,7 +42,8 @@ public class KyberParametersSpi extends AlgorithmParametersSpi {
     protected <T extends AlgorithmParameterSpec> T engineGetParameterSpec(Class<T> paramSpec)
             throws InvalidParameterSpecException {
         if (!KyberParameterSpec.class.isAssignableFrom(paramSpec)) {
-            throw new InvalidParameterSpecException(paramSpec + " is not a supporeted parameter spec.");
+            throw new InvalidParameterSpecException(
+                    paramSpec + " is not a supporeted parameter spec.");
         }
         return KyberParams.newParameterSpec(paramSpec);
     }
@@ -58,5 +62,4 @@ public class KyberParametersSpi extends AlgorithmParametersSpi {
     protected String engineToString() {
         return params.toString();
     }
-
 }
