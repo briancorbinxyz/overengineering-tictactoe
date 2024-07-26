@@ -7,35 +7,37 @@ import java.io.IOException;
 import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 
 /**
  * Provides methods for saving and loading a {@link Game} object to/from a file.
- * 
- * The {@link #saveTo(File, Game)} method writes the provided {@link Game} object to the specified file.
- * The {@link #loadFrom(File)} method reads a {@link Game} object from the specified file and returns it.
- * 
- * The {@link GamePersistenceFilter} class is used to filter the objects that can be loaded from the file,
- * rejecting any loaded classes with more than 1000 object references to prevent deserialization attacks.
+ *
+ * <p>The {@link #saveTo(File, Game)} method writes the provided {@link Game} object to the
+ * specified file. The {@link #loadFrom(File)} method reads a {@link Game} object from the specified
+ * file and returns it.
+ *
+ * <p>The {@link GamePersistenceFilter} class is used to filter the objects that can be loaded from
+ * the file, rejecting any loaded classes with more than 1000 object references to prevent
+ * deserialization attacks.
  */
 public class GamePersistence {
 
+    private static final Logger log = System.getLogger(GamePersistence.class.getName());
+
     public void saveTo(File gameFile, Game game) throws IOException {
-        try (
-            FileOutputStream os = new FileOutputStream(gameFile);
-            ObjectOutputStream o = new ObjectOutputStream(os)
-            ) {
+        try (FileOutputStream os = new FileOutputStream(gameFile);
+                ObjectOutputStream o = new ObjectOutputStream(os)) {
             o.writeObject(game);
         }
-        System.out.println("[Saved to " + gameFile + "]");
+        log.log(Level.DEBUG, "Saved to game state to: {0}", gameFile);
     }
 
     public Game loadFrom(File gameFile) throws IOException, ClassNotFoundException {
-        try (
-            FileInputStream is = new FileInputStream(gameFile);
-            ObjectInputStream o = new ObjectInputStream(is)
-        ) {
+        try (FileInputStream is = new FileInputStream(gameFile);
+                ObjectInputStream o = new ObjectInputStream(is)) {
             o.setObjectInputFilter(new GamePersistenceFilter());
-            return Game.class.cast(o.readObject()); 
+            return Game.class.cast(o.readObject());
         }
     }
 
@@ -51,5 +53,4 @@ public class GamePersistence {
             };
         }
     }
-
 }

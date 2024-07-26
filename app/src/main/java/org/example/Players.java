@@ -1,12 +1,16 @@
 package org.example;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.SequencedMap;
-import java.util.List;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.SequencedMap;
 
 public class Players implements Serializable {
+
+    private static final Logger log = System.getLogger(Players.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -24,7 +28,12 @@ public class Players implements Serializable {
             players.put(player.getPlayerMarker(), player);
             playerMarkers.add(player.getPlayerMarker());
         } else {
-            throw new RuntimeException("Unable to add player " + player + " as player with marker '" + player.getPlayerMarker() + "' already exists.");
+            throw new RuntimeException(
+                    "Unable to add player "
+                            + player
+                            + " as player with marker '"
+                            + player.getPlayerMarker()
+                            + "' already exists.");
         }
     }
 
@@ -50,15 +59,13 @@ public class Players implements Serializable {
 
     public void render() {
         PlayerPrinter printer = new PlayerPrinter();
-        System.out.println("Players: " + playerMarkers());
+        log.log(Level.INFO, "Players: {0}", playerMarkers());
         for (Player player : players.values()) {
-            System.out.println("- " + printer.getPlayerIdentifier(player));
+            log.log(Level.INFO, "- {0}", printer.getPlayerIdentifier(player));
         }
     }
 
     public String playerMarkers() {
         return String.join(", ", players.sequencedKeySet());
     }
-
-
 }

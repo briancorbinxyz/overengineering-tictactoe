@@ -1,9 +1,10 @@
 package org.example;
 
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -18,10 +19,10 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -29,56 +30,100 @@ import javax.crypto.KEM;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 import org.example.security.KyberKEMProvider;
-import org.testng.annotations.Ignore;
+import org.testng.annotations.Test;
 
 /**
- * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key
- * generation and exchange and AES for symmetric encryption of messages with
- * a random IV per message.
- * 
- * Per: https://openjdk.org/jeps/452:
- * 
- * // Receiver side
- * KeyPairGenerator g = KeyPairGenerator.getInstance("ABC");
- * KeyPair kp = g.generateKeyPair();
- * publishKey(kp.getPublic());
- * 
- * // Sender side
- * KEM kemS = KEM.getInstance("ABC-KEM");
- * PublicKey pkR = retrieveKey();
- * ABCKEMParameterSpec specS = new ABCKEMParameterSpec(...);
- * KEM.Encapsulator e = kemS.newEncapsulator(pkR, specS, null);
- * KEM.Encapsulated enc = e.encapsulate();
- * SecretKey secS = enc.key();
- * sendBytes(enc.encapsulation());
- * sendBytes(enc.params());
- * 
- * // Receiver side
- * byte[] em = receiveBytes();
- * byte[] params = receiveBytes();
- * KEM kemR = KEM.getInstance("ABC-KEM");
- * AlgorithmParameters algParams = AlgorithmParameters.getInstance("ABC-KEM");
- * algParams.init(params);
- * ABCKEMParameterSpec specR = algParams.getParameterSpec(ABCKEMParameterSpec.class);
- * KEM.Decapsulator d = kemR.newDecapsulator(kp.getPrivate(), specR);
- * SecretKey secR = d.decapsulate(em);
- * 
- * // secS and secR will be identical
- * 
- * 1. Key Generation: Generate KEM key pairs on both client and server.
- * 2. Key Encapsulation: Client encapsulates a symmetric key with server’s public key and sends it.
- * 3. Key Decapsulation: Server decapsulates the symmetric key with its private key.
- * 4. Secure Communication: Use the symmetric key for encrypting and decrypting data over the TCP connection.
-
+ * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key generation and
+ * exchange and AES for symmetric encryption of messages with a random IV per message.
+ *
+ * <p>Per: https://openjdk.org/jeps/452:
+ *
+ * <p>// Receiver side KeyPairGenerator g = KeyPairGenerator.getInstance("ABC"); KeyPair kp =
+ * g.generateKeyPair(); publishKey(kp.getPublic());
+ *
+ * <p>// Sender side KEM kemS = KEM.getInstance("ABC-KEM"); PublicKey pkR = retrieveKey();
+ * ABCKEMParameterSpec specS = new ABCKEMParameterSpec(...); KEM.Encapsulator e =
+ * kemS.newEncapsulator(pkR, specS, null); KEM.Encapsulated enc = e.encapsulate(); SecretKey secS =
+ * enc.key(); sendBytes(enc.encapsulation()); sendBytes(enc.params());
+ *
+ * <p>// Receiver side byte[] em = receiveBytes(); byte[] params = receiveBytes(); KEM kemR =
+ * KEM.getInstance("ABC-KEM"); AlgorithmParameters algParams =
+ * AlgorithmParameters.getInstance("ABC-KEM"); algParams.init(params); ABCKEMParameterSpec specR =
+ * algParams.getParameterSpec(ABCKEMParameterSpec.class); KEM.Decapsulator d =
+ * kemR.newDecapsulator(kp.getPrivate(), specR); SecretKey secR = d.decapsulate(em);
+ *
+ * <p>// secS and secR will be identical
+ *
+ * <p>1. Key Generation: Generate KEM key pairs on both client and server. 2. Key Encapsulation:
+ * Client encapsulates a symmetric key with server’s public key and sends it. 3. Key Decapsulation:
+ * Server decapsulates the symmetric key with its private key. 4. Secure Communication: Use the
+ * symmetric key for encrypting and decrypting data over the TCP connection.
+ *
  * @author Brian Corbin
  */
-@Ignore
+@SuppressWarnings("unused")
 public class SecureConnectionTest {
+
+    private static final Logger log = System.getLogger(SecureConnectionTest.class.getName());
+
+    @Test
+    public void testSecureConnection() {
+        ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
+        var serverTask =
+                new Runnable() {
+                    public void run() {
+                        try (var serverSocket = new ServerSocket(9090)) {
+                            log.log(
+                                    Level.INFO,
+                                    "Server accepting connections on {0}...",
+                                    serverSocket);
+                            var serverSession = service.submit(new Server(serverSocket));
+                            serverSession.get();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+        var clientTask =
+                new Runnable() {
+                    public void run() {
+                        try (var clientSocket = new Socket("localhost", 9090)) {
+                            log.log(
+                                    Level.INFO,
+                                    "Client accepting connections on {0}...",
+                                    clientSocket);
+                            var clientSession = service.submit(new Client(clientSocket));
+                            clientSession.get();
+                        } catch (IOException e) {
+                            log.log(Level.ERROR, e.getMessage(), e);
+                        } catch (InterruptedException e) {
+                            log.log(Level.ERROR, e.getMessage(), e);
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+
+        try {
+            var serverSesion = service.submit(serverTask);
+            var clientSession = service.submit(clientTask);
+
+            serverSesion.get();
+            clientSession.get();
+            service.shutdown();
+            service.awaitTermination(10, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private static class Server extends Remote implements Runnable {
 
@@ -104,7 +149,7 @@ public class SecureConnectionTest {
             try {
                 // Receiver side
                 KeyPairGenerator g = KeyPairGenerator.getInstance("Kyber");
-                KeyPair kp = g.generateKeyPair(); 
+                KeyPair kp = g.generateKeyPair();
                 publishKey(kp.getPublic());
 
                 // Receiver side
@@ -116,14 +161,16 @@ public class SecureConnectionTest {
                 KyberParameterSpec specR = algParams.getParameterSpec(KyberParameterSpec.class);
                 KEM.Decapsulator d = kemR.newDecapsulator(kp.getPrivate(), specR);
                 SecretKey secR = d.decapsulate(em);
-                System.out.println("SERVER: RCVR Secret Key: " + secR);
-                System.out.println(Arrays.toString(secR.getEncoded()));
+                log.log(Level.DEBUG, "SERVER: RCVR Secret Key: {0}", secR);
+                log.log(Level.DEBUG, Arrays.toString(secR.getEncoded()));
                 sendMessage("Hi, I'm the SERVER!", secR);
                 String decrypted = receiveMessage(secR);
-                System.out.println("SERVER: RCVR Message: " + decrypted + " Length: " + decrypted.length());
+                log.log(
+                        Level.INFO,
+                        "SERVER: RCVR Message: {0} Length: {1}",
+                        decrypted,
+                        decrypted.length());
 
-                //
-                in.read();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -132,25 +179,26 @@ public class SecureConnectionTest {
         }
 
         private void publishKey(PublicKey key) throws IOException {
-            System.out.println("SERVER: SNDR -> Public Key: " + key + " Length: " + key.getEncoded().length);
+            log.log(
+                    Level.DEBUG,
+                    "SERVER: SNDR -> Public Key: " + key + " Length: " + key.getEncoded().length);
             out.writeObject(key);
             out.flush();
         }
-        
-        public static void main(String [] args) {
+
+        public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (ServerSocket serverSocket = new ServerSocket(9090)) {
-                System.out.println("Accepting connections on " + serverSocket + "...");
+                log.log(Level.DEBUG, "Accepting connections on " + serverSocket + "...");
                 service.submit(new Server(serverSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
-
     }
 
     private static class Client extends Remote implements Runnable {
@@ -180,62 +228,72 @@ public class SecureConnectionTest {
                 KEM.Encapsulator e = kemS.newEncapsulator(pkR, specS, null);
                 KEM.Encapsulated enc = e.encapsulate();
                 SecretKey secS = enc.key();
-                System.out.println("CLIENT: NOOP Secret Key: " + secS);
-                System.out.println(Arrays.toString(secS.getEncoded()));
+                log.log(Level.DEBUG, "CLIENT: NOOP Secret Key: {0}", secS);
+                log.log(Level.DEBUG, () -> Arrays.toString(secS.getEncoded()));
                 sendBytes(enc.encapsulation());
-                System.out.println("CLIENT: SNDR Secret Key (Encap): " + enc.encapsulation() + " Length: " + enc.encapsulation().length);
+                log.log(
+                        Level.DEBUG,
+                        "CLIENT: SNDR Secret Key (Encap): {0} Length: {1}",
+                        enc.encapsulation(),
+                        enc.encapsulation().length);
                 sendBytes(enc.params());
-                System.out.println("CLIENT: SNDR Secret Key (Params): " + enc.params() + " Length: " + enc.params().length);
-
+                log.log(
+                        Level.DEBUG,
+                        "CLIENT: SNDR Secret Key (Params): {0} Length: {1}",
+                        enc.params(),
+                        enc.params().length);
                 sendMessage("Hi, I'm the CLIENT!", secS);
                 String decrypted = receiveMessage(secS);
-                System.out.println("CLIENT: RCVR Message: " + decrypted + " Length: " + decrypted.length());
-                
+                log.log(
+                        Level.INFO,
+                        "CLIENT: RCVR Message: {0} Length: {1}",
+                        decrypted,
+                        decrypted.length());
 
-                //
-                in.read();
-                
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InvalidKeyException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InvalidAlgorithmParameterException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (NoSuchProviderException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (BadPaddingException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
 
         private PublicKey retrieveKey() throws ClassNotFoundException, IOException {
             PublicKey serverPublicKey = (PublicKey) in.readObject();
-            System.out.println("CLIENT: RCVR Server Public Key: " + serverPublicKey + " Length: " + serverPublicKey.getEncoded().length);
+            log.log(
+                    Level.DEBUG,
+                    "CLIENT: RCVR Server Public Key: {0} Length: {1}",
+                    serverPublicKey,
+                    serverPublicKey.getEncoded().length);
             return serverPublicKey;
         }
 
-        public static void main(String [] args) {
+        public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (Socket clientSocket = new Socket("localhost", 9090)) {
-                System.out.println("Connecting to server on " + clientSocket + "...");
+                log.log(Level.DEBUG, "Connecting to server on {0}...", clientSocket);
                 service.submit(new Client(clientSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
-
     }
 
     private abstract static class Remote {
@@ -252,13 +310,21 @@ public class SecureConnectionTest {
 
         byte[] receiveBytes() throws IOException, ClassNotFoundException {
             int sz = in.readInt();
-            System.out.println("Reading: " + sz + " bytes.");
+            log.log(Level.DEBUG, "Reading: {0} bytes.", sz);
             byte[] data = new byte[sz];
             in.readFully(data);
             return data;
         }
 
-        void sendMessage(String message, SecretKey secretKey) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException, InvalidAlgorithmParameterException {
+        void sendMessage(String message, SecretKey secretKey)
+                throws NoSuchAlgorithmException,
+                        NoSuchProviderException,
+                        NoSuchPaddingException,
+                        InvalidKeyException,
+                        IllegalBlockSizeException,
+                        BadPaddingException,
+                        IOException,
+                        InvalidAlgorithmParameterException {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
             byte[] iv = new byte[16];
             SecureRandom random = new SecureRandom();
@@ -272,9 +338,18 @@ public class SecureConnectionTest {
             System.arraycopy(ciphertext, 0, ivAndCiphertext, iv.length, ciphertext.length);
 
             sendBytes(ivAndCiphertext);
-        } 
+        }
 
-        String receiveMessage(SecretKey secretKey) throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, ClassNotFoundException, IOException {
+        String receiveMessage(SecretKey secretKey)
+                throws InvalidKeyException,
+                        InvalidAlgorithmParameterException,
+                        NoSuchAlgorithmException,
+                        NoSuchProviderException,
+                        NoSuchPaddingException,
+                        IllegalBlockSizeException,
+                        BadPaddingException,
+                        ClassNotFoundException,
+                        IOException {
             byte[] ivAndCiphertext = receiveBytes();
             byte[] iv = new byte[16];
             System.arraycopy(ivAndCiphertext, 0, iv, 0, iv.length);
@@ -290,6 +365,6 @@ public class SecureConnectionTest {
             byte[] decryptedText = cipher.doFinal(ciphertext);
             String decrypted = new String(decryptedText);
             return decrypted;
-        } 
+        }
     }
 }

@@ -3,6 +3,8 @@ package org.example;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -10,11 +12,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Represents a game of Tic-Tac-Toe, including the game board, players, and game state.
- * The game can be serialized and persisted to a file, and loaded from a file.
- * The game can be played by alternating moves between human and bot players.
+ * Represents a game of Tic-Tac-Toe, including the game board, players, and game state. The game can
+ * be serialized and persisted to a file, and loaded from a file. The game can be played by
+ * alternating moves between human and bot players.
  */
 public class Game implements Serializable {
+
+    private static final Logger log = System.getLogger(Game.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -59,10 +63,14 @@ public class Game implements Serializable {
 
         // Print Initial Setup
         players.render();
-        while (winningPlayer.isEmpty() && movesAvailable) { 
+        while (winningPlayer.isEmpty() && movesAvailable) {
             renderBoard();
             moveNumber += 1;
-            board = pushGameBoard(board.withMove(currentPlayer.getPlayerMarker(), currentPlayer.nextMove(board)));
+            board =
+                    pushGameBoard(
+                            board.withMove(
+                                    currentPlayer.getPlayerMarker(),
+                                    currentPlayer.nextMove(board)));
             if (persistenceEnabled) {
                 persistence.saveTo(gameFile(persistenceDir), this);
             }
@@ -70,18 +78,18 @@ public class Game implements Serializable {
             movesAvailable = board.hasMovesAvailable();
             currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
             currentPlayer = players.byIndex(currentPlayerIdx);
-        };
+        }
 
         winningPlayer.ifPresentOrElse(
-            player -> System.out.println("Winner: Player '" + player.getPlayerMarker() + "'!"),
-            () -> { System.out.println("Tie Game!"); }        );
+                player -> log.log(Level.INFO, "Winner: Player '{0}'!", player.getPlayerMarker()),
+                () -> {
+                    log.log(Level.INFO, "Tie Game!");
+                });
         renderBoard();
     }
 
     private Optional<Player> checkWon(GameBoard board, Player player) {
-        return board.hasChain(player.getPlayerMarker())
-            ? Optional.of(player)
-            : Optional.empty();
+        return board.hasChain(player.getPlayerMarker()) ? Optional.of(player) : Optional.empty();
     }
 
     private File gameFileDirectory() throws IOException {
@@ -102,13 +110,10 @@ public class Game implements Serializable {
     }
 
     private void renderBoard() {
-        System.out.println(activeGameBoard());
-        System.out.println();
+        log.log(Level.INFO, "\n" + activeGameBoard());
     }
 
     private GameBoard activeGameBoard() {
         return boards.peekLast();
     }
-
-
 }

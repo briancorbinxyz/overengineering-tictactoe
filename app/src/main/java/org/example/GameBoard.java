@@ -4,13 +4,12 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * Represents a game board for a game, such as tic-tac-toe.
- * The board has a specified dimension, and stores the current state of the game
- * in a 1D array. Provides methods to check the validity of moves, place player
- * markers, check for a winner, and get a string representation of the board.
+ * Represents a game board for a game, such as tic-tac-toe. The board has a specified dimension, and
+ * stores the current state of the game in a 1D array. Provides methods to check the validity of
+ * moves, place player markers, check for a winner, and get a string representation of the board.
  */
 public record GameBoard(int dimension, String[] content) implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
 
     public GameBoard(int dimension) {
@@ -19,7 +18,8 @@ public record GameBoard(int dimension, String[] content) implements Serializable
 
     public GameBoard {
         if (content.length != dimension * dimension) {
-            throw new IllegalArgumentException("Content must be of length " + dimension * dimension);
+            throw new IllegalArgumentException(
+                    "Content must be of length " + dimension * dimension);
         }
     }
 
@@ -31,8 +31,9 @@ public record GameBoard(int dimension, String[] content) implements Serializable
         String boardString = "";
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                int index = j + i*dimension; 
-                boardString += blankElseIndex(content[index], index) + (j + 1 < dimension ? " " : "");
+                int index = j + i * dimension;
+                boardString +=
+                        blankElseIndex(content[index], index) + (j + 1 < dimension ? " " : "");
             }
             boardString += "\n";
         }
@@ -43,7 +44,7 @@ public record GameBoard(int dimension, String[] content) implements Serializable
         String boardString = "";
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
-                int index = j + i*dimension; 
+                int index = j + i * dimension;
                 boardString += contentElseBlank(content[index]);
             }
             boardString += "\n";
@@ -84,7 +85,7 @@ public record GameBoard(int dimension, String[] content) implements Serializable
         {
             int chain = 0;
             for (int i = 0; i < dimension; i++) {
-                if (playerMarker.equals(content[i+(dimension*(i+1))-dimension])) {
+                if (playerMarker.equals(content[i + (dimension * (i + 1)) - dimension])) {
                     chain++;
                 }
                 if (chain == dimension) {
@@ -95,7 +96,7 @@ public record GameBoard(int dimension, String[] content) implements Serializable
         {
             int chain = 0;
             for (int i = 0; i < dimension; i++) {
-                if (playerMarker.equals(content[(dimension*(i+1))-(i+1)])) {
+                if (playerMarker.equals(content[(dimension * (i + 1)) - (i + 1)])) {
                     chain++;
                 }
                 if (chain == dimension) {
@@ -136,5 +137,4 @@ public record GameBoard(int dimension, String[] content) implements Serializable
     public int getDimension() {
         return dimension;
     }
-
 }
