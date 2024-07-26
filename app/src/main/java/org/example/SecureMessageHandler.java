@@ -210,7 +210,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 sharedKey = exchangeSharedKey();
                 initialized = true;
                 log.log(
-                        Level.INFO,
+                        Level.DEBUG,
                         "Secure connection for {0} established with {1} shared key.",
                         getClass().getSimpleName(),
                         sharedKey.getAlgorithm());
@@ -315,7 +315,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 sharedKey = exchangeSharedKey();
                 initialized = true;
                 log.log(
-                        Level.INFO,
+                        Level.DEBUG,
                         "Secure connection for {0} established with {1} shared key.",
                         getClass().getSimpleName(),
                         sharedKey.getAlgorithm());
