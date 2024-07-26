@@ -10,6 +10,9 @@
     <encoder>
       <pattern>%boldWhite(%date) %yellow([%thread]) %highlight(%-5level) %cyan(%-20logger{20}) - %msg %n</pattern>
     </encoder>
+    <filter class="ThresholdFilter">
+      <level>${log.level:-INFO}</level>
+    </filter>
   </appender>
 
   <appender name="FILE" class="FileAppender">
