@@ -1,12 +1,16 @@
 package org.example;
 
 import java.io.Serializable;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.SequencedMap;
 
 public class Players implements Serializable {
+
+    private static final Logger log = System.getLogger(Players.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -55,9 +59,9 @@ public class Players implements Serializable {
 
     public void render() {
         PlayerPrinter printer = new PlayerPrinter();
-        System.out.println("Players: " + playerMarkers());
+        log.log(Level.INFO, "Players: {0}", playerMarkers());
         for (Player player : players.values()) {
-            System.out.println("- " + printer.getPlayerIdentifier(player));
+            log.log(Level.INFO, "- {0}", printer.getPlayerIdentifier(player));
         }
     }
 

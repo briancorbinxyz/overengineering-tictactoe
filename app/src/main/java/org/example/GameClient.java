@@ -1,5 +1,7 @@
 package org.example;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -10,6 +12,8 @@ import java.util.concurrent.atomic.LongAdder;
 import org.example.RemoteBotPlayer.Client;
 
 public class GameClient {
+
+    private static final Logger log = System.getLogger(GameClient.class.getName());
 
     private final int maxGames;
 
@@ -33,7 +37,7 @@ public class GameClient {
 
     public static void main(String[] args) throws Exception {
         ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
-        System.out.println("Client connecting for Tic-Tac-Toe.");
+        log.log(Level.INFO, "Client connecting for Tic-Tac-Toe.");
         long elapsed = System.currentTimeMillis();
         GameClient client =
                 new GameClient(
@@ -45,28 +49,32 @@ public class GameClient {
             executor.shutdown();
             executor.awaitTermination(10, TimeUnit.MINUTES);
             elapsed = System.currentTimeMillis() - elapsed;
-            System.out.println("Elapsed: " + elapsed);
+            log.log(Level.INFO, "Elapsed: " + elapsed);
         } finally {
-            System.out.println("Finished.");
-            System.out.println(
+            log.log(Level.INFO, "Finished.");
+            log.log(
+                    Level.INFO,
                     "Submitted "
                             + client.submittedClients.sum()
                             + " clients for "
                             + client.maxGames
                             + " games.");
-            System.out.println(
+            log.log(
+                    Level.INFO,
                     "Started "
                             + client.startedClients.sum()
                             + " clients for "
                             + client.maxGames
                             + " games.");
-            System.out.println(
+            log.log(
+                    Level.INFO,
                     "Failed "
                             + client.failedClients.sum()
                             + " clients for "
                             + client.maxGames
                             + " games.");
-            System.out.println(
+            log.log(
+                    Level.INFO,
                     "Completed "
                             + client.failedClients.sum()
                             + " clients for "
@@ -84,15 +92,15 @@ public class GameClient {
                         Socket socket = new Socket(serverHost, serverSocket);
                                 Client client = new Client(socket); ) {
                             startedClients.increment();
-                            System.out.println("Connected " + startedClients.sum());
+                            log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
                             client.connectAndPlay(socket);
                             completedClients.increment();
                         } catch (ConnectException e) {
                             failedClients.increment();
-                            System.out.println("Connect exception, server down.");
+                            log.log(Level.ERROR, "Connect exception, server down.");
                         } catch (SocketException e) {
                             failedClients.increment();
-                            System.out.println("Socket exception, server disconnected.");
+                            log.log(Level.ERROR, "Socket exception, server disconnected.");
                         } catch (Exception e) {
                             failedClients.increment();
                             throw new RuntimeException(e);

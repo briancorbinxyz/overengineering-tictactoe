@@ -3,6 +3,8 @@ package org.example;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -17,6 +19,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +34,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 import org.example.security.KyberKEMProvider;
-import org.testng.annotations.Ignore;
+import org.testng.annotations.Test;
 
 /**
  * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key generation and
@@ -62,8 +65,65 @@ import org.testng.annotations.Ignore;
  *
  * @author Brian Corbin
  */
-@Ignore
+@SuppressWarnings("unused")
 public class SecureConnectionTest {
+
+    private static final Logger log = System.getLogger(SecureConnectionTest.class.getName());
+
+    @Test
+    public void testSecureConnection() {
+        ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
+        var serverTask =
+                new Runnable() {
+                    public void run() {
+                        try (var serverSocket = new ServerSocket(9090)) {
+                            log.log(
+                                    Level.INFO,
+                                    "Server accepting connections on {0}...",
+                                    serverSocket);
+                            var serverSession = service.submit(new Server(serverSocket));
+                            serverSession.get();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+        var clientTask =
+                new Runnable() {
+                    public void run() {
+                        try (var clientSocket = new Socket("localhost", 9090)) {
+                            log.log(
+                                    Level.INFO,
+                                    "Client accepting connections on {0}...",
+                                    clientSocket);
+                            var clientSession = service.submit(new Client(clientSocket));
+                            clientSession.get();
+                        } catch (IOException e) {
+                            log.log(Level.ERROR, e.getMessage(), e);
+                        } catch (InterruptedException e) {
+                            log.log(Level.ERROR, e.getMessage(), e);
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+
+        try {
+            var serverSesion = service.submit(serverTask);
+            var clientSession = service.submit(clientTask);
+
+            serverSesion.get();
+            clientSession.get();
+            service.shutdown();
+            service.awaitTermination(10, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private static class Server extends Remote implements Runnable {
 
@@ -101,15 +161,16 @@ public class SecureConnectionTest {
                 KyberParameterSpec specR = algParams.getParameterSpec(KyberParameterSpec.class);
                 KEM.Decapsulator d = kemR.newDecapsulator(kp.getPrivate(), specR);
                 SecretKey secR = d.decapsulate(em);
-                System.out.println("SERVER: RCVR Secret Key: " + secR);
-                System.out.println(Arrays.toString(secR.getEncoded()));
+                log.log(Level.DEBUG, "SERVER: RCVR Secret Key: {0}", secR);
+                log.log(Level.DEBUG, Arrays.toString(secR.getEncoded()));
                 sendMessage("Hi, I'm the SERVER!", secR);
                 String decrypted = receiveMessage(secR);
-                System.out.println(
-                        "SERVER: RCVR Message: " + decrypted + " Length: " + decrypted.length());
+                log.log(
+                        Level.INFO,
+                        "SERVER: RCVR Message: {0} Length: {1}",
+                        decrypted,
+                        decrypted.length());
 
-                //
-                in.read();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -118,7 +179,8 @@ public class SecureConnectionTest {
         }
 
         private void publishKey(PublicKey key) throws IOException {
-            System.out.println(
+            log.log(
+                    Level.DEBUG,
                     "SERVER: SNDR -> Public Key: " + key + " Length: " + key.getEncoded().length);
             out.writeObject(key);
             out.flush();
@@ -127,14 +189,14 @@ public class SecureConnectionTest {
         public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (ServerSocket serverSocket = new ServerSocket(9090)) {
-                System.out.println("Accepting connections on " + serverSocket + "...");
+                log.log(Level.DEBUG, "Accepting connections on " + serverSocket + "...");
                 service.submit(new Server(serverSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
     }
@@ -166,71 +228,70 @@ public class SecureConnectionTest {
                 KEM.Encapsulator e = kemS.newEncapsulator(pkR, specS, null);
                 KEM.Encapsulated enc = e.encapsulate();
                 SecretKey secS = enc.key();
-                System.out.println("CLIENT: NOOP Secret Key: " + secS);
-                System.out.println(Arrays.toString(secS.getEncoded()));
+                log.log(Level.DEBUG, "CLIENT: NOOP Secret Key: {0}", secS);
+                log.log(Level.DEBUG, () -> Arrays.toString(secS.getEncoded()));
                 sendBytes(enc.encapsulation());
-                System.out.println(
-                        "CLIENT: SNDR Secret Key (Encap): "
-                                + enc.encapsulation()
-                                + " Length: "
-                                + enc.encapsulation().length);
+                log.log(
+                        Level.DEBUG,
+                        "CLIENT: SNDR Secret Key (Encap): {0} Length: {1}",
+                        enc.encapsulation(),
+                        enc.encapsulation().length);
                 sendBytes(enc.params());
-                System.out.println(
-                        "CLIENT: SNDR Secret Key (Params): "
-                                + enc.params()
-                                + " Length: "
-                                + enc.params().length);
-
+                log.log(
+                        Level.DEBUG,
+                        "CLIENT: SNDR Secret Key (Params): {0} Length: {1}",
+                        enc.params(),
+                        enc.params().length);
                 sendMessage("Hi, I'm the CLIENT!", secS);
                 String decrypted = receiveMessage(secS);
-                System.out.println(
-                        "CLIENT: RCVR Message: " + decrypted + " Length: " + decrypted.length());
-
-                //
-                in.read();
+                log.log(
+                        Level.INFO,
+                        "CLIENT: RCVR Message: {0} Length: {1}",
+                        decrypted,
+                        decrypted.length());
 
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InvalidKeyException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InvalidAlgorithmParameterException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (NoSuchProviderException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (BadPaddingException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
 
         private PublicKey retrieveKey() throws ClassNotFoundException, IOException {
             PublicKey serverPublicKey = (PublicKey) in.readObject();
-            System.out.println(
-                    "CLIENT: RCVR Server Public Key: "
-                            + serverPublicKey
-                            + " Length: "
-                            + serverPublicKey.getEncoded().length);
+            log.log(
+                    Level.DEBUG,
+                    "CLIENT: RCVR Server Public Key: {0} Length: {1}",
+                    serverPublicKey,
+                    serverPublicKey.getEncoded().length);
             return serverPublicKey;
         }
 
         public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (Socket clientSocket = new Socket("localhost", 9090)) {
-                System.out.println("Connecting to server on " + clientSocket + "...");
+                log.log(Level.DEBUG, "Connecting to server on {0}...", clientSocket);
                 service.submit(new Client(clientSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
     }
@@ -249,7 +310,7 @@ public class SecureConnectionTest {
 
         byte[] receiveBytes() throws IOException, ClassNotFoundException {
             int sz = in.readInt();
-            System.out.println("Reading: " + sz + " bytes.");
+            log.log(Level.DEBUG, "Reading: {0} bytes.", sz);
             byte[] data = new byte[sz];
             in.readFully(data);
             return data;

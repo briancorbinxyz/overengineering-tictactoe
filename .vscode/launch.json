@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "SecureConnectionTest$Server",
+            "request": "launch",
+            "mainClass": "org.example.SecureConnectionTest$Server",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
             "name": "SecureConnectionTest$Client",
             "request": "launch",
             "mainClass": "org.example.SecureConnectionTest$Client",

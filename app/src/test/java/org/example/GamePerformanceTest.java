@@ -1,6 +1,8 @@
 package org.example;
 
 import java.io.IOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -11,6 +13,8 @@ import org.testng.annotations.Test;
 
 @Ignore
 public class GamePerformanceTest {
+
+    private static final Logger log = System.getLogger(GamePerformanceTest.class.getName());
 
     @Test
     public void testGameBotPerformanceInSerial() throws Exception {
@@ -101,7 +105,7 @@ public class GamePerformanceTest {
     private void execClientServerGames(ExecutorService executor, ServerSocket serverSocket)
             throws IOException {
         for (int i = 0; i < 40000; i++) {
-            System.out.println("Accepting connections for game " + i);
+            log.log(Level.INFO, "Accepting connections for game {0}", i);
             Socket playerOne = serverSocket.accept();
             Socket playerTwo = serverSocket.accept();
             executor.submit(
