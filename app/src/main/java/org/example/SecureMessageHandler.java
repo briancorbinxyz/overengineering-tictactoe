@@ -14,7 +14,6 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.spec.InvalidParameterSpecException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.DecapsulateException;
@@ -23,7 +22,6 @@ import javax.crypto.KEM;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
@@ -31,7 +29,7 @@ import org.example.security.KyberKEMProvider;
 
 public abstract sealed class SecureMessageHandler implements MessageHandler {
 
-    private static final Logger LOG = System.getLogger(SecureMessageHandler.class.getName());
+    private static final Logger log = System.getLogger(SecureMessageHandler.class.getName());
 
     protected final RemoteMessageHandler handler;
 
@@ -211,7 +209,8 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 handler.init();
                 sharedKey = exchangeSharedKey();
                 initialized = true;
-                LOG.log(Level.INFO,
+                log.log(
+                        Level.INFO,
                         "Secure connection for "
                                 + getClass().getSimpleName()
                                 + " established with "
@@ -317,7 +316,8 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 handler.init();
                 sharedKey = exchangeSharedKey();
                 initialized = true;
-                LOG.log(Level.INFO, 
+                log.log(
+                        Level.INFO,
                         "Secure connection for "
                                 + getClass().getSimpleName()
                                 + " established with "

@@ -10,8 +10,8 @@ import java.util.SequencedMap;
 
 public class Players implements Serializable {
 
-    private static final Logger LOG = System.getLogger(Players.class.getName());
-    
+    private static final Logger log = System.getLogger(Players.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     private final SequencedMap<String, Player> players;
@@ -59,9 +59,9 @@ public class Players implements Serializable {
 
     public void render() {
         PlayerPrinter printer = new PlayerPrinter();
-        LOG.log(Level.INFO, "Players: " + playerMarkers());
+        log.log(Level.INFO, "Players: " + playerMarkers());
         for (Player player : players.values()) {
-            LOG.log(Level.INFO, "- " + printer.getPlayerIdentifier(player));
+            log.log(Level.INFO, "- " + printer.getPlayerIdentifier(player));
         }
     }
 

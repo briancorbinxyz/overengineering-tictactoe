@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -31,7 +30,6 @@ import javax.crypto.KEM;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
@@ -70,7 +68,7 @@ import org.testng.annotations.Test;
 @SuppressWarnings("unused")
 public class SecureConnectionTest {
 
-    private static final Logger LOG = System.getLogger(SecureConnectionTest.class.getName());
+    private static final Logger log = System.getLogger(SecureConnectionTest.class.getName());
 
     @Test
     public void testSecureConnection() {
@@ -79,7 +77,7 @@ public class SecureConnectionTest {
                 new Runnable() {
                     public void run() {
                         try (var serverSocket = new ServerSocket(9090)) {
-                            LOG.log(
+                            log.log(
                                     Level.INFO,
                                     "Server accepting connections on " + serverSocket + "...");
                             var serverSession = service.submit(new Server(serverSocket));
@@ -97,7 +95,7 @@ public class SecureConnectionTest {
                 new Runnable() {
                     public void run() {
                         try (var clientSocket = new Socket("localhost", 9090)) {
-                            LOG.log(
+                            log.log(
                                     Level.INFO,
                                     "Client accepting connections on " + clientSocket + "...");
                             var clientSession = service.submit(new Client(clientSocket));
@@ -161,12 +159,12 @@ public class SecureConnectionTest {
                 KyberParameterSpec specR = algParams.getParameterSpec(KyberParameterSpec.class);
                 KEM.Decapsulator d = kemR.newDecapsulator(kp.getPrivate(), specR);
                 SecretKey secR = d.decapsulate(em);
-                LOG.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
-                LOG.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
-                LOG.log(Level.DEBUG, Arrays.toString(secR.getEncoded()));
+                log.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
+                log.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
+                log.log(Level.DEBUG, Arrays.toString(secR.getEncoded()));
                 sendMessage("Hi, I'm the SERVER!", secR);
                 String decrypted = receiveMessage(secR);
-                LOG.log(
+                log.log(
                         Level.INFO,
                         "SERVER: RCVR Message: " + decrypted + " Length: " + decrypted.length());
 
@@ -178,7 +176,7 @@ public class SecureConnectionTest {
         }
 
         private void publishKey(PublicKey key) throws IOException {
-            LOG.log(
+            log.log(
                     Level.DEBUG,
                     "SERVER: SNDR -> Public Key: " + key + " Length: " + key.getEncoded().length);
             out.writeObject(key);
@@ -188,7 +186,7 @@ public class SecureConnectionTest {
         public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (ServerSocket serverSocket = new ServerSocket(9090)) {
-                LOG.log(Level.DEBUG, "Accepting connections on " + serverSocket + "...");
+                log.log(Level.DEBUG, "Accepting connections on " + serverSocket + "...");
                 service.submit(new Server(serverSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
@@ -227,17 +225,17 @@ public class SecureConnectionTest {
                 KEM.Encapsulator e = kemS.newEncapsulator(pkR, specS, null);
                 KEM.Encapsulated enc = e.encapsulate();
                 SecretKey secS = enc.key();
-                LOG.log(Level.DEBUG, "CLIENT: NOOP Secret Key: " + secS);
-                LOG.log(Level.DEBUG, Arrays.toString(secS.getEncoded()));
+                log.log(Level.DEBUG, "CLIENT: NOOP Secret Key: " + secS);
+                log.log(Level.DEBUG, Arrays.toString(secS.getEncoded()));
                 sendBytes(enc.encapsulation());
-                LOG.log(
+                log.log(
                         Level.DEBUG,
                         "CLIENT: SNDR Secret Key (Encap): "
                                 + enc.encapsulation()
                                 + " Length: "
                                 + enc.encapsulation().length);
                 sendBytes(enc.params());
-                LOG.log(
+                log.log(
                         Level.DEBUG,
                         "CLIENT: SNDR Secret Key (Params): "
                                 + enc.params()
@@ -246,7 +244,7 @@ public class SecureConnectionTest {
 
                 sendMessage("Hi, I'm the CLIENT!", secS);
                 String decrypted = receiveMessage(secS);
-                LOG.log(
+                log.log(
                         Level.INFO,
                         "CLIENT: RCVR Message: " + decrypted + " Length: " + decrypted.length());
 
@@ -273,7 +271,7 @@ public class SecureConnectionTest {
 
         private PublicKey retrieveKey() throws ClassNotFoundException, IOException {
             PublicKey serverPublicKey = (PublicKey) in.readObject();
-            LOG.log(
+            log.log(
                     Level.DEBUG,
                     "CLIENT: RCVR Server Public Key: "
                             + serverPublicKey
@@ -285,7 +283,7 @@ public class SecureConnectionTest {
         public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (Socket clientSocket = new Socket("localhost", 9090)) {
-                LOG.log(Level.DEBUG, "Connecting to server on " + clientSocket + "...");
+                log.log(Level.DEBUG, "Connecting to server on " + clientSocket + "...");
                 service.submit(new Client(clientSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
@@ -311,7 +309,7 @@ public class SecureConnectionTest {
 
         byte[] receiveBytes() throws IOException, ClassNotFoundException {
             int sz = in.readInt();
-            LOG.log(Level.DEBUG, "Reading: " + sz + " bytes.");
+            log.log(Level.DEBUG, "Reading: " + sz + " bytes.");
             byte[] data = new byte[sz];
             in.readFully(data);
             return data;

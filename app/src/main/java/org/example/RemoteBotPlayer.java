@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
  */
 public final class RemoteBotPlayer implements Player, Serializable, AutoCloseable {
 
-    private static final Logger LOG = System.getLogger(RemoteBotPlayer.class.getName());
+    private static final Logger log = System.getLogger(RemoteBotPlayer.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -35,7 +35,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
     public RemoteBotPlayer(String playerMarker, Socket socket) throws Exception {
         this.playerMarker = playerMarker;
         initConnection(playerMarker, socket);
-        LOG.log(Level.INFO, "Server connecting client to socket " + socket + " for Tic-Tac-Toe.");
+        log.log(Level.INFO, "Server connecting client to socket " + socket + " for Tic-Tac-Toe.");
     }
 
     private void initConnection(String playerMarker, Socket socket) throws IOException {
@@ -114,6 +114,5 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
         public void close() throws Exception {
             connection.close();
         }
-        ;
     }
 }

@@ -8,14 +8,13 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
-
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 @Ignore
 public class GamePerformanceTest {
 
-    private static final Logger LOG = System.getLogger(GamePerformanceTest.class.getName());
+    private static final Logger log = System.getLogger(GamePerformanceTest.class.getName());
 
     @Test
     public void testGameBotPerformanceInSerial() throws Exception {
@@ -82,7 +81,7 @@ public class GamePerformanceTest {
             // round-robin match making for up to 1000 games
             execClientServerGames(executor, serverSocket);
         } catch (Exception e) {
-            LOG.log(Level.INFO, e);
+            log.log(Level.INFO, e);
             throw new RuntimeException(e);
         }
         executor.shutdown();
@@ -96,7 +95,7 @@ public class GamePerformanceTest {
             // round-robin match making for up to 1000 games
             execClientServerGames(executor, serverSocket);
         } catch (Exception e) {
-            LOG.log(Level.INFO, e);
+            log.log(Level.INFO, e);
             throw new RuntimeException(e);
         }
         executor.shutdown();
@@ -106,7 +105,7 @@ public class GamePerformanceTest {
     private void execClientServerGames(ExecutorService executor, ServerSocket serverSocket)
             throws IOException {
         for (int i = 0; i < 40000; i++) {
-            LOG.log(Level.INFO, "Accepting connections for game " + i);
+            log.log(Level.INFO, "Accepting connections for game " + i);
             Socket playerOne = serverSocket.accept();
             Socket playerTwo = serverSocket.accept();
             executor.submit(
@@ -116,7 +115,7 @@ public class GamePerformanceTest {
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
                         } catch (Exception e) {
-                            LOG.log(Level.INFO, e);
+                            log.log(Level.INFO, e);
                             throw new RuntimeException(e);
                         }
                     });

@@ -10,7 +10,7 @@ import java.lang.System.Logger.Level;
 /** A simple java tic-tac-toe game. */
 public class App {
 
-    private static final Logger LOG = System.getLogger(App.class.getName());
+    private static final Logger log = System.getLogger(App.class.getName());
 
     /**
      * Runs the game.
@@ -51,7 +51,7 @@ public class App {
      */
     public static void main(String[] args) throws Exception {
         App app = new App();
-        LOG.log(Level.INFO, app.getGreeting());
+        log.log(Level.INFO, app.getGreeting());
         if (args.length > 0) {
             app.runFrom(new File(args[0]));
         } else {

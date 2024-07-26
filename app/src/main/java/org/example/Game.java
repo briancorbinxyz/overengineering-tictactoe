@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public class Game implements Serializable {
 
-    private static final Logger LOG = System.getLogger(Game.class.getName());
+    private static final Logger log = System.getLogger(Game.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -82,9 +82,9 @@ public class Game implements Serializable {
         ;
 
         winningPlayer.ifPresentOrElse(
-                player -> LOG.log(Level.INFO, "Winner: Player '" + player.getPlayerMarker() + "'!"),
+                player -> log.log(Level.INFO, "Winner: Player '" + player.getPlayerMarker() + "'!"),
                 () -> {
-                    LOG.log(Level.INFO, "Tie Game!");
+                    log.log(Level.INFO, "Tie Game!");
                 });
         renderBoard();
     }
@@ -111,7 +111,7 @@ public class Game implements Serializable {
     }
 
     private void renderBoard() {
-        LOG.log(Level.INFO, "\n" + activeGameBoard());
+        log.log(Level.INFO, "\n" + activeGameBoard());
     }
 
     private GameBoard activeGameBoard() {

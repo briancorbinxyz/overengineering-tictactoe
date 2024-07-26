@@ -23,14 +23,14 @@ import java.lang.System.Logger.Level;
  */
 public class GamePersistence {
 
-    private static final Logger LOG = System.getLogger(GamePersistence.class.getName());
+    private static final Logger log = System.getLogger(GamePersistence.class.getName());
 
     public void saveTo(File gameFile, Game game) throws IOException {
         try (FileOutputStream os = new FileOutputStream(gameFile);
                 ObjectOutputStream o = new ObjectOutputStream(os)) {
             o.writeObject(game);
         }
-        LOG.log(Level.INFO, "[Saved to " + gameFile + "]");
+        log.log(Level.INFO, "[Saved to " + gameFile + "]");
     }
 
     public Game loadFrom(File gameFile) throws IOException, ClassNotFoundException {
