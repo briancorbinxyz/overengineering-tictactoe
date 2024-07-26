@@ -81,7 +81,7 @@ public class GamePerformanceTest {
             // round-robin match making for up to 1000 games
             execClientServerGames(executor, serverSocket);
         } catch (Exception e) {
-            log.log(Level.INFO, e);
+            System.out.println(e);
             throw new RuntimeException(e);
         }
         executor.shutdown();
@@ -95,7 +95,7 @@ public class GamePerformanceTest {
             // round-robin match making for up to 1000 games
             execClientServerGames(executor, serverSocket);
         } catch (Exception e) {
-            log.log(Level.INFO, e);
+            System.out.println(e);
             throw new RuntimeException(e);
         }
         executor.shutdown();
@@ -105,7 +105,7 @@ public class GamePerformanceTest {
     private void execClientServerGames(ExecutorService executor, ServerSocket serverSocket)
             throws IOException {
         for (int i = 0; i < 40000; i++) {
-            log.log(Level.INFO, "Accepting connections for game " + i);
+            log.log(Level.INFO, "Accepting connections for game {0}", i);
             Socket playerOne = serverSocket.accept();
             Socket playerTwo = serverSocket.accept();
             executor.submit(
@@ -115,7 +115,7 @@ public class GamePerformanceTest {
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
                         } catch (Exception e) {
-                            log.log(Level.INFO, e);
+                            System.out.println(e);
                             throw new RuntimeException(e);
                         }
                     });

@@ -30,21 +30,22 @@ public class GameServer {
                                 args.length > 0 ? Integer.parseInt(args[0]) : 9090, 10000);
                 ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor(); ) {
             serverSocket.setSoTimeout(CONNECTION_TIMEOUT);
-            log.log(Level.INFO, "Starting game server at " + serverSocket);
+            log.log(Level.INFO, "Starting game server at {0}", serverSocket);
             server.listenForPlayers(executor, serverSocket);
             executor.shutdown();
             executor.awaitTermination(10, java.util.concurrent.TimeUnit.MINUTES);
         } catch (SocketTimeoutException e) {
-            log.log(Level.INFO, "Timed out after " + CONNECTION_TIMEOUT + "ms");
+            log.log(Level.INFO, "Timed out after {0}ms", CONNECTION_TIMEOUT);
         } catch (Exception e) {
             log.log(Level.INFO, e);
             throw new RuntimeException(e);
         } finally {
             log.log(Level.INFO, "Server shutting down.");
-            log.log(Level.INFO, "Total games played: " + server.totalGames.get());
+            log.log(Level.INFO, "Total games played: {0}", server.totalGames.get());
             log.log(
                     Level.INFO,
-                    "Maximum number of concurrent games: " + server.maxConcurrentGames.get());
+                    "Maximum number of concurrent games: {0}",
+                    server.maxConcurrentGames.get());
         }
     }
 
@@ -59,12 +60,12 @@ public class GameServer {
                                 var playerO = new RemoteBotPlayer("O", socketPlayerTwo)) {
                             log.log(
                                     Level.INFO,
-                                    updateStatsAndGetConcurrentGames()
-                                            + " concurrent games in progress.");
+                                    "{0} concurrent games in progress.",
+                                    updateStatsAndGetConcurrentGames());
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
                         } catch (Exception e) {
-                            log.log(Level.INFO, e);
+                            log.log(Level.ERROR, e.getMessage(), e);
                             throw new RuntimeException(e);
                         } finally {
                             concurrentGames.decrement();

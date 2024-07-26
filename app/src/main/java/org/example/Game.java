@@ -79,10 +79,9 @@ public class Game implements Serializable {
             currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
             currentPlayer = players.byIndex(currentPlayerIdx);
         }
-        ;
 
         winningPlayer.ifPresentOrElse(
-                player -> log.log(Level.INFO, "Winner: Player '" + player.getPlayerMarker() + "'!"),
+                player -> log.log(Level.INFO, "Winner: Player '{0}'!", player.getPlayerMarker()),
                 () -> {
                     log.log(Level.INFO, "Tie Game!");
                 });

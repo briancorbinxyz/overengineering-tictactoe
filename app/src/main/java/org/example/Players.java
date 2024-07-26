@@ -59,9 +59,9 @@ public class Players implements Serializable {
 
     public void render() {
         PlayerPrinter printer = new PlayerPrinter();
-        log.log(Level.INFO, "Players: " + playerMarkers());
+        log.log(Level.INFO, "Players: {0}", playerMarkers());
         for (Player player : players.values()) {
-            log.log(Level.INFO, "- " + printer.getPlayerIdentifier(player));
+            log.log(Level.INFO, "- {0}", printer.getPlayerIdentifier(player));
         }
     }
 

@@ -92,7 +92,7 @@ public class GameClient {
                         Socket socket = new Socket(serverHost, serverSocket);
                                 Client client = new Client(socket); ) {
                             startedClients.increment();
-                            log.log(Level.INFO, "Connected " + startedClients.sum());
+                            log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
                             client.connectAndPlay(socket);
                             completedClients.increment();
                         } catch (ConnectException e) {

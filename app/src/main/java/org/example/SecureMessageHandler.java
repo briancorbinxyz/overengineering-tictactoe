@@ -211,11 +211,9 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 initialized = true;
                 log.log(
                         Level.INFO,
-                        "Secure connection for "
-                                + getClass().getSimpleName()
-                                + " established with "
-                                + sharedKey.getAlgorithm()
-                                + " shared key.");
+                        "Secure connection for {0} established with {1} shared key.",
+                        getClass().getSimpleName(),
+                        sharedKey.getAlgorithm());
             } catch (NoSuchAlgorithmException
                     | NoSuchProviderException
                     | InvalidParameterSpecException
@@ -318,11 +316,9 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                 initialized = true;
                 log.log(
                         Level.INFO,
-                        "Secure connection for "
-                                + getClass().getSimpleName()
-                                + " established with "
-                                + sharedKey.getAlgorithm()
-                                + " shared key.");
+                        "Secure connection for {0} established with {1} shared key.",
+                        getClass().getSimpleName(),
+                        sharedKey.getAlgorithm());
             } catch (ClassNotFoundException
                     | IOException
                     | NoSuchAlgorithmException

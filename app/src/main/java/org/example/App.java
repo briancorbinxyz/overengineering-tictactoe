@@ -51,7 +51,7 @@ public class App {
      */
     public static void main(String[] args) throws Exception {
         App app = new App();
-        log.log(Level.INFO, app.getGreeting());
+        log.log(Level.INFO, () -> app.getGreeting());
         if (args.length > 0) {
             app.runFrom(new File(args[0]));
         } else {

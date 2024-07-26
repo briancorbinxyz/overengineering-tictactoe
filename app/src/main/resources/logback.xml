@@ -4,6 +4,7 @@
   <import class="ch.qos.logback.classic.encoder.JsonEncoder"/>
   <import class="ch.qos.logback.core.ConsoleAppender"/>
   <import class="ch.qos.logback.core.FileAppender"/>
+  <import class="ch.qos.logback.classic.filter.ThresholdFilter"/>
 
   <appender name="CONSOLE" class="ConsoleAppender">
     <encoder>
@@ -25,15 +26,14 @@
       <withContext>false</withContext>
       <withMDC>false</withMDC>
     </encoder>
+    <filter class="ThresholdFilter">
+      <level>INFO</level>
+    </filter>
   </appender>
 
   <root>
     <level value="DEBUG"/>
     <appender-ref ref="CONSOLE"/>
-  </root>
-
-  <logger name="org.example">
-    <level value="INFO"/>
     <appender-ref ref="FILE"/>
-  </logger>
+  </root>
 </configuration>

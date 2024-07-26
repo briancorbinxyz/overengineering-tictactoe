@@ -30,7 +30,7 @@ public class GamePersistence {
                 ObjectOutputStream o = new ObjectOutputStream(os)) {
             o.writeObject(game);
         }
-        log.log(Level.INFO, "[Saved to " + gameFile + "]");
+        log.log(Level.DEBUG, "Saved to game state to: {0}", gameFile);
     }
 
     public Game loadFrom(File gameFile) throws IOException, ClassNotFoundException {

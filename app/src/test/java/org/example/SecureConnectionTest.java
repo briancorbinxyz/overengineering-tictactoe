@@ -79,7 +79,8 @@ public class SecureConnectionTest {
                         try (var serverSocket = new ServerSocket(9090)) {
                             log.log(
                                     Level.INFO,
-                                    "Server accepting connections on " + serverSocket + "...");
+                                    "Server accepting connections on {0}...",
+                                    serverSocket);
                             var serverSession = service.submit(new Server(serverSocket));
                             serverSession.get();
                         } catch (IOException e) {
@@ -97,13 +98,14 @@ public class SecureConnectionTest {
                         try (var clientSocket = new Socket("localhost", 9090)) {
                             log.log(
                                     Level.INFO,
-                                    "Client accepting connections on " + clientSocket + "...");
+                                    "Client accepting connections on {0}...",
+                                    clientSocket);
                             var clientSession = service.submit(new Client(clientSocket));
                             clientSession.get();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            log.log(Level.ERROR, e.getMessage(), e);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            log.log(Level.ERROR, e.getMessage(), e);
                         } catch (ExecutionException e) {
                             throw new RuntimeException(e);
                         }
@@ -159,14 +161,15 @@ public class SecureConnectionTest {
                 KyberParameterSpec specR = algParams.getParameterSpec(KyberParameterSpec.class);
                 KEM.Decapsulator d = kemR.newDecapsulator(kp.getPrivate(), specR);
                 SecretKey secR = d.decapsulate(em);
-                log.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
-                log.log(Level.DEBUG, "SERVER: RCVR Secret Key: " + secR);
+                log.log(Level.DEBUG, "SERVER: RCVR Secret Key: {0}", secR);
                 log.log(Level.DEBUG, Arrays.toString(secR.getEncoded()));
                 sendMessage("Hi, I'm the SERVER!", secR);
                 String decrypted = receiveMessage(secR);
                 log.log(
                         Level.INFO,
-                        "SERVER: RCVR Message: " + decrypted + " Length: " + decrypted.length());
+                        "SERVER: RCVR Message: {0} Length: {1}",
+                        decrypted,
+                        decrypted.length());
 
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
@@ -191,9 +194,9 @@ public class SecureConnectionTest {
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
     }
@@ -225,47 +228,46 @@ public class SecureConnectionTest {
                 KEM.Encapsulator e = kemS.newEncapsulator(pkR, specS, null);
                 KEM.Encapsulated enc = e.encapsulate();
                 SecretKey secS = enc.key();
-                log.log(Level.DEBUG, "CLIENT: NOOP Secret Key: " + secS);
-                log.log(Level.DEBUG, Arrays.toString(secS.getEncoded()));
+                log.log(Level.DEBUG, "CLIENT: NOOP Secret Key: {0}", secS);
+                log.log(Level.DEBUG, () -> Arrays.toString(secS.getEncoded()));
                 sendBytes(enc.encapsulation());
                 log.log(
                         Level.DEBUG,
-                        "CLIENT: SNDR Secret Key (Encap): "
-                                + enc.encapsulation()
-                                + " Length: "
-                                + enc.encapsulation().length);
+                        "CLIENT: SNDR Secret Key (Encap): {0} Length: {1}",
+                        enc.encapsulation(),
+                        enc.encapsulation().length);
                 sendBytes(enc.params());
                 log.log(
                         Level.DEBUG,
-                        "CLIENT: SNDR Secret Key (Params): "
-                                + enc.params()
-                                + " Length: "
-                                + enc.params().length);
-
+                        "CLIENT: SNDR Secret Key (Params): {0} Length: {1}",
+                        enc.params(),
+                        enc.params().length);
                 sendMessage("Hi, I'm the CLIENT!", secS);
                 String decrypted = receiveMessage(secS);
                 log.log(
                         Level.INFO,
-                        "CLIENT: RCVR Message: " + decrypted + " Length: " + decrypted.length());
+                        "CLIENT: RCVR Message: {0} Length: {1}",
+                        decrypted,
+                        decrypted.length());
 
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InvalidKeyException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InvalidAlgorithmParameterException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (NoSuchProviderException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (BadPaddingException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
 
@@ -273,24 +275,23 @@ public class SecureConnectionTest {
             PublicKey serverPublicKey = (PublicKey) in.readObject();
             log.log(
                     Level.DEBUG,
-                    "CLIENT: RCVR Server Public Key: "
-                            + serverPublicKey
-                            + " Length: "
-                            + serverPublicKey.getEncoded().length);
+                    "CLIENT: RCVR Server Public Key: {0} Length: {1}",
+                    serverPublicKey,
+                    serverPublicKey.getEncoded().length);
             return serverPublicKey;
         }
 
         public static void main(String[] args) {
             ExecutorService service = Executors.newVirtualThreadPerTaskExecutor();
             try (Socket clientSocket = new Socket("localhost", 9090)) {
-                log.log(Level.DEBUG, "Connecting to server on " + clientSocket + "...");
+                log.log(Level.DEBUG, "Connecting to server on {0}...", clientSocket);
                 service.submit(new Client(clientSocket));
                 service.shutdown();
                 service.awaitTermination(10, TimeUnit.MINUTES);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.log(Level.ERROR, e.getMessage(), e);
             }
         }
     }
@@ -309,7 +310,7 @@ public class SecureConnectionTest {
 
         byte[] receiveBytes() throws IOException, ClassNotFoundException {
             int sz = in.readInt();
-            log.log(Level.DEBUG, "Reading: " + sz + " bytes.");
+            log.log(Level.DEBUG, "Reading: {0} bytes.", sz);
             byte[] data = new byte[sz];
             in.readFully(data);
             return data;

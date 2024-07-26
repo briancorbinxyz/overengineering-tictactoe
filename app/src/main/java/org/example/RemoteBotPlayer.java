@@ -35,7 +35,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
     public RemoteBotPlayer(String playerMarker, Socket socket) throws Exception {
         this.playerMarker = playerMarker;
         initConnection(playerMarker, socket);
-        log.log(Level.INFO, "Server connecting client to socket " + socket + " for Tic-Tac-Toe.");
+        log.log(Level.INFO, "Server connecting client to socket {0} for Tic-Tac-Toe.", socket);
     }
 
     private void initConnection(String playerMarker, Socket socket) throws IOException {
