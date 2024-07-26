@@ -247,6 +247,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
                         InvalidKeyException,
                         DecapsulateException {
             var keyPair = generateKeyPair();
+            publishKey(keyPair.getPublic());
             // Receiver side
             var encapsulated = handler.receiveBytes();
             var encapsulatedParams = handler.receiveBytes();
@@ -268,7 +269,6 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
         private KeyPair generateKeyPair() throws NoSuchAlgorithmException, IOException {
             var keyPairGen = KeyPairGenerator.getInstance("Kyber");
             var keyPair = keyPairGen.generateKeyPair();
-            publishKey(keyPair.getPublic());
             return keyPair;
         }
 
