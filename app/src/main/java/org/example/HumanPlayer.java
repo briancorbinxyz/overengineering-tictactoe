@@ -35,7 +35,7 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
                 location = Integer.parseInt(msg);
             } catch (NumberFormatException e) {
                 // expected if user enters non-integer carry on.
-                log.log(Level.TRACE, "Invalid location: " + e.getMessage(), e);
+                log.log(Level.TRACE, "Invalid location: ", e.getMessage(), e);
                 location = -1;
             }
         } while (!board.isValidMove(location));

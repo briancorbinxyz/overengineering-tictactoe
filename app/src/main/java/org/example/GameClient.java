@@ -95,10 +95,10 @@ public class GameClient {
                             log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
                             client.connectAndPlay(socket);
                             completedClients.increment();
-                        } catch (ConnectException e) {
+                        } catch (ConnectException _) {
                             failedClients.increment();
                             log.log(Level.ERROR, "Connect exception, server down.");
-                        } catch (SocketException e) {
+                        } catch (SocketException _) {
                             failedClients.increment();
                             log.log(Level.ERROR, "Socket exception, server disconnected.");
                         } catch (Exception e) {

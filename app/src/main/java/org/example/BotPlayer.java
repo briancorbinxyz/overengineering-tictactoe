@@ -21,7 +21,6 @@ public record BotPlayer(String playerMarker, RandomGenerator random)
     public String getPlayerMarker() {
         return playerMarker;
     }
-    ;
 
     public int nextMove(GameBoard board) {
         int dimension = board.getDimension();
@@ -31,5 +30,4 @@ public record BotPlayer(String playerMarker, RandomGenerator random)
         } while (!board.isValidMove(location));
         return location;
     }
-    ;
 }

@@ -105,7 +105,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
                 }
                 ;
             } catch (IOException e) {
-                e.printStackTrace();
+                log.log(Level.INFO, "IO exception: {0}", e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }

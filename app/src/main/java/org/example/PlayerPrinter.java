@@ -19,7 +19,7 @@ public class PlayerPrinter {
             return String.format(
                     "TicTacToeClient/1.0 [%s] (IP: %s; Host: %s; Java: %s; OS: %s %s)",
                     playerToType(player), ipAddress, hostName, javaVersion, osName, osVersion);
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException _) {
             return String.format(
                     "TicTacToeClient/1.0 [%s] (IP: unknown; Host: unknown; Java: %s; OS: %s %s)",
                     playerToType(player), javaVersion, osName, osVersion);
@@ -29,8 +29,7 @@ public class PlayerPrinter {
     private String playerToType(Player player) {
         return switch (player) {
             case HumanPlayer(String playerMarker) -> "Human" + " (" + playerMarker + ")";
-            case BotPlayer(String playerMarker, RandomGenerator r) ->
-                    "Bot" + " (" + playerMarker + ")";
+            case BotPlayer(String playerMarker, _) -> "Bot" + " (" + playerMarker + ")";
             case RemoteBotPlayer p -> "BotClient" + " (" + p.getPlayerMarker() + ")";
         };
     }
