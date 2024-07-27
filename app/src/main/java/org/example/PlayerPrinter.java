@@ -2,7 +2,6 @@ package org.example;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.random.RandomGenerator;
 
 public class PlayerPrinter {
 
