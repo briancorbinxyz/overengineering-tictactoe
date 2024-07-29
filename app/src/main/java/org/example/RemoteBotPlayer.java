@@ -23,7 +23,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
     private final String playerMarker;
 
-    private final transient JsonPrinter json = new JsonPrinter();
+    private final transient GameBoardJsonPrinter json = new GameBoardJsonPrinter();
 
     private transient MessageHandler connection;
 

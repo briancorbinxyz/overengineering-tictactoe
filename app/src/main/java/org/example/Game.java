@@ -40,7 +40,7 @@ public class Game implements Serializable {
 
     public Game(int size, boolean persistenceEnabled, Player... players) {
         this.boards = new ArrayDeque<>();
-        this.boards.add(new GameBoard(size));
+        this.boards.add(new DefaultGameBoard(size));
         this.players = Players.of(players);
         this.gameId = UUID.randomUUID();
         this.moveNumber = 0;
@@ -82,9 +82,8 @@ public class Game implements Serializable {
 
         winningPlayer.ifPresentOrElse(
                 player -> log.log(Level.INFO, "Winner: Player {0}!", player.getPlayerMarker()),
-                () -> {
-                    log.log(Level.INFO, "Tie Game!");
-                });
+                () -> log.log(Level.INFO, "Tie Game!")
+        );
         renderBoard();
     }
 
