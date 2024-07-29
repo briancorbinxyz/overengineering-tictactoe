@@ -73,3 +73,10 @@ tasks.run.configure {
     // Override the empty stream to allow for interactive runs with gradlew run
     standardInput = System.`in`
 }
+
+tasks.withType<Test>().all {
+    systemProperty(
+        "java.library.path",
+        "${projectDir}/lib/tictactoe/target/debug" //Replace : with ; for windows
+    )
+}
