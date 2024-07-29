@@ -23,8 +23,8 @@
       <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
     <encoder class="JsonEncoder">
-      <withFormattedMessage>false</withFormattedMessage>
-      <withMessage>true</withMessage>
+      <withFormattedMessage>true</withFormattedMessage>
+      <withMessage>false</withMessage>
       <withArguments>false</withArguments>
       <withContext>false</withContext>
       <withMDC>false</withMDC>
