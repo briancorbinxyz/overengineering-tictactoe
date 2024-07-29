@@ -81,7 +81,7 @@ public class Game implements Serializable {
         }
 
         winningPlayer.ifPresentOrElse(
-                player -> log.log(Level.INFO, "Winner: Player '{0}'!", player.getPlayerMarker()),
+                player -> log.log(Level.INFO, "Winner: Player {0}!", player.getPlayerMarker()),
                 () -> {
                     log.log(Level.INFO, "Tie Game!");
                 });

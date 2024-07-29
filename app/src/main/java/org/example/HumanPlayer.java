@@ -1,8 +1,11 @@
 package org.example;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.util.Scanner;
 
 /**
  * Represents a human player in the game. The human player interacts with the game by providing
@@ -22,7 +25,7 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
     @Override
     public int nextMove(GameBoard board) {
         int location;
-        var io = System.console();
+        var io = System.console() != null ? new ConsoleInput() : new ScannerInput();
         do {
             System.out.print(
                     "Player '"
@@ -40,5 +43,56 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
             }
         } while (!board.isValidMove(location));
         return location;
+    }
+
+        static sealed interface Input {
+        String readLine();
+    }
+
+    static final class ConsoleInput implements Input {
+        @Override
+        public String readLine() {
+            return System.console().readLine();
+        }
+    }
+
+    static final class ScannerInput implements Input {
+        @Override
+        public String readLine() {
+            try (Scanner scanner = new Scanner(new CloseOnExitInputStream(System.in))) {
+                return scanner.nextLine();
+            }
+        }
+    
+    }
+
+    static class CloseOnExitInputStream extends InputStream {
+
+        private final InputStream in;
+
+        public CloseOnExitInputStream(InputStream in) {
+            this.in = in;
+        }
+
+        @Override
+        public void close() {
+            // no op
+        }
+
+		@Override
+		public int read() throws IOException {
+            return in.read();
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            return in.read(b, off, len);
+        }
+
+        @Override
+        public int read(byte[] b) throws IOException {
+            return in.read(b);
+        }
+
     }
 }
