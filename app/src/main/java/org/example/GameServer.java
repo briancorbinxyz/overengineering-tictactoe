@@ -44,7 +44,8 @@ public class GameServer {
             log.log(Level.INFO, "Total games played: {0}", server.totalGames.get());
             log.log(
                     Level.INFO,
-                    "Maximum number of concurrent games: {0}", server.maxConcurrentGames.get());
+                    "Maximum number of concurrent games: {0}",
+                    server.maxConcurrentGames.get());
         }
     }
 
@@ -59,7 +60,8 @@ public class GameServer {
                                 var playerO = new RemoteBotPlayer("O", socketPlayerTwo)) {
                             log.log(
                                     Level.INFO,
-                                        "{0} concurrent games in progress.", updateStatsAndGetConcurrentGames());
+                                    "{0} concurrent games in progress.",
+                                    updateStatsAndGetConcurrentGames());
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
                         } catch (Exception e) {

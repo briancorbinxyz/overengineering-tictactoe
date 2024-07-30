@@ -1,4 +1,4 @@
-use std::{ffi::{c_char, CString}, slice};
+use std::{ffi::{c_char, c_int, CString}, slice};
 
 #[no_mangle]
 pub extern "C" fn add(left: u64, right: u64) -> u64 {
@@ -12,7 +12,7 @@ pub extern "C" fn version(buffer: *mut u8, len: usize) -> isize {
     let required_len = version_bytes.len() + 1; // +1 for null terminator
 
     if buffer.is_null() {
-        return version_bytes.len() as isize;
+        return required_len as isize;
     }
 
     if len < version_bytes.len() {
@@ -20,7 +20,7 @@ pub extern "C" fn version(buffer: *mut u8, len: usize) -> isize {
     }
 
     unsafe {
-        let buffer_slice = slice::from_raw_parts_mut(buffer, len);
+        let buffer_slice = slice::from_raw_parts_mut(buffer, required_len);
         buffer_slice[..version_bytes.len()].copy_from_slice(version_bytes);
         buffer_slice[version_bytes.len()] = 0; // null terminator
     }
@@ -28,13 +28,13 @@ pub extern "C" fn version(buffer: *mut u8, len: usize) -> isize {
     required_len as isize
 }
 
-type Callback = unsafe extern fn(*const c_char);
+type Callback = unsafe extern fn(*const c_char, c_int);
 
 #[no_mangle]
 pub unsafe extern fn versionString(callback: Callback) {
     let version = env!("CARGO_PKG_VERSION");
     let c_string = CString::new(version).expect("CString::new failed");
-    callback(c_string.as_ptr())
+    callback(c_string.as_ptr(), (version.len()+1) as c_int);
 }
 
 #[cfg(test)]

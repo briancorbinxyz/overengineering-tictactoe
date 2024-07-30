@@ -15,5 +15,4 @@ public interface GameBoard {
     int getDimension();
 
     String[] getContent();
-
 }

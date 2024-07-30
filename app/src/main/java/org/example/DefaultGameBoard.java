@@ -24,7 +24,7 @@ public record DefaultGameBoard(int dimension, String[] content) implements Seria
     }
 
     @Override
-	public String toString() {
+    public String toString() {
         return boardAsString();
     }
 
@@ -54,12 +54,12 @@ public record DefaultGameBoard(int dimension, String[] content) implements Seria
     }
 
     @Override
-	public boolean isValidMove(int location) {
+    public boolean isValidMove(int location) {
         return location >= 0 && location < content.length && content[location] == null;
     }
 
     @Override
-	public boolean hasChain(String playerMarker) {
+    public boolean hasChain(String playerMarker) {
         // check rows
         for (int i = 0; i < dimension; i++) {
             int chain = 0;
@@ -111,7 +111,7 @@ public record DefaultGameBoard(int dimension, String[] content) implements Seria
     }
 
     @Override
-	public boolean hasMovesAvailable() {
+    public boolean hasMovesAvailable() {
         return Arrays.stream(content).anyMatch(m -> m == null);
     }
 
@@ -124,7 +124,7 @@ public record DefaultGameBoard(int dimension, String[] content) implements Seria
     }
 
     @Override
-	public DefaultGameBoard withMove(String playerMarker, int location) {
+    public DefaultGameBoard withMove(String playerMarker, int location) {
         if (!isValidMove(location)) {
             throw new InvalidMoveException();
         }
@@ -140,12 +140,12 @@ public record DefaultGameBoard(int dimension, String[] content) implements Seria
     }
 
     @Override
-	public int getDimension() {
+    public int getDimension() {
         return dimension;
     }
 
-	@Override
-	public String[] getContent() {
+    @Override
+    public String[] getContent() {
         return content;
-	}
+    }
 }
