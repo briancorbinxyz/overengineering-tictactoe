@@ -13,9 +13,14 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-public class NativeGameBoard implements GameBoard {
+/**
+ * Implements the GameBoard interface using a native library.
+ * This class manages the lifetime of the native library resources
+ * and provides methods to interact with the native library.
+ */
+public class GameBoardNativeImpl implements GameBoard {
 
-    // Bounded to NativeGameBoard lifetime, Not explicitly closeable, Accessible from any thread
+    // Bound to GameBoardNativeImpl lifetime, Not explicitly closeable, Accessible from any thread
     // https://docs.oracle.com/en%2Fjava%2Fjavase%2F22%2Fdocs%2Fapi%2F%2F/java.base/java/lang/foreign/Arena.html
     private static final Logger log =
             System.getLogger(MethodHandles.lookup().lookupClass().getName());
@@ -24,7 +29,7 @@ public class NativeGameBoard implements GameBoard {
 
     private final Linker linker = Linker.nativeLinker();
 
-    public NativeGameBoard() {
+    public GameBoardNativeImpl() {
         initLibrary();
     }
 
@@ -41,33 +46,36 @@ public class NativeGameBoard implements GameBoard {
                         ValueLayout.JAVA_LONG,
                         ValueLayout.ADDRESS,
                         ValueLayout.JAVA_LONG);
+        var versionString =
+                foreignMethod(
+                        libTicTacToe,
+                        "versionString",
+                        FunctionDescriptor.ofVoid(ValueLayout.ADDRESS));
         try {
             logVersion(version);
-
-            // Create a method handle for the foreign function
-            var versionString =
-                    foreignMethod(
-                            libTicTacToe,
-                            "versionString",
-                            FunctionDescriptor.ofVoid(ValueLayout.ADDRESS));
-
-            // Create a method handle for our local callback
-            MethodHandle callback =
-                    MethodHandles.lookup()
-                            .findStatic(
-                                    NativeGameBoard.class,
-                                    "logVersionString",
-                                    MethodType.methodType(
-                                            void.class, MemorySegment.class, int.class));
-            FunctionDescriptor callbackDesc =
-                    FunctionDescriptor.ofVoid(ValueLayout.ADDRESS, ValueLayout.JAVA_INT);
-            MemorySegment callbackStub = linker.upcallStub(callback, callbackDesc, arena);
-            versionString.invokeExact(callbackStub);
+            logVersionString(versionString);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void logVersionString(MethodHandle versionString)
+            throws NoSuchMethodException, IllegalAccessException, Throwable {
+        // Create a method handle for our local callback
+        MethodHandle callback =
+                MethodHandles.lookup()
+                        .findStatic(
+                                GameBoardNativeImpl.class,
+                                "logVersionString",
+                                MethodType.methodType(
+                                        void.class, MemorySegment.class, int.class));
+        FunctionDescriptor callbackDesc =
+                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS, ValueLayout.JAVA_INT);
+        MemorySegment callbackStub = linker.upcallStub(callback, callbackDesc, arena);
+        versionString.invokeExact(callbackStub);
+    }
+
+    @SuppressWarnings("unused")
     private static void logVersionString(MemorySegment version, int length) {
         MemorySegment ptr = version.reinterpret(length);
         log.log(Level.INFO, "Version = {0}", ptr.getString(0));

@@ -40,7 +40,7 @@ public class Game implements Serializable {
 
     public Game(int size, boolean persistenceEnabled, Player... players) {
         this.boards = new ArrayDeque<>();
-        this.boards.add(new DefaultGameBoard(size));
+        this.boards.add(new GameBoardDefaultImpl(size));
         this.players = Players.of(players);
         this.gameId = UUID.randomUUID();
         this.moveNumber = 0;

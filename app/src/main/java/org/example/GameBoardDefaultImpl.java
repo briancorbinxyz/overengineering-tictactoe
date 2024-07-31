@@ -8,15 +8,15 @@ import java.util.Arrays;
  * stores the current state of the game in a 1D array. Provides methods to check the validity of
  * moves, place player markers, check for a winner, and get a string representation of the board.
  */
-public record DefaultGameBoard(int dimension, String[] content) implements Serializable, GameBoard {
+public record GameBoardDefaultImpl(int dimension, String[] content) implements Serializable, GameBoard {
 
     private static final long serialVersionUID = 1L;
 
-    public DefaultGameBoard(int dimension) {
+    public GameBoardDefaultImpl(int dimension) {
         this(dimension, new String[dimension * dimension]);
     }
 
-    public DefaultGameBoard {
+    public GameBoardDefaultImpl {
         if (content.length != dimension * dimension) {
             throw new IllegalArgumentException(
                     "Content must be of length " + dimension * dimension);
@@ -124,13 +124,13 @@ public record DefaultGameBoard(int dimension, String[] content) implements Seria
     }
 
     @Override
-    public DefaultGameBoard withMove(String playerMarker, int location) {
+    public GameBoardDefaultImpl withMove(String playerMarker, int location) {
         if (!isValidMove(location)) {
             throw new InvalidMoveException();
         }
         String[] boardCopy = getBoardCopy();
         boardCopy[location] = playerMarker;
-        return new DefaultGameBoard(dimension, boardCopy);
+        return new GameBoardDefaultImpl(dimension, boardCopy);
     }
 
     private String[] getBoardCopy() {

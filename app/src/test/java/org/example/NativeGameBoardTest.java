@@ -13,7 +13,7 @@ public class NativeGameBoardTest {
     @Test
     public void should_load_library() {
         printSysemProperties();
-        GameBoard gameBoard = new NativeGameBoard();
+        GameBoard gameBoard = new GameBoardNativeImpl();
     }
 
     private void printSysemProperties() {
