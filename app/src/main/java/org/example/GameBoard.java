@@ -4,14 +4,7 @@ package org.example;
  * Represents a game board for a game. The game board has a square dimension and contains a grid of
  * game pieces. This interface defines the operations that can be performed on the game board.
  */
-public interface GameBoard {
-
-    /**
-     * Returns a string representation of the game board.
-     *
-     * @return a string representation of the game board.
-     */
-    String toString();
+public interface GameBoard extends JsonSerializable {
 
     /**
      * Checks if the given location on the game board is a valid move (i.e. an available location).
@@ -54,11 +47,26 @@ public interface GameBoard {
     int getDimension();
 
     /**
-     * Returns the contents of the game board as an array of strings representing the game pieces.
-     * The array is of dimension {@link #getDimension()} x {@link #getDimension()}, where the value
-     * at the i,j index is the game piece at the i,j location on the game board.
-     *
-     * @return the contents of the game board as an array of strings
+     * Converts the game board to a JSON string representation for serialization.
+     * Format corresponds to the following JSON schema with content as a 1D array of strings of size dimension x dimension:
+     * {@snippet : 
+     * {
+     *     "dimension": int,
+     *     "content": [
+     *         string,
+     *        ...
+     *     ]
+     * }
+     * }
+     * @return the game board as a JSON string
      */
-    String[] getContent();
+    String asJsonString();
+
+    /**
+     * Returns a string representation of the game board for presentation to the player.
+     *
+     * @return a string representation of the game board.
+     */
+    String toString();
+
 }

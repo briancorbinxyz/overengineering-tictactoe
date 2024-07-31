@@ -23,8 +23,6 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
 
     private final String playerMarker;
 
-    private final transient GameBoardJsonPrinter json = new GameBoardJsonPrinter();
-
     private transient MessageHandler connection;
 
     public String getPlayerMarker() {
@@ -54,7 +52,7 @@ public final class RemoteBotPlayer implements Player, Serializable, AutoCloseabl
         do {
             try {
                 connection.sendMessage(
-                        String.format(RemoteProtocol.NEXT_MOVE_JSON_FORMAT, json.asJson(board)));
+                        String.format(RemoteProtocol.NEXT_MOVE_JSON_FORMAT, board.asJsonString()));
                 String clientMessage = connection.receiveMessage();
                 location = Integer.parseInt(clientMessage);
             } catch (NumberFormatException e) {

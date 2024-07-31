@@ -158,9 +158,9 @@ public class GameBoardNativeImpl implements GameBoard {
         throw new UnsupportedOperationException("Unimplemented method 'getDimension'");
     }
 
-    @Override
-    public String[] getContent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getContent'");
-    }
+	@Override
+	public String asJsonString() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'asJsonString'");
+	}
 }

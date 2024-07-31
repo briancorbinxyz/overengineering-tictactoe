@@ -2,6 +2,7 @@ package org.example;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Represents a game board for a game, such as tic-tac-toe. The board has a specified dimension, and
@@ -145,8 +146,17 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
         return dimension;
     }
 
-    @Override
-    public String[] getContent() {
-        return content;
-    }
+	@Override
+	public String asJsonString() {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"dimension\":").append(getDimension()).append(",");
+        json.append("\"content\":")
+                .append(
+                        Arrays.stream(content())
+                                .map(m -> m == null ? "null" : "\"" + m + "\"")
+                                .collect(Collectors.joining(",", "[", "]")));
+        json.append("}");
+        return json.toString();
+	}
 }
