@@ -8,7 +8,8 @@ import java.util.Arrays;
  * stores the current state of the game in a 1D array. Provides methods to check the validity of
  * moves, place player markers, check for a winner, and get a string representation of the board.
  */
-public record GameBoardDefaultImpl(int dimension, String[] content) implements Serializable, GameBoard {
+public record GameBoardDefaultImpl(int dimension, String[] content)
+        implements Serializable, GameBoard {
 
     private static final long serialVersionUID = 1L;
 

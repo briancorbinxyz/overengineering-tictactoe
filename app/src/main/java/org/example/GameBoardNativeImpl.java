@@ -14,9 +14,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
 /**
- * Implements the GameBoard interface using a native library.
- * This class manages the lifetime of the native library resources
- * and provides methods to interact with the native library.
+ * Implements the GameBoard interface using a native library. This class manages the lifetime of the
+ * native library resources and provides methods to interact with the native library.
  */
 public class GameBoardNativeImpl implements GameBoard {
 
@@ -67,8 +66,7 @@ public class GameBoardNativeImpl implements GameBoard {
                         .findStatic(
                                 GameBoardNativeImpl.class,
                                 "logVersionString",
-                                MethodType.methodType(
-                                        void.class, MemorySegment.class, int.class));
+                                MethodType.methodType(void.class, MemorySegment.class, int.class));
         FunctionDescriptor callbackDesc =
                 FunctionDescriptor.ofVoid(ValueLayout.ADDRESS, ValueLayout.JAVA_INT);
         MemorySegment callbackStub = linker.upcallStub(callback, callbackDesc, arena);

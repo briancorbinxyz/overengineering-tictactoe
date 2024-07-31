@@ -32,6 +32,7 @@ testing {
             useTestNG("7.5.1")
         }
     }
+    
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -67,6 +68,13 @@ graalvmNative {
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
+    // JDK22: Foreign Function Interface (FFI)
+    // Resolves Warning:
+    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }
 
 tasks.run.configure {
@@ -76,7 +84,14 @@ tasks.run.configure {
 
 tasks.withType<Test>().all {
     systemProperty(
-        "java.library.path",
-        "${projectDir}/lib/tictactoe/target/debug" //Replace : with ; for windows
+        "java.library.path", "${projectDir}/lib/tictactoe/target/debug" 
     )
+
+    // JDK22: Foreign Function Interface (FFI)
+    // Resolves Warning:
+    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }

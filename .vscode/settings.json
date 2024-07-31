@@ -1,3 +1,12 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.test.config": [
+        {
+            "name": "MyTestConfig",
+            "workingDirectory": "${workspaceFolder}",
+            "vmArgs": ["--enable-native-access=ALL-UNNAMED"],
+            "env": {},
+            "args": []
+        },
+    ],
 }
