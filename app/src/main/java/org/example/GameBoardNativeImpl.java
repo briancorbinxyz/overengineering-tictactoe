@@ -33,11 +33,7 @@ public class GameBoardNativeImpl implements GameBoard {
     }
 
     private void initLibrary() {
-        var libTicTacToe =
-                SymbolLookup.libraryLookup(
-                        "/Users/briancorbin/Documents/GitHub/overengineering-tictactoe/lib/tictactoe/target/debug/"
-                                + libraryName(),
-                        arena);
+        var libTicTacToe = SymbolLookup.libraryLookup(libraryName(), arena);
         var version =
                 foreignMethod(
                         libTicTacToe,

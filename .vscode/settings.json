@@ -4,8 +4,16 @@
         {
             "name": "MyTestConfig",
             "workingDirectory": "${workspaceFolder}",
-            "vmArgs": ["--enable-native-access=ALL-UNNAMED"],
-            "env": {},
+            "vmArgs": [
+                "--enable-native-access=ALL-UNNAMED",
+                "-Djava.library.path=${env:LIB_PATH}",
+            ],
+            "env": {
+                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
+                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+            },
             "args": []
         },
     ],
