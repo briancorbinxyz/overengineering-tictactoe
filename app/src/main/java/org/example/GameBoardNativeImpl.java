@@ -85,7 +85,7 @@ public class GameBoardNativeImpl implements GameBoard {
         }
 
         private String platformLibraryName() {
-            return System.mapLibraryName("tictactoe");
+            return System.mapLibraryName(LIBRARY_NAME);
         }
 
         private void initLibrary() {
@@ -116,7 +116,7 @@ public class GameBoardNativeImpl implements GameBoard {
             MethodHandle callback =
                     MethodHandles.lookup()
                             .findStatic(
-                                    GameBoardNativeImpl.class,
+                                    TicTacToeLibrary.class,
                                     "logVersionString",
                                     MethodType.methodType(void.class, MemorySegment.class, int.class));
             FunctionDescriptor callbackDesc =
