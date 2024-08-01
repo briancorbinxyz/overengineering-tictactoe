@@ -35,7 +35,7 @@ public interface GameBoard extends JsonSerializable {
      *
      * @param playerMarker the marker representing the player making the move
      * @param location the location on the game board where the player is making the move
-     * @return a new {@link GameBoard} instance with the player's move applied
+     * @return a ne {@link GameBoard} instance with the player's move applied
      */
     GameBoard withMove(String playerMarker, int location);
 
