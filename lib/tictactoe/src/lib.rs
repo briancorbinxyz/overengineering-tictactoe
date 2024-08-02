@@ -3,6 +3,10 @@ use std::{
     slice,
 };
 
+/// ----------------------------------------------------------------------------
+/// # TicTacToe Library FFI bindings
+/// ---------------------------------------------------------------------------- 
+
 /// Writes the current package version as a null-terminated C-style string to the provided buffer.
 ///
 /// # Arguments
@@ -46,11 +50,34 @@ type Callback = unsafe extern "C" fn(*const c_char, c_int);
 ///
 /// This function is marked as `unsafe` because it calls the provided callback function, which may perform unsafe operations.
 #[no_mangle]
-pub unsafe extern "C" fn versionString(callback: Callback) {
+pub unsafe extern "C" fn version_string(callback: Callback) {
     let version = env!("CARGO_PKG_VERSION");
     let c_string = CString::new(version).expect("CString::new failed");
     callback(c_string.as_ptr(), (version.len() + 1) as c_int);
 }
+
+/// ----------------------------------------------------------------------------
+/// # TicTacToe GameBoard FFI bindings
+/// ---------------------------------------------------------------------------- 
+
+#[no_mangle]
+pub extern "C" fn new_game_board(dimension: u32) -> *mut tictactoe::GameBoard {
+    Box::into_raw(Box::new(tictactoe::GameBoard::new(dimension)))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn free_game_board(game_board: *mut tictactoe::GameBoard) {
+    drop(Box::from_raw(game_board));
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn get_game_board_dimension(game_board: *mut tictactoe::GameBoard) -> u32 {
+    (*game_board).get_dimension()
+}
+
+/// ----------------------------------------------------------------------------
+/// # TicTacToe
+/// ---------------------------------------------------------------------------- 
 
 mod tictactoe {
 
@@ -71,6 +98,10 @@ mod tictactoe {
                 content.push(row);
             }
             GameBoard { dimension, content }
+        }
+
+        pub fn get_dimension(&self) -> u32 {
+            self.dimension
         }
 
         pub fn get(&self, row: u32, col: u32) -> u32 {
