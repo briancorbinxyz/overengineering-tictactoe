@@ -1,6 +1,5 @@
 use std::{
-    ffi::{c_char, c_int, CString},
-    slice,
+    ffi::{c_char, c_int, CString}, ptr, slice
 };
 
 /// ----------------------------------------------------------------------------
@@ -73,6 +72,56 @@ pub unsafe extern "C" fn free_game_board(game_board: *mut tictactoe::GameBoard) 
 #[no_mangle]
 pub unsafe extern "C" fn get_game_board_dimension(game_board: *mut tictactoe::GameBoard) -> u32 {
     (*game_board).get_dimension()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn get_game_board_value_at_index( game_board: *mut tictactoe::GameBoard, index: u32) -> u32 {
+    (*game_board).get_with_index(index)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn get_game_board_with_value_at_index(
+    game_board: *mut tictactoe::GameBoard,
+    index: u32,
+    value: u32,
+) -> *mut tictactoe::GameBoard {
+    Box::into_raw(Box::new((*game_board).with_value_at_index(index, value)))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ffi_can_manage_game_board_lifecycle_with_raw_pointer() {
+        let board_ptr = new_game_board(3);
+        assert!(!board_ptr.is_null());
+        unsafe {
+            free_game_board(board_ptr);
+        }
+    }
+
+    #[test]
+    fn test_ffi_can_get_game_board_value_at_index() {
+        let board_ptr = new_game_board(3);
+        assert!(!board_ptr.is_null());
+        unsafe {
+            assert_eq!(get_game_board_value_at_index(board_ptr, 0), 0);
+            free_game_board(board_ptr);
+        }
+    }
+
+    #[test]
+    fn test_ffi_can_update_a_gameboard_immutably() {
+        let board_ptr = new_game_board(3);
+        unsafe {
+            let updated_board_ptr = get_game_board_with_value_at_index(board_ptr, 4, 2);
+            assert_eq!(get_game_board_value_at_index(board_ptr, 4), 0);
+            assert_eq!(get_game_board_value_at_index(updated_board_ptr, 4), 2);
+            free_game_board(board_ptr);
+            free_game_board(updated_board_ptr);
+        }
+    }
 }
 
 /// ----------------------------------------------------------------------------
@@ -245,6 +294,68 @@ mod tictactoe {
                     assert_eq!(cell, 0);
                 }
             }
+        }
+
+        #[test]
+        fn test_set_and_retrieve_with_index() {
+            let mut board = GameBoard::new(3);
+            board.set_with_index(0, 99);
+            assert_eq!(board.get_with_index(0), 99);
+        }
+
+        #[test]
+        fn test_immutably_set_with_index() {
+            let board = GameBoard::new(3);
+            let new_board = board.with_value_at_index(0, 99);
+            assert_eq!(board.get_with_index(0), 0);
+            assert_eq!(new_board.get_with_index(0), 99);
+        }
+
+        #[test]
+        fn test_can_check_for_empty() {
+            let board = GameBoard::new(1);
+            assert_eq!(board.is_empty_at(0, 0), true); 
+            assert_eq!(board.is_empty_at_index(0), true); 
+        }
+
+        #[test]
+        fn test_can_check_for_full() {
+            let mut board = GameBoard::new(1);
+            board.set(0, 0, 1);
+            assert_eq!(board.is_full(), true); 
+        }
+
+        #[test]
+        fn test_empty_board_has_no_chain() {
+            let board = GameBoard::new(3);
+            assert_eq!(board.has_chain(1), false); 
+        }
+
+        #[test]
+        fn test_can_detect_winning_row_chain() {
+            let mut board = GameBoard::new(3);
+            for r in 0..3 {
+                board.set(r, 0, 1);
+            }
+            assert_eq!(board.has_chain(1), true); 
+        }
+
+        #[test]
+        fn test_can_detect_winning_column_chain() {
+            let mut board = GameBoard::new(3);
+            for c in 0..3 {
+                board.set(1, c, 1);
+            }
+            assert_eq!(board.has_chain(1), true); 
+        }
+
+        #[test]
+        fn test_can_detect_diagonal_winning_column_chain() {
+            let mut board = GameBoard::new(3);
+            for o in 0..3 {
+                board.set(o, o, 1);
+            }
+            assert_eq!(board.has_chain(1), true); 
         }
     }
 }

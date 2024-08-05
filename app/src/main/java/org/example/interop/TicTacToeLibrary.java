@@ -80,7 +80,7 @@ public final class TicTacToeLibrary {
     @SuppressWarnings("unused")
     private static void logVersionString(MemorySegment version, int length) {
         MemorySegment ptr = version.reinterpret(length);
-        log.log(Level.INFO, "Version = {0}", ptr.getString(0));
+        log.log(Level.DEBUG, "Version = {0}", ptr.getString(0));
     }
 
     private void logVersion(MethodHandle version) throws Throwable {
@@ -97,6 +97,6 @@ public final class TicTacToeLibrary {
         } else if (written != requiredLength) {
             throw new RuntimeException("Unexpected number of bytes written");
         }
-        log.log(Level.INFO, "Version = {0}", buffer.getString(0));
+        log.log(Level.DEBUG, "Version = {0}", buffer.getString(0));
     }
 }

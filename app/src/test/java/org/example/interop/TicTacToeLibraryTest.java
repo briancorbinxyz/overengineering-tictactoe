@@ -1,9 +1,8 @@
-package org.example;
+package org.example.interop;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-import org.example.interop.TicTacToeLibrary;
 import org.testng.annotations.Test;
 
 public class TicTacToeLibraryTest {
@@ -13,11 +12,12 @@ public class TicTacToeLibraryTest {
         assertNotNull(ticTacToeLibrary);
     }
 
-    @Test public void should_load_game_board() {
+    @Test public void should_load_game_board_using_library() {
         var ticTacToeLibrary = new TicTacToeLibrary();
         var gameBoard = ticTacToeLibrary.newGameBoard(3);
         assertNotNull(gameBoard);
         assertEquals(gameBoard.getDimension(), 3);
     }
+
 
 }

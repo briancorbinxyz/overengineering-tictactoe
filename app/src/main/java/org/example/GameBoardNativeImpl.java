@@ -20,49 +20,45 @@ public class GameBoardNativeImpl implements GameBoard {
 
     private final TicTacToeLibrary library;
 
+    private final GameBoard board;
+
     public GameBoardNativeImpl() {
-        library = new TicTacToeLibrary();
+        this.library = new TicTacToeLibrary();
+        this.board = library.newGameBoard(3);
     }
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toString'");
+        return board.toString();
     }
 
     @Override
     public boolean isValidMove(int location) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isValidMove'");
+        return board.isValidMove(location);
     }
 
     @Override
     public boolean hasChain(String playerMarker) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasChain'");
+        return board.hasChain(playerMarker);
     }
 
     @Override
     public boolean hasMovesAvailable() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasMovesAvailable'");
+        return board.hasMovesAvailable();
     }
 
     @Override
     public GameBoard withMove(String playerMarker, int location) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'withMove'");
+        return board.withMove(playerMarker, location);
     }
 
     @Override
     public int getDimension() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDimension'");
+        return board.getDimension();
     }
 
     @Override
     public String asJsonString() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'asJsonString'");
+        return board.asJsonString();
     }
 }
