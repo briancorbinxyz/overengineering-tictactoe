@@ -40,7 +40,7 @@ public class Game implements Serializable {
 
     public Game(int size, boolean persistenceEnabled, Player... players) {
         this.boards = new ArrayDeque<>();
-        this.boards.add(new GameBoard(size));
+        this.boards.add(new GameBoardNativeImpl(size));
         this.players = Players.of(players);
         this.gameId = UUID.randomUUID();
         this.moveNumber = 0;
@@ -71,7 +71,7 @@ public class Game implements Serializable {
                             board.withMove(
                                     currentPlayer.getPlayerMarker(),
                                     currentPlayer.nextMove(board)));
-            if (persistenceEnabled) {
+            if (persistenceEnabled && board instanceof Serializable) {
                 persistence.saveTo(gameFile(persistenceDir), this);
             }
             winningPlayer = checkWon(board, currentPlayer);
@@ -82,9 +82,7 @@ public class Game implements Serializable {
 
         winningPlayer.ifPresentOrElse(
                 player -> log.log(Level.INFO, "Winner: Player {0}!", player.getPlayerMarker()),
-                () -> {
-                    log.log(Level.INFO, "Tie Game!");
-                });
+                () -> log.log(Level.INFO, "Tie Game!"));
         renderBoard();
     }
 

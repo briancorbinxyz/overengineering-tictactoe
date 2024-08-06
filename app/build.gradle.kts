@@ -32,19 +32,22 @@ testing {
             useTestNG("7.5.1")
         }
     }
+    
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(22)
     }
 }
 
 // Code formatting (./gradlew spotlessApply)
 spotless {
     java {
-        googleJavaFormat().reflowLongStrings().aosp()
+        googleJavaFormat("1.23.0")
+            .reflowLongStrings()
+            .aosp()
     }
 }
 
@@ -64,12 +67,62 @@ graalvmNative {
     }
 }
 
+val osName = System.getProperty("os.name").lowercase()
+
+val libPath = when {
+    osName.contains("win") -> "${projectDir}/../lib/tictactoe/target/debug"
+    osName.contains("mac") -> "${projectDir}/../lib/tictactoe/target/debug"
+    osName.contains("nux") -> "${projectDir}/../lib/tictactoe/target/debug"
+    else -> throw GradleException("Unsupported OS")
+}
+
 application {
     // Define the main class for the application.
     mainClass = "org.example.App"
+    // JDK22: Foreign Function Interface (FFI)
+    // Resolves Warning:
+    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }
 
 tasks.run.configure {
     // Override the empty stream to allow for interactive runs with gradlew run
     standardInput = System.`in`
+}
+
+tasks.withType<Test>().all {
+    systemProperty(
+        "java.library.path", libPath 
+    )
+
+    // JDK22: Foreign Function Interface (FFI)
+    // Resolves Warning:
+    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
+    environment("PATH", libPath) // For Windows
+    environment("LD_LIBRARY_PATH", libPath) // For Linux
+    environment("DYLD_LIBRARY_PATH", libPath) // For macOS
+}
+
+tasks.named<JavaExec>("run") {
+    systemProperty(
+        "java.library.path", libPath 
+    )
+
+    // JDK22: Foreign Function Interface (FFI)
+    // Resolves Warning:
+    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
+    environment("PATH", libPath) // For Windows
+    environment("LD_LIBRARY_PATH", libPath) // For Linux
+    environment("DYLD_LIBRARY_PATH", libPath) // For macOS
 }

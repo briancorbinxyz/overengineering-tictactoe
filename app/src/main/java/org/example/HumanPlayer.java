@@ -38,14 +38,14 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
                 location = Integer.parseInt(msg);
             } catch (NumberFormatException e) {
                 // expected if user enters non-integer carry on.
-                log.log(Level.TRACE, "Invalid location: " + e.getMessage(), e);
+                log.log(Level.TRACE, "Invalid location: ", e.getMessage(), e);
                 location = -1;
             }
         } while (!board.isValidMove(location));
         return location;
     }
 
-        static sealed interface Input {
+    static sealed interface Input {
         String readLine();
     }
 
@@ -63,7 +63,6 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
                 return scanner.nextLine();
             }
         }
-    
     }
 
     static class CloseOnExitInputStream extends InputStream {
@@ -79,8 +78,8 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
             // no op
         }
 
-		@Override
-		public int read() throws IOException {
+        @Override
+        public int read() throws IOException {
             return in.read();
         }
 
@@ -93,6 +92,5 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
         public int read(byte[] b) throws IOException {
             return in.read(b);
         }
-
     }
 }
