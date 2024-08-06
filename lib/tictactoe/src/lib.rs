@@ -93,6 +93,11 @@ pub unsafe extern "C" fn get_game_board_is_full(game_board: *mut tictactoe::Game
     (*game_board).is_full()
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn get_game_board_has_chain(game_board: *mut tictactoe::GameBoard, value: u32) -> bool {
+    (*game_board).has_chain(value)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -145,6 +150,19 @@ mod tests {
                  board_ptr = get_game_board_with_value_at_index(board_ptr, i, i % 2 + 1);
             }
             assert!(get_game_board_is_full(board_ptr));
+        }
+
+    }
+
+    #[test]
+    fn test_ffi_can_check_for_winning_chain() {
+        let mut board_ptr = new_game_board(3);
+        unsafe {
+            for i in 0..3 {
+                board_ptr = get_game_board_with_value_at_index(board_ptr, i, 1);
+            }
+            assert!(get_game_board_has_chain(board_ptr, 1));
+            free_game_board(board_ptr);
         }
     }
 }

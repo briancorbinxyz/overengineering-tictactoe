@@ -76,4 +76,17 @@ public class TicTacToeGameBoardTest {
         assertFalse(gameBoard.hasMovesAvailable());
     }
 
+    @Test public void should_check_board_for_player_with_winning_chain() {
+        var gameBoard = ticTacToeLibrary.newGameBoard(3);
+        gameBoard = gameBoard.withMove("X", 0);
+        gameBoard = gameBoard.withMove("O", 5);
+        gameBoard = gameBoard.withMove("X", 1);
+        gameBoard = gameBoard.withMove("O", 4);
+        gameBoard = gameBoard.withMove("X", 2);
+        assertTrue(gameBoard.hasChain("X"));
+        assertFalse(gameBoard.hasChain("O"));
+    }
+
+
+
 }

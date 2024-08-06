@@ -41,6 +41,7 @@ class TicTacToeGameBoard implements GameBoard {
     private MethodHandle withMove;
     private MethodHandle getValueAtIndex;
     private MethodHandle getGameBoardIsFull;
+    private MethodHandle getGameBoardHasChain;
 
 
     public TicTacToeGameBoard(int dimension, SymbolLookup libTicTacToe) {
@@ -77,8 +78,7 @@ class TicTacToeGameBoard implements GameBoard {
 
     @Override
     public boolean hasChain(String playerMarker) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasChain'");
+        return getGameBoardHasChain(playerMarkerToId.get(playerMarker));
     }
 
     @Override
@@ -143,6 +143,9 @@ class TicTacToeGameBoard implements GameBoard {
         getGameBoardIsFull = libTicTacToe.find("get_game_board_is_full")
             .map(m -> linker.downcallHandle(m, FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN, ValueLayout.ADDRESS)))
             .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'get_game_board_is_full'"));
+        getGameBoardHasChain = libTicTacToe.find("get_game_board_has_chain")
+            .map(m -> linker.downcallHandle(m, FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN, ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
+            .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'get_game_board_has_chain'"));
     }
 
     private MemorySegment newGameBoard(int dimension) {
@@ -178,6 +181,14 @@ class TicTacToeGameBoard implements GameBoard {
     boolean getGameBoardIsFull() {
         try {
             return (Boolean) getGameBoardIsFull.invoke(board);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean getGameBoardHasChain(Integer playerId) {
+        try {
+            return (Boolean) getGameBoardHasChain.invoke(board, playerId);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
