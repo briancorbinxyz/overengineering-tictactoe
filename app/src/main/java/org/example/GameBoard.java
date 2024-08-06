@@ -31,7 +31,7 @@ public interface GameBoard extends JsonSerializable {
 
     /**
      * Creates a new {@link GameBoard} instance with the given player's move made at the specified
-     * location.
+     * location within the game board dimension x dimension
      *
      * @param playerMarker the marker representing the player making the move
      * @param location the location on the game board where the player is making the move

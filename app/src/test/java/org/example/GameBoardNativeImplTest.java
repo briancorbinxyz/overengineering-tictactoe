@@ -1,5 +1,7 @@
 package org.example;
 
+import static org.testng.Assert.assertNotNull;
+
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
@@ -15,6 +17,7 @@ public class GameBoardNativeImplTest {
         printEnvironmentVariables();
         printSystemProperties();
         GameBoard gameBoard = new GameBoardNativeImpl();
+        assertNotNull(gameBoard);
     }
 
     private void printSystemProperties() {

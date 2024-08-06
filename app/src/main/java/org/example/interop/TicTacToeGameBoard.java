@@ -47,11 +47,11 @@ class TicTacToeGameBoard implements GameBoard {
         this.idToPlayerMarker = new HashMap<>();
         this.nextId = new AtomicInteger(1);
         this.initGameBoardMethods();
+        this.board = newGameBoard(dimension);
         this.cleanable = cleaner.register(this, () -> {
             log.log(Level.DEBUG, "Cleaning up native resources for TicTacToeGameBoard");
             freeGameBoard();
         });
-        this.board = newGameBoard(dimension);
     }
 
     TicTacToeGameBoard(MemorySegment board, Map<String, Integer> playerMarkerToId,
@@ -70,8 +70,7 @@ class TicTacToeGameBoard implements GameBoard {
 
     @Override
     public boolean isValidMove(int location) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isValidMove'");
+        return getValueAtIndex(location) == 0 && location >= 0 && location < getDimension();
     }
 
     @Override
@@ -95,8 +94,8 @@ class TicTacToeGameBoard implements GameBoard {
         }
 
         try {
-            MemorySegment newBoard = (MemorySegment) withMove.invoke(board,
-                    playerMarkerToId.get(playerMarker).intValue(), location);
+            int playerId = playerMarkerToId.get(playerMarker).intValue();
+            MemorySegment newBoard = (MemorySegment) withMove.invoke(board, location, playerId);
             return new TicTacToeGameBoard(newBoard, playerMarkerToId, idToPlayerMarker, nextId.get(), libTicTacToe);
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -140,6 +139,7 @@ class TicTacToeGameBoard implements GameBoard {
                         FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
                 .orElseThrow(
                         () -> new IllegalArgumentException("Unable to find method 'get_game_board_value_at_index'"));
+        
     }
 
     private MemorySegment newGameBoard(int dimension) {
