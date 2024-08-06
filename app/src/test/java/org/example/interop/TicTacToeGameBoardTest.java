@@ -101,4 +101,14 @@ public class TicTacToeGameBoardTest {
         var gameBoard = ticTacToeLibrary.newGameBoard(3);
         assertEquals(gameBoard.toString(), "_ _ _\n_ _ _\n_ _ _\n");
     }
+
+    @Test public void should_represent_board_as_json_string() {
+        var gameBoard = ticTacToeLibrary.newGameBoard(3);
+        gameBoard = gameBoard.withMove("X", 0);
+        gameBoard = gameBoard.withMove("O", 5);
+        gameBoard = gameBoard.withMove("X", 1);
+        gameBoard = gameBoard.withMove("O", 4);
+        gameBoard = gameBoard.withMove("X", 2);
+        assertEquals(gameBoard.asJsonString(), "{\"dimension\":3,\"content\":[\"X\",\"X\",\"X\",null,\"O\",\"O\",null,null,null]}");
+    }
 }

@@ -12,6 +12,7 @@ import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.ref.Cleaner;
 
 import org.example.GameBoard;
 
@@ -25,6 +26,8 @@ public final class TicTacToeLibrary {
 
     private final Linker linker = Linker.nativeLinker();
 
+    private final Cleaner cleaner = Cleaner.create();
+
     private SymbolLookup libTicTacToe;
 
     private MethodHandle version;
@@ -35,7 +38,7 @@ public final class TicTacToeLibrary {
     }
 
     public GameBoard newGameBoard(int dimension) {
-        return new TicTacToeGameBoard(dimension, libTicTacToe);
+        return new TicTacToeGameBoard(dimension, libTicTacToe, cleaner);
     }
 
     private String platformLibraryName() {

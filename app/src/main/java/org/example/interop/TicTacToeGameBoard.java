@@ -13,6 +13,8 @@ import java.lang.ref.Cleaner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.example.GameBoard;
 
@@ -25,8 +27,6 @@ class TicTacToeGameBoard implements GameBoard {
     private final Linker linker = Linker.nativeLinker();
 
     private final SymbolLookup libTicTacToe;
-
-    private final Cleaner cleaner = Cleaner.create();
 
     private final AtomicInteger nextId;
 
@@ -44,7 +44,7 @@ class TicTacToeGameBoard implements GameBoard {
     private MethodHandle getGameBoardHasChain;
 
 
-    public TicTacToeGameBoard(int dimension, SymbolLookup libTicTacToe) {
+    public TicTacToeGameBoard(int dimension, SymbolLookup libTicTacToe, Cleaner cleaner) {
         this.libTicTacToe = libTicTacToe;
         this.playerMarkerToId = new HashMap<>();
         this.idToPlayerMarker = new HashMap<>();
@@ -132,8 +132,17 @@ class TicTacToeGameBoard implements GameBoard {
 
     @Override
     public String asJsonString() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'asJsonString'");
+        int dimension = getDimension();
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"dimension\":").append(dimension).append(",");
+        json.append("\"content\":")
+                .append(IntStream.range(0, dimension * dimension)
+                        .mapToObj(i -> getPlayerMarkerAtIndex(i)) 
+                        .map(m -> m == null ? "null" : "\"" + m + "\"")
+                        .collect(Collectors.joining(",", "[", "]")));
+        json.append("}");
+        return json.toString();
     }
 
     private void initGameBoardMethods() {
