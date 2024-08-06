@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.example.GameBoard;
 
 class TicTacToeGameBoard implements GameBoard {
 
-    private static final Logger log = System.getLogger(MethodHandles.lookup().lookupClass().getName());
+    private static final Logger log =
+            System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     private final MemorySegment board;
 
@@ -43,7 +43,6 @@ class TicTacToeGameBoard implements GameBoard {
     private MethodHandle getGameBoardIsFull;
     private MethodHandle getGameBoardHasChain;
 
-
     public TicTacToeGameBoard(int dimension, SymbolLookup libTicTacToe, Cleaner cleaner) {
         this.libTicTacToe = libTicTacToe;
         this.playerMarkerToId = new HashMap<>();
@@ -51,34 +50,51 @@ class TicTacToeGameBoard implements GameBoard {
         this.nextId = new AtomicInteger(1);
         this.initGameBoardMethods();
         this.board = newGameBoard(dimension);
-        this.cleanable = cleaner.register(this, () -> {
-            log.log(Level.DEBUG, "Cleaning up native resources for TicTacToeGameBoard");
-            freeGameBoard();
-        });
+        this.cleanable =
+                cleaner.register(
+                        this,
+                        () -> {
+                            log.log(
+                                    Level.DEBUG,
+                                    "Cleaning up native resources for TicTacToeGameBoard");
+                            freeGameBoard();
+                        });
     }
 
-    TicTacToeGameBoard(MemorySegment board, Map<String, Integer> playerMarkerToId,
-            Map<Integer, String> idToPlayerMarker, int initialValue, SymbolLookup libTicTacToe) {
+    TicTacToeGameBoard(
+            MemorySegment board,
+            Map<String, Integer> playerMarkerToId,
+            Map<Integer, String> idToPlayerMarker,
+            int initialValue,
+            SymbolLookup libTicTacToe) {
         this.libTicTacToe = libTicTacToe;
         this.playerMarkerToId = new HashMap<>(playerMarkerToId);
         this.idToPlayerMarker = new HashMap<>(idToPlayerMarker);
         this.nextId = new AtomicInteger(initialValue);
         this.initGameBoardMethods();
         this.board = board;
-        this.cleanable = cleaner.register(this, () -> {
-            log.log(Level.DEBUG, "Cleaning up native resources for TicTacToeGameBoard");
-            freeGameBoard();
-        });
+        this.cleanable =
+                cleaner.register(
+                        this,
+                        () -> {
+                            log.log(
+                                    Level.DEBUG,
+                                    "Cleaning up native resources for TicTacToeGameBoard");
+                            freeGameBoard();
+                        });
     }
 
     @Override
     public boolean isValidMove(int location) {
-        return getValueAtIndex(location) == 0 && location >= 0 && location < getDimension() * getDimension();
+        return getValueAtIndex(location) == 0
+                && location >= 0
+                && location < getDimension() * getDimension();
     }
 
     @Override
     public boolean hasChain(String playerMarker) {
-        return playerMarkerToId.containsKey(playerMarker) && getGameBoardHasChain(playerMarkerToId.get(playerMarker));
+        return playerMarkerToId.containsKey(playerMarker)
+                && getGameBoardHasChain(playerMarkerToId.get(playerMarker));
     }
 
     @Override
@@ -97,7 +113,8 @@ class TicTacToeGameBoard implements GameBoard {
         try {
             int playerId = playerMarkerToId.get(playerMarker).intValue();
             MemorySegment newBoard = (MemorySegment) withMove.invoke(board, location, playerId);
-            return new TicTacToeGameBoard(newBoard, playerMarkerToId, idToPlayerMarker, nextId.get(), libTicTacToe);
+            return new TicTacToeGameBoard(
+                    newBoard, playerMarkerToId, idToPlayerMarker, nextId.get(), libTicTacToe);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -137,41 +154,117 @@ class TicTacToeGameBoard implements GameBoard {
         json.append("{");
         json.append("\"dimension\":").append(dimension).append(",");
         json.append("\"content\":")
-                .append(IntStream.range(0, dimension * dimension)
-                        .mapToObj(i -> getPlayerMarkerAtIndex(i)) 
-                        .map(m -> m == null ? "null" : "\"" + m + "\"")
-                        .collect(Collectors.joining(",", "[", "]")));
+                .append(
+                        IntStream.range(0, dimension * dimension)
+                                .mapToObj(i -> getPlayerMarkerAtIndex(i))
+                                .map(m -> m == null ? "null" : "\"" + m + "\"")
+                                .collect(Collectors.joining(",", "[", "]")));
         json.append("}");
         return json.toString();
     }
 
     private void initGameBoardMethods() {
-        newGameBoard = libTicTacToe.find("new_game_board")
-                .map(m -> linker.downcallHandle(m, FunctionDescriptor.of(ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
-                .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'new_game_board'"));
-        freeGameBoard = libTicTacToe.find("free_game_board")
-                .map(m -> linker.downcallHandle(m, FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)))
-                .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'free_game_board'"));
-        getDimension = libTicTacToe.find("get_game_board_dimension")
-                .map(m -> linker.downcallHandle(m, FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)))
-                .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'get_game_board_dimension'"));
-        withMove = libTicTacToe.find("get_game_board_with_value_at_index")
-                .map(m -> linker.downcallHandle(m,
-                        FunctionDescriptor.of(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_INT,
-                                ValueLayout.JAVA_INT)))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Unable to find method 'get_game_board_with_value_at_index'"));
-        getValueAtIndex = libTicTacToe.find("get_game_board_value_at_index")
-                .map(m -> linker.downcallHandle(m,
-                        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
-                .orElseThrow(
-                        () -> new IllegalArgumentException("Unable to find method 'get_game_board_value_at_index'"));
-        getGameBoardIsFull = libTicTacToe.find("get_game_board_is_full")
-            .map(m -> linker.downcallHandle(m, FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN, ValueLayout.ADDRESS)))
-            .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'get_game_board_is_full'"));
-        getGameBoardHasChain = libTicTacToe.find("get_game_board_has_chain")
-            .map(m -> linker.downcallHandle(m, FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN, ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
-            .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'get_game_board_has_chain'"));
+        newGameBoard =
+                libTicTacToe
+                        .find("new_game_board")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m,
+                                                FunctionDescriptor.of(
+                                                        ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Unable to find method 'new_game_board'"));
+        freeGameBoard =
+                libTicTacToe
+                        .find("free_game_board")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m, FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Unable to find method 'free_game_board'"));
+        getDimension =
+                libTicTacToe
+                        .find("get_game_board_dimension")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m,
+                                                FunctionDescriptor.of(
+                                                        ValueLayout.JAVA_INT, ValueLayout.ADDRESS)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Unable to find method"
+                                                        + " 'get_game_board_dimension'"));
+        withMove =
+                libTicTacToe
+                        .find("get_game_board_with_value_at_index")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m,
+                                                FunctionDescriptor.of(
+                                                        ValueLayout.ADDRESS,
+                                                        ValueLayout.ADDRESS,
+                                                        ValueLayout.JAVA_INT,
+                                                        ValueLayout.JAVA_INT)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Unable to find method"
+                                                        + " 'get_game_board_with_value_at_index'"));
+        getValueAtIndex =
+                libTicTacToe
+                        .find("get_game_board_value_at_index")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m,
+                                                FunctionDescriptor.of(
+                                                        ValueLayout.JAVA_INT,
+                                                        ValueLayout.ADDRESS,
+                                                        ValueLayout.JAVA_INT)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Unable to find method"
+                                                        + " 'get_game_board_value_at_index'"));
+        getGameBoardIsFull =
+                libTicTacToe
+                        .find("get_game_board_is_full")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m,
+                                                FunctionDescriptor.of(
+                                                        ValueLayout.JAVA_BOOLEAN,
+                                                        ValueLayout.ADDRESS)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Unable to find method 'get_game_board_is_full'"));
+        getGameBoardHasChain =
+                libTicTacToe
+                        .find("get_game_board_has_chain")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m,
+                                                FunctionDescriptor.of(
+                                                        ValueLayout.JAVA_BOOLEAN,
+                                                        ValueLayout.ADDRESS,
+                                                        ValueLayout.JAVA_INT)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Unable to find method"
+                                                        + " 'get_game_board_has_chain'"));
     }
 
     private MemorySegment newGameBoard(int dimension) {
@@ -219,5 +312,4 @@ class TicTacToeGameBoard implements GameBoard {
             throw new RuntimeException(e);
         }
     }
-
 }

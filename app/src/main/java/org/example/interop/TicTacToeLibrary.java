@@ -13,12 +13,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.ref.Cleaner;
-
 import org.example.GameBoard;
 
 public final class TicTacToeLibrary {
 
-    private static final Logger log = System.getLogger(MethodHandles.lookup().lookupClass().getName());
+    private static final Logger log =
+            System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     static final String LIBRARY_NAME = "tictactoe";
 
@@ -57,25 +57,45 @@ public final class TicTacToeLibrary {
     }
 
     private void initLibraryMethods() {
-        version = libTicTacToe.find("version")
-                .map(m -> linker.downcallHandle(m,
-                        FunctionDescriptor.of(ValueLayout.JAVA_LONG,
-                                new MemoryLayout[] { ValueLayout.ADDRESS, ValueLayout.JAVA_LONG })))
-                .orElseThrow(() -> new IllegalStateException("Unable to find method version"));
-        versionString = libTicTacToe.find("version_string")
-                .map(m -> linker.downcallHandle(m, FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)))
-                .orElseThrow(() -> new IllegalStateException("Unable to find method version_string"));
+        version =
+                libTicTacToe
+                        .find("version")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m,
+                                                FunctionDescriptor.of(
+                                                        ValueLayout.JAVA_LONG,
+                                                        new MemoryLayout[] {
+                                                            ValueLayout.ADDRESS,
+                                                            ValueLayout.JAVA_LONG
+                                                        })))
+                        .orElseThrow(
+                                () -> new IllegalStateException("Unable to find method version"));
+        versionString =
+                libTicTacToe
+                        .find("version_string")
+                        .map(
+                                m ->
+                                        linker.downcallHandle(
+                                                m, FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)))
+                        .orElseThrow(
+                                () ->
+                                        new IllegalStateException(
+                                                "Unable to find method version_string"));
     }
 
     private void logVersionString(MethodHandle versionString)
             throws NoSuchMethodException, IllegalAccessException, Throwable {
         // Create a method handle for our local callback
-        MethodHandle callback = MethodHandles.lookup()
-                .findStatic(
-                        TicTacToeLibrary.class,
-                        "logVersionString",
-                        MethodType.methodType(void.class, MemorySegment.class, int.class));
-        FunctionDescriptor callbackDesc = FunctionDescriptor.ofVoid(ValueLayout.ADDRESS, ValueLayout.JAVA_INT);
+        MethodHandle callback =
+                MethodHandles.lookup()
+                        .findStatic(
+                                TicTacToeLibrary.class,
+                                "logVersionString",
+                                MethodType.methodType(void.class, MemorySegment.class, int.class));
+        FunctionDescriptor callbackDesc =
+                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS, ValueLayout.JAVA_INT);
         MemorySegment callbackStub = linker.upcallStub(callback, callbackDesc, arena);
         versionString.invokeExact(callbackStub);
     }

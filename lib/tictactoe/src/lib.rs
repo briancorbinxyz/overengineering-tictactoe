@@ -1,10 +1,11 @@
 use std::{
-    ffi::{c_char, c_int, CString}, slice
+    ffi::{c_char, c_int, CString},
+    slice,
 };
 
 /// ----------------------------------------------------------------------------
 /// # TicTacToe Library FFI bindings
-/// ---------------------------------------------------------------------------- 
+/// ----------------------------------------------------------------------------
 
 /// Writes the current package version as a null-terminated C-style string to the provided buffer.
 ///
@@ -57,7 +58,7 @@ pub unsafe extern "C" fn version_string(callback: Callback) {
 
 /// ----------------------------------------------------------------------------
 /// # TicTacToe GameBoard FFI bindings
-/// ---------------------------------------------------------------------------- 
+/// ----------------------------------------------------------------------------
 
 #[no_mangle]
 pub extern "C" fn new_game_board(dimension: u32) -> *mut tictactoe::GameBoard {
@@ -75,7 +76,10 @@ pub unsafe extern "C" fn get_game_board_dimension(game_board: *mut tictactoe::Ga
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn get_game_board_value_at_index( game_board: *mut tictactoe::GameBoard, index: u32) -> u32 {
+pub unsafe extern "C" fn get_game_board_value_at_index(
+    game_board: *mut tictactoe::GameBoard,
+    index: u32,
+) -> u32 {
     (*game_board).get_with_index(index)
 }
 
@@ -94,7 +98,10 @@ pub unsafe extern "C" fn get_game_board_is_full(game_board: *mut tictactoe::Game
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn get_game_board_has_chain(game_board: *mut tictactoe::GameBoard, value: u32) -> bool {
+pub unsafe extern "C" fn get_game_board_has_chain(
+    game_board: *mut tictactoe::GameBoard,
+    value: u32,
+) -> bool {
     (*game_board).has_chain(value)
 }
 
@@ -147,11 +154,10 @@ mod tests {
         let mut board_ptr = new_game_board(3);
         unsafe {
             for i in 0..9 {
-                 board_ptr = get_game_board_with_value_at_index(board_ptr, i, i % 2 + 1);
+                board_ptr = get_game_board_with_value_at_index(board_ptr, i, i % 2 + 1);
             }
             assert!(get_game_board_is_full(board_ptr));
         }
-
     }
 
     #[test]
@@ -169,7 +175,7 @@ mod tests {
 
 /// ----------------------------------------------------------------------------
 /// # TicTacToe
-/// ---------------------------------------------------------------------------- 
+/// ----------------------------------------------------------------------------
 
 mod tictactoe {
 
@@ -357,21 +363,21 @@ mod tictactoe {
         #[test]
         fn test_can_check_for_empty() {
             let board = GameBoard::new(1);
-            assert_eq!(board.is_empty_at(0, 0), true); 
-            assert_eq!(board.is_empty_at_index(0), true); 
+            assert_eq!(board.is_empty_at(0, 0), true);
+            assert_eq!(board.is_empty_at_index(0), true);
         }
 
         #[test]
         fn test_can_check_for_full() {
             let mut board = GameBoard::new(1);
             board.set(0, 0, 1);
-            assert_eq!(board.is_full(), true); 
+            assert_eq!(board.is_full(), true);
         }
 
         #[test]
         fn test_empty_board_has_no_chain() {
             let board = GameBoard::new(3);
-            assert_eq!(board.has_chain(1), false); 
+            assert_eq!(board.has_chain(1), false);
         }
 
         #[test]
@@ -380,7 +386,7 @@ mod tictactoe {
             for r in 0..3 {
                 board.set(r, 0, 1);
             }
-            assert_eq!(board.has_chain(1), true); 
+            assert_eq!(board.has_chain(1), true);
         }
 
         #[test]
@@ -389,7 +395,7 @@ mod tictactoe {
             for c in 0..3 {
                 board.set(1, c, 1);
             }
-            assert_eq!(board.has_chain(1), true); 
+            assert_eq!(board.has_chain(1), true);
         }
 
         #[test]
@@ -398,7 +404,7 @@ mod tictactoe {
             for o in 0..3 {
                 board.set(o, o, 1);
             }
-            assert_eq!(board.has_chain(1), true); 
+            assert_eq!(board.has_chain(1), true);
         }
     }
 }
