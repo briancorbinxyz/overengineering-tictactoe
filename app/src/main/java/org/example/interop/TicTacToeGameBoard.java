@@ -114,6 +114,23 @@ class TicTacToeGameBoard implements GameBoard {
     }
 
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        int dimension = getDimension();
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                int value = getValueAtIndex(i * dimension + j);
+                sb.append(idToPlayerMarker.getOrDefault(value, "_"));
+                if (j + 1 < dimension) {
+                    sb.append(" ");
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    @Override
     public String asJsonString() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'asJsonString'");
