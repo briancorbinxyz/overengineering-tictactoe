@@ -1,5 +1,5 @@
 use std::{
-    ffi::{c_char, c_int, CString}, ptr, slice
+    ffi::{c_char, c_int, CString}, slice
 };
 
 /// ----------------------------------------------------------------------------
@@ -88,6 +88,11 @@ pub unsafe extern "C" fn get_game_board_with_value_at_index(
     Box::into_raw(Box::new((*game_board).with_value_at_index(index, value)))
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn get_game_board_is_full(game_board: *mut tictactoe::GameBoard) -> bool {
+    (*game_board).is_full()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -120,6 +125,26 @@ mod tests {
             assert_eq!(get_game_board_value_at_index(updated_board_ptr, 4), 2);
             free_game_board(board_ptr);
             free_game_board(updated_board_ptr);
+        }
+    }
+
+    #[test]
+    fn test_ffi_can_check_empty_game_board_has_available_moves() {
+        let board_ptr = new_game_board(3);
+        unsafe {
+            assert!(!get_game_board_is_full(board_ptr));
+            free_game_board(board_ptr);
+        }
+    }
+
+    #[test]
+    fn test_ffi_can_check_full_game_board_has_no_available_moves() {
+        let mut board_ptr = new_game_board(3);
+        unsafe {
+            for i in 0..9 {
+                 board_ptr = get_game_board_with_value_at_index(board_ptr, i, i % 2 + 1);
+            }
+            assert!(get_game_board_is_full(board_ptr));
         }
     }
 }

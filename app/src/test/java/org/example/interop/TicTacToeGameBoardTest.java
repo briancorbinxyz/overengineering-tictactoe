@@ -62,4 +62,18 @@ public class TicTacToeGameBoardTest {
         }
     }
 
+    @Test public void should_check_empty_board_has_moves_available() {
+        var gameBoard = ticTacToeLibrary.newGameBoard(3);
+        assertTrue(gameBoard.hasMovesAvailable());
+    }
+
+    @Test public void should_check_full_board_has_no_moves_available() {
+        var gameBoard = ticTacToeLibrary.newGameBoard(3);
+        for (int i = 0; i < 9; i++) {
+            assertTrue(gameBoard.hasMovesAvailable());
+            gameBoard = gameBoard.withMove(i % 2 == 0 ? "X" : "O", i);
+        }
+        assertFalse(gameBoard.hasMovesAvailable());
+    }
+
 }

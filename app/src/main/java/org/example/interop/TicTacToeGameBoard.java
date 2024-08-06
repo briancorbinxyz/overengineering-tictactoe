@@ -40,6 +40,8 @@ class TicTacToeGameBoard implements GameBoard {
     private MethodHandle getDimension;
     private MethodHandle withMove;
     private MethodHandle getValueAtIndex;
+    private MethodHandle getGameBoardIsFull;
+
 
     public TicTacToeGameBoard(int dimension, SymbolLookup libTicTacToe) {
         this.libTicTacToe = libTicTacToe;
@@ -81,8 +83,7 @@ class TicTacToeGameBoard implements GameBoard {
 
     @Override
     public boolean hasMovesAvailable() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasMovesAvailable'");
+        return !getGameBoardIsFull();
     }
 
     @Override
@@ -139,7 +140,9 @@ class TicTacToeGameBoard implements GameBoard {
                         FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
                 .orElseThrow(
                         () -> new IllegalArgumentException("Unable to find method 'get_game_board_value_at_index'"));
-        
+        getGameBoardIsFull = libTicTacToe.find("get_game_board_is_full")
+            .map(m -> linker.downcallHandle(m, FunctionDescriptor.of(ValueLayout.JAVA_BOOLEAN, ValueLayout.ADDRESS)))
+            .orElseThrow(() -> new IllegalArgumentException("Unable to find method 'get_game_board_is_full'"));
     }
 
     private MemorySegment newGameBoard(int dimension) {
@@ -167,6 +170,14 @@ class TicTacToeGameBoard implements GameBoard {
     Integer getValueAtIndex(int index) {
         try {
             return (Integer) getValueAtIndex.invoke(board, index);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    boolean getGameBoardIsFull() {
+        try {
+            return (Boolean) getGameBoardIsFull.invoke(board);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
