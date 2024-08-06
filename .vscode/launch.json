@@ -83,14 +83,26 @@
             "name": "App",
             "request": "launch",
             "mainClass": "org.example.App",
-            "projectName": "app"
+            "projectName": "app",
+            "env": {
+                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
+                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+            },
         },
         {
             "type": "java",
             "name": "GameClient",
             "request": "launch",
             "mainClass": "org.example.GameClient",
-            "projectName": "app"
+            "projectName": "app",
+            "env": {
+                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
+                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+            },
         },
         {
             "type": "java",
@@ -98,14 +110,26 @@
             "request": "launch",
             "vmArgs": "-XX:+UseZGC -XX:+ZGenerational",
             "mainClass": "org.example.GameClient",
-            "projectName": "app"
+            "projectName": "app",
+            "env": {
+                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
+                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+            },
         },
         {
             "type": "java",
             "name": "GameServer",
             "request": "launch",
             "mainClass": "org.example.GameServer",
-            "projectName": "app"
+            "projectName": "app",
+            "env": {
+                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
+                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+            },
         },
         {
             "type": "java",
@@ -113,7 +137,13 @@
             "request": "launch",
             "vmArgs": "-XX:+UseZGC -XX:+ZGenerational",
             "mainClass": "org.example.GameServer",
-            "projectName": "app"
+            "projectName": "app",
+            "env": {
+                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
+                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+            },
         }
     ]
 }

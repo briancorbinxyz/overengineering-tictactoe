@@ -23,8 +23,12 @@ public class GameBoardNativeImpl implements GameBoard {
     private final GameBoard board;
 
     public GameBoardNativeImpl() {
+        this(3);
+    }
+
+    public GameBoardNativeImpl(int dimension) {
         this.library = new TicTacToeLibrary();
-        this.board = library.newGameBoard(3);
+        this.board = library.newGameBoard(dimension);
     }
 
     @Override

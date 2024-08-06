@@ -73,12 +73,12 @@ class TicTacToeGameBoard implements GameBoard {
 
     @Override
     public boolean isValidMove(int location) {
-        return getValueAtIndex(location) == 0 && location >= 0 && location < getDimension();
+        return getValueAtIndex(location) == 0 && location >= 0 && location < getDimension() * getDimension();
     }
 
     @Override
     public boolean hasChain(String playerMarker) {
-        return getGameBoardHasChain(playerMarkerToId.get(playerMarker));
+        return playerMarkerToId.containsKey(playerMarker) && getGameBoardHasChain(playerMarkerToId.get(playerMarker));
     }
 
     @Override
