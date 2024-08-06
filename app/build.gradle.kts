@@ -45,7 +45,9 @@ java {
 // Code formatting (./gradlew spotlessApply)
 spotless {
     java {
-        googleJavaFormat().reflowLongStrings().aosp()
+        googleJavaFormat("1.23.0")
+            .reflowLongStrings()
+            .aosp()
     }
 }
 
@@ -65,7 +67,7 @@ graalvmNative {
     }
 }
 
-val osName = System.getProperty("os.name").toLowerCase()
+val osName = System.getProperty("os.name").lowercase()
 
 val libPath = when {
     osName.contains("win") -> "${projectDir}/../lib/tictactoe/target/debug"
