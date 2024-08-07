@@ -52,7 +52,14 @@ tasks.register<Exec>("cargoBuild") {
 tasks.named("compileJava") {
     dependsOn("buildRust")
 }
-// Forma rust and java code together
+// clean up the Rust build artifacts
+tasks.register<Delete>("cleanRust") {
+    delete(cargoBuildDir)
+}
+tasks.named("clean") {
+    dependsOn("cleanRust")
+}
+// Format Rust and java code together
 tasks.named("spotlessApply") {
     dependsOn("formatRust")
 }

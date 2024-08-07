@@ -17,4 +17,5 @@
             "args": []
         },
     ],
+    "java.configuration.updateBuildConfiguration": "automatic",
 }
