@@ -1,3 +1,5 @@
+### Main Java Build
+
 Initialized with:
 ---
 
@@ -61,3 +63,13 @@ To learn more about Gradle by exploring our Samples at https://docs.gradle.org/8
 
 BUILD SUCCESSFUL in 1m 42s
 1 actionable task: 1 executed
+
+
+
+---
+
+### Native Rust Library
+
+❯ cargo new --lib tictactoe
+Creating library `tictactoe` package
+note: see more `Cargo.toml` keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

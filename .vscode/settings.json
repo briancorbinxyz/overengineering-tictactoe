@@ -1,5 +1,5 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.configuration.updateapp/buildConfiguration": "automatic",
     "java.test.config": [
         {
             "name": "MyTestConfig",
@@ -9,10 +9,10 @@
                 "-Djava.library.path=${env:LIB_PATH}",
             ],
             "env": {
-                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
-                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
             },
             "args": []
         },

@@ -11,6 +11,65 @@ repositories {
     gradlePluginPortal()
 }
 
+// JDK22: Foreign Function Interface (FFI)
+// Support building native Rust library using Cargo:
+// https://doc.rust-lang.org/cargo/getting-started/installation.html
+val osName = System.getProperty("os.name").lowercase()
+
+val cargoBuildDir = file("${buildDir}/cargo")
+
+val libPath = when {
+    osName.contains("win") -> "${cargoBuildDir}/debug"
+    osName.contains("mac") -> "${cargoBuildDir}/debug"
+    osName.contains("nux") -> "${cargoBuildDir}/debug"
+    else -> throw GradleException("Unsupported OS")
+}
+val libName = System.mapLibraryName("tictactoe")
+
+//
+// Rust Build Start
+//
+tasks.register<Exec>("formatRust") {
+    workingDir = file("src/main/rust")
+    commandLine = listOf("cargo", "fmt")
+}
+// alias for formatRust
+tasks.register<Exec>("cargoFmt") {
+    dependsOn("formatRust")
+}
+
+tasks.register<Exec>("buildRust") {
+    // https://doc.rust-lang.org/cargo/reference/environment-variables.html
+    environment("CARGO_TARGET_DIR", cargoBuildDir.absolutePath)
+    workingDir = file("src/main/rust")
+    commandLine = listOf("cargo", "build")
+}
+// alias for buildRust
+tasks.register<Exec>("cargoBuild") {
+    dependsOn("buildRust")
+}
+
+tasks.named("compileJava") {
+    dependsOn("buildRust")
+}
+// Forma rust and java code together
+tasks.named("spotlessApply") {
+    dependsOn("formatRust")
+}
+tasks.named<Jar>("jar") {
+    from("${cargoBuildDir}/debug") {
+        include(libName) 
+    }
+}
+//
+// Rust Build End
+//
+
+// Automatic code formatting before compile
+tasks.named("compileJava") {
+    dependsOn("spotlessApply")
+}
+
 dependencies {
     // JDK21: KEM SPI (Third-Party)
     // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
@@ -32,7 +91,6 @@ testing {
             useTestNG("7.5.1")
         }
     }
-    
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -65,15 +123,6 @@ graalvmNative {
             }
         }
     }
-}
-
-val osName = System.getProperty("os.name").lowercase()
-
-val libPath = when {
-    osName.contains("win") -> "${projectDir}/../lib/tictactoe/target/debug"
-    osName.contains("mac") -> "${projectDir}/../lib/tictactoe/target/debug"
-    osName.contains("nux") -> "${projectDir}/../lib/tictactoe/target/debug"
-    else -> throw GradleException("Unsupported OS")
 }
 
 application {
