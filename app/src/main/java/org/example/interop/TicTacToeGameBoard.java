@@ -33,6 +33,7 @@ class TicTacToeGameBoard implements GameBoard {
     private final Map<String, Integer> playerMarkerToId;
     private final Map<Integer, String> idToPlayerMarker;
 
+    private final Cleaner cleaner;
     private final Cleaner.Cleanable cleanable;
 
     private MethodHandle newGameBoard;
@@ -50,6 +51,7 @@ class TicTacToeGameBoard implements GameBoard {
         this.nextId = new AtomicInteger(1);
         this.initGameBoardMethods();
         this.board = newGameBoard(dimension);
+        this.cleaner = cleaner;
         this.cleanable =
                 cleaner.register(
                         this,
@@ -66,13 +68,15 @@ class TicTacToeGameBoard implements GameBoard {
             Map<String, Integer> playerMarkerToId,
             Map<Integer, String> idToPlayerMarker,
             int initialValue,
-            SymbolLookup libTicTacToe) {
+            SymbolLookup libTicTacToe,
+            Cleaner cleaner) {
         this.libTicTacToe = libTicTacToe;
         this.playerMarkerToId = new HashMap<>(playerMarkerToId);
         this.idToPlayerMarker = new HashMap<>(idToPlayerMarker);
         this.nextId = new AtomicInteger(initialValue);
         this.initGameBoardMethods();
         this.board = board;
+        this.cleaner = cleaner;
         this.cleanable =
                 cleaner.register(
                         this,
@@ -114,7 +118,12 @@ class TicTacToeGameBoard implements GameBoard {
             int playerId = playerMarkerToId.get(playerMarker).intValue();
             MemorySegment newBoard = (MemorySegment) withMove.invoke(board, location, playerId);
             return new TicTacToeGameBoard(
-                    newBoard, playerMarkerToId, idToPlayerMarker, nextId.get(), libTicTacToe);
+                    newBoard,
+                    playerMarkerToId,
+                    idToPlayerMarker,
+                    nextId.get(),
+                    libTicTacToe,
+                    cleaner);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

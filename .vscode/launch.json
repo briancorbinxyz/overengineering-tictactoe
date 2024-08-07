@@ -85,10 +85,10 @@
             "mainClass": "org.example.App",
             "projectName": "app",
             "env": {
-                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
-                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
             },
         },
         {
@@ -98,10 +98,10 @@
             "mainClass": "org.example.GameClient",
             "projectName": "app",
             "env": {
-                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
-                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
             },
         },
         {
@@ -112,10 +112,10 @@
             "mainClass": "org.example.GameClient",
             "projectName": "app",
             "env": {
-                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
-                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
             },
         },
         {
@@ -125,10 +125,10 @@
             "mainClass": "org.example.GameServer",
             "projectName": "app",
             "env": {
-                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
-                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
             },
         },
         {
@@ -139,10 +139,10 @@
             "mainClass": "org.example.GameServer",
             "projectName": "app",
             "env": {
-                "LIB_PATH": "${workspaceFolder}/lib/tictactoe/target/debug",
-                "PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/lib/tictactoe/target/debug" // For macOS
+                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
             },
         }
     ]

@@ -6,5 +6,6 @@ edition = "2021"
 [dependencies]
 
 [lib]
+path = "tictactoe/lib.rs"
 crate-type = ["cdylib"]
 
