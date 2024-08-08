@@ -12,6 +12,8 @@ Pairs with the ongoing blog post: [Road to JDK 25 - Over-Engineering Tic-Tac-Toe
 https://openjdk.org/projects/jdk/23/
 
 - **JEP467**:   Markdown Documentation Comments	
+- **JEP474**:   ZGC: Generational Mode by Default
+- **JEP471**:   Deprecate the Memory-Access Methods in sun.misc.Unsafe for Removal
 
 https://openjdk.org/projects/jdk/22/
 
