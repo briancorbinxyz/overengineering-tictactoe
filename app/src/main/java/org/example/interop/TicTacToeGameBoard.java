@@ -33,6 +33,8 @@ class TicTacToeGameBoard implements GameBoard {
     private final Map<Integer, String> idToPlayerMarker;
 
     private final Cleaner cleaner;
+
+    @SuppressWarnings("unused")
     private final Cleaner.Cleanable cleanable;
 
     private MethodHandle newGameBoard;

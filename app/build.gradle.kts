@@ -16,7 +16,7 @@ repositories {
 // https://doc.rust-lang.org/cargo/getting-started/installation.html
 val osName = System.getProperty("os.name").lowercase()
 
-val cargoBuildDir = file("${layout.buildDirectory}/cargo")
+val cargoBuildDir = file("${layout.buildDirectory.get()}/cargo")
 
 val libPath = when {
     osName.contains("win") -> "${cargoBuildDir}/debug"
