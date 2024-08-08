@@ -160,7 +160,7 @@ tasks.withType<Test>().all {
     // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
     environment("PATH", libPath) // For Windows
     environment("LD_LIBRARY_PATH", libPath) // For Linux
     environment("DYLD_LIBRARY_PATH", libPath) // For macOS
@@ -177,7 +177,7 @@ tasks.named<JavaExec>("run") {
     // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
     environment("PATH", libPath) // For Windows
     environment("LD_LIBRARY_PATH", libPath) // For Linux
     environment("DYLD_LIBRARY_PATH", libPath) // For macOS
