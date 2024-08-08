@@ -9,6 +9,10 @@ Pairs with the ongoing blog post: [Road to JDK 25 - Over-Engineering Tic-Tac-Toe
 
 ### Features
 
+https://openjdk.org/projects/jdk/23/
+
+- **JEP467**:   Markdown Documentation Comments	
+
 https://openjdk.org/projects/jdk/22/
 
 - **JEP454**:	Foreign Function & Memory API
