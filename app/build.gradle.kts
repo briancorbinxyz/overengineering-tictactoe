@@ -16,7 +16,7 @@ repositories {
 // https://doc.rust-lang.org/cargo/getting-started/installation.html
 val osName = System.getProperty("os.name").lowercase()
 
-val cargoBuildDir = file("${buildDir}/cargo")
+val cargoBuildDir = file("${layout.buildDirectory}/cargo")
 
 val libPath = when {
     osName.contains("win") -> "${cargoBuildDir}/debug"
@@ -103,7 +103,7 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
+        languageVersion = JavaLanguageVersion.of(23)
     }
 }
 
@@ -123,7 +123,7 @@ graalvmNative {
             javaLauncher = javaToolchains.launcherFor {
                 // NB: On MacOS ARM ARCH the native-image implementation is not available
                 // for the versions of GRAAL_VM Community edition - selecting Oracle
-                languageVersion = JavaLanguageVersion.of(22)
+                languageVersion = JavaLanguageVersion.of(23)
                 vendor = JvmVendorSpec.matching("Oracle")
                 // languageVersion = JavaLanguageVersion.of(17)
                 // vendor = JvmVendorSpec.GRAAL_VM
