@@ -88,6 +88,20 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic:1.5.6")
     runtimeOnly("org.slf4j:slf4j-api:2.0.13")
     runtimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
+
+
+    // JDK23: JMH (Third-Party) Not required, added for benchmarking
+    // https://github.com/openjdk/jmh
+    implementation("org.openjdk.jmh:jmh-core:1.37")
+    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+}
+
+// Run JMH benchmark
+// ./gradlew jmh
+tasks.register<JavaExec>("jmh") {
+    mainClass.set("org.openjdk.jmh.Main")
+    classpath = sourceSets["main"].runtimeClasspath
+    args = listOf("org.example.interop.benchmark.PlayerIdsBenchmark")
 }
 
 testing {
