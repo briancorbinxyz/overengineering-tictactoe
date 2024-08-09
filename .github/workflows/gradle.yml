@@ -27,7 +27,7 @@ jobs:
       with:
         # https://github.com/actions/setup-java?tab=readme-ov-file#supported-distributions
         java-version: '23'
-        distribution: 'zulu'
+        distribution: 'oracle'
 
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
@@ -61,7 +61,7 @@ jobs:
       with:
         # https://github.com/actions/setup-java?tab=readme-ov-file#supported-distributions
         java-version: '23'
-        distribution: 'zulu'
+        distribution: 'oracle'
 
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
