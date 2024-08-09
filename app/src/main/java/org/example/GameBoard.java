@@ -46,13 +46,16 @@ public interface GameBoard extends JsonSerializable {
      */
     int getDimension();
 
-    /**
-     * Converts the game board to a JSON string representation for serialization. Format corresponds
-     * to the following JSON schema with content as a 1D array of strings of size dimension x
-     * dimension: {@snippet : { "dimension": int, "content": [ string, ... ] } }
-     *
-     * @return the game board as a JSON string
-     */
+    ///
+    /// Converts the game board to a JSON string representation for serialization. Format
+    /// corresponds to the following JSON schema with content as a 1D array of strings of size
+    /// dimension x dimension.
+    ///
+    /// ```javascript
+    /// { "dimension": int, "content": [ string, string, ..., string ] } }
+    /// ```
+    /// @return the game board as a JSON string
+    /// @see JsonSerializable
     String asJsonString();
 
     /**

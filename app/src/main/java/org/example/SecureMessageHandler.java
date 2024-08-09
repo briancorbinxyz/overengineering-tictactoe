@@ -74,7 +74,6 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
      * @throws InvalidParameterSpecException if the received Kyber parameters are invalid
      * @throws InvalidAlgorithmParameterException if the Kyber parameters are invalid
      * @throws InvalidKeyException if the public/private key is invalid
-     * @throws EncapsulateException if the encapsulation of the shared secret fails
      * @throws DecapsulateException if the decapsulation of the shared secret fails
      * @throws ClassNotFoundException
      */
