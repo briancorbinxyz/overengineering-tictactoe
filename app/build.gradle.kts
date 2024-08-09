@@ -16,7 +16,7 @@ repositories {
 // https://doc.rust-lang.org/cargo/getting-started/installation.html
 val osName = System.getProperty("os.name").lowercase()
 
-val cargoBuildDir = file("${buildDir}/cargo")
+val cargoBuildDir = file("${layout.buildDirectory.get()}/cargo")
 
 val libPath = when {
     osName.contains("win") -> "${cargoBuildDir}/debug"
@@ -88,6 +88,20 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic:1.5.6")
     runtimeOnly("org.slf4j:slf4j-api:2.0.13")
     runtimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
+
+
+    // JDK23: JMH (Third-Party) Not required, added for benchmarking
+    // https://github.com/openjdk/jmh
+    implementation("org.openjdk.jmh:jmh-core:1.37")
+    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+}
+
+// Run JMH benchmark
+// ./gradlew jmh
+tasks.register<JavaExec>("jmh") {
+    mainClass.set("org.openjdk.jmh.Main")
+    classpath = sourceSets["main"].runtimeClasspath
+    args = listOf("org.example.interop.benchmark.PlayerIdsBenchmark")
 }
 
 testing {
@@ -103,7 +117,7 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
+        languageVersion = JavaLanguageVersion.of(23)
     }
 }
 
@@ -123,7 +137,7 @@ graalvmNative {
             javaLauncher = javaToolchains.launcherFor {
                 // NB: On MacOS ARM ARCH the native-image implementation is not available
                 // for the versions of GRAAL_VM Community edition - selecting Oracle
-                languageVersion = JavaLanguageVersion.of(22)
+                languageVersion = JavaLanguageVersion.of(23)
                 vendor = JvmVendorSpec.matching("Oracle")
                 // languageVersion = JavaLanguageVersion.of(17)
                 // vendor = JvmVendorSpec.GRAAL_VM
@@ -141,7 +155,7 @@ application {
     // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
 }
 
 tasks.run.configure {
@@ -160,7 +174,7 @@ tasks.withType<Test>().all {
     // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
     environment("PATH", libPath) // For Windows
     environment("LD_LIBRARY_PATH", libPath) // For Linux
     environment("DYLD_LIBRARY_PATH", libPath) // For macOS
@@ -177,7 +191,7 @@ tasks.named<JavaExec>("run") {
     // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
     environment("PATH", libPath) // For Windows
     environment("LD_LIBRARY_PATH", libPath) // For Linux
     environment("DYLD_LIBRARY_PATH", libPath) // For macOS

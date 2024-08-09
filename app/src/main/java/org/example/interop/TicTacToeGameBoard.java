@@ -12,7 +12,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.ref.Cleaner;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.example.GameBoard;
@@ -28,12 +27,14 @@ class TicTacToeGameBoard implements GameBoard {
 
     private final SymbolLookup libTicTacToe;
 
-    private final AtomicInteger nextId;
+    private final PlayerIds playerIds;
 
     private final Map<String, Integer> playerMarkerToId;
     private final Map<Integer, String> idToPlayerMarker;
 
     private final Cleaner cleaner;
+
+    @SuppressWarnings("unused")
     private final Cleaner.Cleanable cleanable;
 
     private MethodHandle newGameBoard;
@@ -48,7 +49,7 @@ class TicTacToeGameBoard implements GameBoard {
         this.libTicTacToe = libTicTacToe;
         this.playerMarkerToId = new HashMap<>();
         this.idToPlayerMarker = new HashMap<>();
-        this.nextId = new AtomicInteger(1);
+        this.playerIds = new PlayerIds(1);
         this.initGameBoardMethods();
         this.board = newGameBoard(dimension);
         this.cleaner = cleaner;
@@ -73,7 +74,7 @@ class TicTacToeGameBoard implements GameBoard {
         this.libTicTacToe = libTicTacToe;
         this.playerMarkerToId = new HashMap<>(playerMarkerToId);
         this.idToPlayerMarker = new HashMap<>(idToPlayerMarker);
-        this.nextId = new AtomicInteger(initialValue);
+        this.playerIds = new PlayerIds(initialValue);
         this.initGameBoardMethods();
         this.board = board;
         this.cleaner = cleaner;
@@ -109,7 +110,7 @@ class TicTacToeGameBoard implements GameBoard {
     @Override
     public GameBoard withMove(String playerMarker, int location) {
         if (!playerMarkerToId.containsKey(playerMarker)) {
-            int id = nextId.getAndIncrement();
+            int id = playerIds.getNextIdAndIncrement();
             playerMarkerToId.put(playerMarker, id);
             idToPlayerMarker.put(id, playerMarker);
         }
@@ -121,7 +122,7 @@ class TicTacToeGameBoard implements GameBoard {
                     newBoard,
                     playerMarkerToId,
                     idToPlayerMarker,
-                    nextId.get(),
+                    playerIds.getNextId(),
                     libTicTacToe,
                     cleaner);
         } catch (Throwable e) {

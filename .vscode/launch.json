@@ -108,7 +108,7 @@
             "type": "java",
             "name": "GameClient (on ZGC)",
             "request": "launch",
-            "vmArgs": "-XX:+UseZGC -XX:+ZGenerational",
+            "vmArgs": "-XX:+UseZGC",
             "mainClass": "org.example.GameClient",
             "projectName": "app",
             "env": {
@@ -135,7 +135,7 @@
             "type": "java",
             "name": "GameServer (on ZGC)",
             "request": "launch",
-            "vmArgs": "-XX:+UseZGC -XX:+ZGenerational",
+            "vmArgs": "-XX:+UseZGC",
             "mainClass": "org.example.GameServer",
             "projectName": "app",
             "env": {
