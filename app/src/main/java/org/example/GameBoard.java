@@ -44,7 +44,7 @@ public interface GameBoard extends JsonSerializable {
      *
      * @return the dimension of the game board
      */
-    int getDimension();
+    int dimension();
 
     ///
     /// Converts the game board to a JSON string representation for serialization. Format

@@ -24,15 +24,15 @@ public class Players implements Serializable {
     }
 
     public void tryAddPlayer(Player player) {
-        if (!players.containsKey(player.getPlayerMarker())) {
-            players.put(player.getPlayerMarker(), player);
-            playerMarkers.add(player.getPlayerMarker());
+        if (!players.containsKey(player.playerMarker())) {
+            players.put(player.playerMarker(), player);
+            playerMarkers.add(player.playerMarker());
         } else {
             throw new RuntimeException(
                     "Unable to add player "
                             + player
                             + " as player with marker '"
-                            + player.getPlayerMarker()
+                            + player.playerMarker()
                             + "' already exists.");
         }
     }

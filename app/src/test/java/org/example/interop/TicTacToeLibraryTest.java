@@ -18,6 +18,6 @@ public class TicTacToeLibraryTest {
         var ticTacToeLibrary = new TicTacToeLibrary();
         var gameBoard = ticTacToeLibrary.newGameBoard(3);
         assertNotNull(gameBoard);
-        assertEquals(gameBoard.getDimension(), 3);
+        assertEquals(gameBoard.dimension(), 3);
     }
 }

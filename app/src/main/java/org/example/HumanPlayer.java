@@ -18,11 +18,6 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public String getPlayerMarker() {
-        return playerMarker;
-    }
-
-    @Override
     public int nextMove(GameBoard board) {
         int location;
         var io = System.console() != null ? new ConsoleInput() : new ScannerInput();
@@ -31,14 +26,14 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
                     "Player '"
                             + playerMarker
                             + "' choose an available location between [0-"
-                            + (board.getDimension() * board.getDimension() - 1)
+                            + (board.dimension() * board.dimension() - 1)
                             + "]: ");
             try {
                 var msg = io.readLine();
                 location = Integer.parseInt(msg);
             } catch (NumberFormatException e) {
                 // expected if user enters non-integer carry on.
-                log.log(Level.TRACE, "Invalid location: ", e.getMessage(), e);
+                log.log(Level.TRACE, "Invalid location: {0}", e.getMessage(), e);
                 location = -1;
             }
         } while (!board.isValidMove(location));

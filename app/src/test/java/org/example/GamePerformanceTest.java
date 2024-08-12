@@ -110,8 +110,8 @@ public class GamePerformanceTest {
             Socket playerTwo = serverSocket.accept();
             executor.submit(
                     () -> {
-                        try (var playerX = new RemoteBotPlayer("X", playerOne);
-                                var playerO = new RemoteBotPlayer("O", playerTwo)) {
+                        try (var playerX = new RemotePlayer("X", playerOne);
+                                var playerO = new RemotePlayer("O", playerTwo)) {
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
                         } catch (Exception e) {

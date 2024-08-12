@@ -54,8 +54,8 @@ public class GameBoardNativeImpl implements GameBoard {
     }
 
     @Override
-    public int getDimension() {
-        return board.getDimension();
+    public int dimension() {
+        return board.dimension();
     }
 
     @Override

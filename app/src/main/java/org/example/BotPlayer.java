@@ -18,12 +18,8 @@ public record BotPlayer(String playerMarker, RandomGenerator random)
         this(playerMarker, new SecureRandom());
     }
 
-    public String getPlayerMarker() {
-        return playerMarker;
-    }
-
     public int nextMove(GameBoard board) {
-        int dimension = board.getDimension();
+        int dimension = board.dimension();
         int location;
         do {
             location = random.nextInt(dimension * dimension);

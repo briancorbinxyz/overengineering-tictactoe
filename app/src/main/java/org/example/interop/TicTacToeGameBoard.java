@@ -93,7 +93,7 @@ class TicTacToeGameBoard implements GameBoard {
     public boolean isValidMove(int location) {
         return getValueAtIndex(location) == 0
                 && location >= 0
-                && location < getDimension() * getDimension();
+                && location < dimension() * dimension();
     }
 
     @Override
@@ -131,7 +131,7 @@ class TicTacToeGameBoard implements GameBoard {
     }
 
     @Override
-    public int getDimension() {
+    public int dimension() {
         try {
             return (Integer) getDimension.invoke(board);
         } catch (Throwable e) {
@@ -143,7 +143,7 @@ class TicTacToeGameBoard implements GameBoard {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        int dimension = getDimension();
+        int dimension = dimension();
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 int value = getValueAtIndex(i * dimension + j);
@@ -159,7 +159,7 @@ class TicTacToeGameBoard implements GameBoard {
 
     @Override
     public String asJsonString() {
-        int dimension = getDimension();
+        int dimension = dimension();
         StringBuilder json = new StringBuilder();
         json.append("{");
         json.append("\"dimension\":").append(dimension).append(",");

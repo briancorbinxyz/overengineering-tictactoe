@@ -71,5 +71,4 @@ public class RemoteMessageHandler implements MessageHandler {
             throw new IllegalStateException("MessageHandler has not been initialized.");
         }
     }
-    ;
 }

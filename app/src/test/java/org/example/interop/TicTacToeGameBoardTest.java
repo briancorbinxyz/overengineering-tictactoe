@@ -21,7 +21,7 @@ public class TicTacToeGameBoardTest {
     @Test
     public void should_create_board_with_specified_dimensions() {
         var board = ticTacToeLibrary.newGameBoard(3);
-        assertEquals(board.getDimension(), 3);
+        assertEquals(board.dimension(), 3);
     }
 
     @Test

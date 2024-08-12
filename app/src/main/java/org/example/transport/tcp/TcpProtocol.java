@@ -1,8 +1,8 @@
-package org.example;
+package org.example.transport.tcp;
 
 import java.util.regex.Pattern;
 
-public class RemoteProtocol {
+public class TcpProtocol {
 
     public static final String EXIT_CODE = "{}";
 

@@ -142,15 +142,10 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
     }
 
     @Override
-    public int getDimension() {
-        return dimension;
-    }
-
-    @Override
     public String asJsonString() {
         StringBuilder json = new StringBuilder();
         json.append("{");
-        json.append("\"dimension\":").append(getDimension()).append(",");
+        json.append("\"dimension\":").append(dimension()).append(",");
         json.append("\"content\":")
                 .append(
                         Arrays.stream(content())

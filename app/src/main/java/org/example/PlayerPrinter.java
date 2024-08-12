@@ -29,7 +29,7 @@ public class PlayerPrinter {
         return switch (player) {
             case HumanPlayer(String playerMarker) -> "Human" + " (" + playerMarker + ")";
             case BotPlayer(String playerMarker, _) -> "Bot" + " (" + playerMarker + ")";
-            case RemoteBotPlayer p -> "BotClient" + " (" + p.getPlayerMarker() + ")";
+            case RemotePlayer p -> "BotClient" + " (" + p.playerMarker() + ")";
         };
     }
 }

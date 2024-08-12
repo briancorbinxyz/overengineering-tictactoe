@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
+import org.example.transport.tcp.TcpTransport;
+
 public class GameServer {
 
     private static final Logger log = System.getLogger(GameServer.class.getName());
@@ -56,8 +58,8 @@ public class GameServer {
             Socket socketPlayerTwo = serverSocket.accept();
             executor.submit(
                     () -> {
-                        try (var playerX = new RemoteBotPlayer("X", socketPlayerOne);
-                                var playerO = new RemoteBotPlayer("O", socketPlayerTwo)) {
+                        try (var playerX = new RemotePlayer<BotPlayer>("X", new TcpTransport(socketPlayerOne));
+                                var playerO = new RemotePlayer<BotPlayer>("O", new TcpTransport(socketPlayerTwo))) {
                             log.log(
                                     Level.INFO,
                                     "{0} concurrent games in progress.",

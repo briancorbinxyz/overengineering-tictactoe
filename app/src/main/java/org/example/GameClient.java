@@ -9,7 +9,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
-import org.example.RemoteBotPlayer.Client;
+
+import org.example.transport.PlayerTransports;
+import org.example.transport.tcp.TcpClient;
 
 public class GameClient {
 
@@ -52,60 +54,37 @@ public class GameClient {
             log.log(Level.INFO, "Elapsed: " + elapsed);
         } finally {
             log.log(Level.INFO, "Finished.");
-            log.log(
-                    Level.INFO,
-                    "Submitted "
-                            + client.submittedClients.sum()
-                            + " clients for "
-                            + client.maxGames
-                            + " games.");
-            log.log(
-                    Level.INFO,
-                    "Started "
-                            + client.startedClients.sum()
-                            + " clients for "
-                            + client.maxGames
-                            + " games.");
-            log.log(
-                    Level.INFO,
-                    "Failed "
-                            + client.failedClients.sum()
-                            + " clients for "
-                            + client.maxGames
-                            + " games.");
-            log.log(
-                    Level.INFO,
-                    "Completed "
-                            + client.failedClients.sum()
-                            + " clients for "
-                            + client.maxGames
-                            + " games.");
+            log.log(Level.INFO, "Submitted {0} clients for {1} games.", client.submittedClients.sum(), client.maxGames);
+            log.log(Level.INFO, "Started {0} clients for {1} games.", client.startedClients.sum(), client.maxGames);
+            log.log(Level.INFO, "Failed {0} clients for {1} games.", client.failedClients.sum(), client.maxGames);
+            log.log(Level.INFO, "Completed {0} clients for {1} games.", client.completedClients.sum(), client.maxGames);
         }
     }
 
     private void connectToServer(ExecutorService executor) {
         while (submittedClients.sum() < 2 * maxGames) {
             executor.submit(
-                    () -> {
-                        try (
+                () -> {
+                    try (
                         // Contention will cause SocketException, down Server ConnectException
                         Socket socket = new Socket(serverHost, serverSocket);
-                                Client client = new Client(socket); ) {
-                            startedClients.increment();
-                            log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
-                            client.connectAndPlay(socket);
-                            completedClients.increment();
-                        } catch (ConnectException _) {
-                            failedClients.increment();
-                            log.log(Level.ERROR, "Connect exception, server down.");
-                        } catch (SocketException _) {
-                            failedClients.increment();
-                            log.log(Level.ERROR, "Socket exception, server disconnected.");
-                        } catch (Exception e) {
-                            failedClients.increment();
-                            throw new RuntimeException(e);
-                        }
-                    });
+                        TcpClient client = PlayerTransports.newSocketClient(BotPlayer.class, socket);
+                    ) {
+                        startedClients.increment();
+                        log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
+                        client.connectAndPlay(socket);
+                        completedClients.increment();
+                    } catch (ConnectException _) {
+                        failedClients.increment();
+                        log.log(Level.ERROR, "Connect exception, server down.");
+                    } catch (SocketException _) {
+                        failedClients.increment();
+                        log.log(Level.ERROR, "Socket exception, server disconnected.");
+                    } catch (Exception e) {
+                        failedClients.increment();
+                        throw new RuntimeException(e);
+                    }
+                });
             submittedClients.increment();
         }
     }

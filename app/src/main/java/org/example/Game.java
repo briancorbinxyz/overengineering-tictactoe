@@ -69,7 +69,7 @@ public class Game implements Serializable {
             board =
                     pushGameBoard(
                             board.withMove(
-                                    currentPlayer.getPlayerMarker(),
+                                    currentPlayer.playerMarker(),
                                     currentPlayer.nextMove(board)));
             if (persistenceEnabled && board instanceof Serializable) {
                 persistence.saveTo(gameFile(persistenceDir), this);
@@ -81,13 +81,13 @@ public class Game implements Serializable {
         }
 
         winningPlayer.ifPresentOrElse(
-                player -> log.log(Level.INFO, "Winner: Player {0}!", player.getPlayerMarker()),
+                player -> log.log(Level.INFO, "Winner: Player {0}!", player.playerMarker()),
                 () -> log.log(Level.INFO, "Tie Game!"));
         renderBoard();
     }
 
     private Optional<Player> checkWon(GameBoard board, Player player) {
-        return board.hasChain(player.getPlayerMarker()) ? Optional.of(player) : Optional.empty();
+        return board.hasChain(player.playerMarker()) ? Optional.of(player) : Optional.empty();
     }
 
     private File gameFileDirectory() throws IOException {
