@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 
 public class PlayerPrinter {
 
-    public String getPlayerIdentifier(Player player) {
+    public String getPlayerIdentifier(PlayerNode player) {
         String javaVersion = System.getProperty("java.version");
         String osName = System.getProperty("os.name");
         String osVersion = System.getProperty("os.version");
@@ -25,11 +25,10 @@ public class PlayerPrinter {
         }
     }
 
-    private String playerToType(Player player) {
+    private String playerToType(PlayerNode player) {
         return switch (player) {
-            case HumanPlayer(String playerMarker) -> "Human" + " (" + playerMarker + ")";
-            case BotPlayer(String playerMarker, _) -> "Bot" + " (" + playerMarker + ")";
-            case RemotePlayer p -> "BotClient" + " (" + p.playerMarker() + ")";
+            case PlayerNode.Local(Player p) -> "Local" + " (" + p.playerMarker() + ")";
+            case PlayerNode.Remote(String playerMarker, _) -> "Remote" + " (" + playerMarker + ")";
         };
     }
 }

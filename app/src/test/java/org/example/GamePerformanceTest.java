@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
+import org.example.transport.tcp.TcpTransportServer;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
@@ -19,7 +20,7 @@ public class GamePerformanceTest {
     @Test
     public void testGameBotPerformanceInSerial() throws Exception {
         for (int i = 0; i < 1000; i++) {
-            Game game = new Game(3, false, new BotPlayer("X"), new BotPlayer("O"));
+            Game game = new Game(3, false, newBotPlayer("X"), newBotPlayer("O"));
             game.play();
         }
     }
@@ -38,8 +39,8 @@ public class GamePerformanceTest {
                                                         new Game(
                                                                 3,
                                                                 false,
-                                                                new BotPlayer("X"),
-                                                                new BotPlayer("O"));
+                                                                newBotPlayer("X"),
+                                                                newBotPlayer("O"));
                                                 game.play();
                                             } catch (Exception e) {
                                                 throw new RuntimeException(e);
@@ -62,8 +63,8 @@ public class GamePerformanceTest {
                                                         new Game(
                                                                 3,
                                                                 false,
-                                                                new BotPlayer("X"),
-                                                                new BotPlayer("O"));
+                                                                newBotPlayer("X"),
+                                                                newBotPlayer("O"));
                                                 game.play();
                                             } catch (Exception e) {
                                                 throw new RuntimeException(e);
@@ -110,8 +111,12 @@ public class GamePerformanceTest {
             Socket playerTwo = serverSocket.accept();
             executor.submit(
                     () -> {
-                        try (var playerX = new RemotePlayer("X", playerOne);
-                                var playerO = new RemotePlayer("O", playerTwo)) {
+                        try (var playerX =
+                                        new PlayerNode.Remote(
+                                                "X", new TcpTransportServer(playerOne));
+                                var playerO =
+                                        new PlayerNode.Remote(
+                                                "O", new TcpTransportServer(playerTwo))) {
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
                         } catch (Exception e) {
@@ -120,5 +125,9 @@ public class GamePerformanceTest {
                         }
                     });
         }
+    }
+
+    private PlayerNode newBotPlayer(String playerMarker) {
+        return new PlayerNode.Local<>(new BotPlayer(playerMarker));
     }
 }

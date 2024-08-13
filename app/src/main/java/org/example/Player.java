@@ -8,7 +8,7 @@ package org.example;
 /// // Choose the next valid move on the game board
 /// int validBoardLocation = player.nextMove(gameBoard); // @end
 /// }
-public sealed interface Player permits HumanPlayer, BotPlayer, RemotePlayer {
+public sealed interface Player permits HumanPlayer, BotPlayer {
 
     /// Returns the marker (e.g. "X" or "O") used by this player.
     /// @return the player's marker

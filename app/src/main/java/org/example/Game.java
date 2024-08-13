@@ -26,7 +26,7 @@ public class Game implements Serializable {
 
     private final Deque<GameBoard> boards;
 
-    private final Players players;
+    private final PlayerNodes players;
 
     private final boolean persistenceEnabled;
 
@@ -35,13 +35,17 @@ public class Game implements Serializable {
     private int moveNumber;
 
     public Game() {
-        this(3, true, new HumanPlayer("X"), new BotPlayer("O"));
+        this(
+                3,
+                true,
+                new PlayerNode.Local<>(new HumanPlayer("X")),
+                new PlayerNode.Local<>(new BotPlayer("O")));
     }
 
-    public Game(int size, boolean persistenceEnabled, Player... players) {
+    public Game(int size, boolean persistenceEnabled, PlayerNode... players) {
         this.boards = new ArrayDeque<>();
         this.boards.add(new GameBoardNativeImpl(size));
-        this.players = Players.of(players);
+        this.players = PlayerNodes.of(players);
         this.gameId = UUID.randomUUID();
         this.moveNumber = 0;
         this.currentPlayerIdx = 0;
@@ -58,8 +62,8 @@ public class Game implements Serializable {
         File persistenceDir = gameFileDirectory();
         GameBoard board = activeGameBoard();
         boolean movesAvailable = board.hasMovesAvailable();
-        Player currentPlayer = players.byIndex(currentPlayerIdx);
-        Optional<Player> winningPlayer = checkWon(board, currentPlayer);
+        PlayerNode currentPlayer = players.byIndex(currentPlayerIdx);
+        Optional<String> winningPlayer = checkWon(board, currentPlayer.playerMarker());
 
         // Print Initial Setup
         players.render();
@@ -69,25 +73,24 @@ public class Game implements Serializable {
             board =
                     pushGameBoard(
                             board.withMove(
-                                    currentPlayer.playerMarker(),
-                                    currentPlayer.nextMove(board)));
+                                    currentPlayer.playerMarker(), currentPlayer.applyAsInt(board)));
             if (persistenceEnabled && board instanceof Serializable) {
                 persistence.saveTo(gameFile(persistenceDir), this);
             }
-            winningPlayer = checkWon(board, currentPlayer);
+            winningPlayer = checkWon(board, currentPlayer.playerMarker());
             movesAvailable = board.hasMovesAvailable();
             currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
             currentPlayer = players.byIndex(currentPlayerIdx);
         }
 
         winningPlayer.ifPresentOrElse(
-                player -> log.log(Level.INFO, "Winner: Player {0}!", player.playerMarker()),
+                p -> log.log(Level.INFO, "Winner: Player {0}!", p),
                 () -> log.log(Level.INFO, "Tie Game!"));
         renderBoard();
     }
 
-    private Optional<Player> checkWon(GameBoard board, Player player) {
-        return board.hasChain(player.playerMarker()) ? Optional.of(player) : Optional.empty();
+    private Optional<String> checkWon(GameBoard board, String playerMarker) {
+        return board.hasChain(playerMarker) ? Optional.of(playerMarker) : Optional.empty();
     }
 
     private File gameFileDirectory() throws IOException {

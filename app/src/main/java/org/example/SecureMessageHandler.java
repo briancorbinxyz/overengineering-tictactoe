@@ -190,7 +190,8 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
          * Constructs a new `SecureServerMessageHandler` instance with the given
          * `RemoteMessageHandler`.
          *
-         * @param remoteMessageHandler the `RemoteMessageHandler` to use for sending and receiving messages
+         * @param remoteMessageHandler the `RemoteMessageHandler` to use for sending and receiving
+         *     messages
          */
         public Server(RemoteMessageHandler remoteMessageHandler) {
             super(remoteMessageHandler);

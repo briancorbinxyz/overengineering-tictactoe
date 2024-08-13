@@ -17,5 +17,16 @@
             "args": []
         },
     ],
+    "java.import.exclusions": [
+        "org.junit.*"
+    ],
+    "java.completion.importOrder": [
+        "org.testng",
+        "java.lang",
+        "java",
+        "javax",
+        "com",
+        "org"
+    ],
     "java.configuration.updateBuildConfiguration": "automatic",
 }

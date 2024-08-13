@@ -10,8 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
-
-import org.example.transport.tcp.TcpTransport;
+import org.example.transport.tcp.TcpTransportServer;
 
 public class GameServer {
 
@@ -54,12 +53,16 @@ public class GameServer {
     private void listenForPlayers(ExecutorService executor, ServerSocket serverSocket)
             throws IOException {
         while (true) {
-            Socket socketPlayerOne = serverSocket.accept();
-            Socket socketPlayerTwo = serverSocket.accept();
             executor.submit(
                     () -> {
-                        try (var playerX = new RemotePlayer<BotPlayer>("X", new TcpTransport(socketPlayerOne));
-                                var playerO = new RemotePlayer<BotPlayer>("O", new TcpTransport(socketPlayerTwo))) {
+                        try (Socket socketPlayerOne = serverSocket.accept();
+                                Socket socketPlayerTwo = serverSocket.accept();
+                                var playerX =
+                                        new PlayerNode.Remote(
+                                                "X", new TcpTransportServer(socketPlayerOne));
+                                var playerO =
+                                        new PlayerNode.Remote(
+                                                "O", new TcpTransportServer(socketPlayerTwo))) {
                             log.log(
                                     Level.INFO,
                                     "{0} concurrent games in progress.",
