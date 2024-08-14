@@ -12,11 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.example.transport.Transports;
 import org.example.transport.tcp.TcpTransportServer;
-
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
-@Ignore
 public class TcpTransportTest {
 
     private static final Logger log = System.getLogger(TcpTransportTest.class.getName());
@@ -28,54 +25,51 @@ public class TcpTransportTest {
     @Test
     public void testCanCreateClientServerBotGame() throws Exception {
         var executor = Executors.newVirtualThreadPerTaskExecutor();
-        CompletableFuture<ServerSocket> serverSocketFuture = startServer(SERVER_PORT, executor);
-
-        serverSocketFuture.thenAccept(
-                serverSocket -> startClient(SERVER_HOST, SERVER_PORT, executor));
-        serverSocketFuture.thenAccept(
-                serverSocket -> startClient(SERVER_HOST, SERVER_PORT, executor));
-
+        var serverSocketFuture = startServerAsync(SERVER_PORT, executor);
         try {
+            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, executor));
+            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, executor));
+
             // Wait for both clients to connect
-            CompletableFuture<Socket> client1ConnectionFuture =
-                    serverSocketFuture.thenCompose(s -> acceptClient(s, executor));
-            CompletableFuture<Socket> client2ConnectionFuture =
-                    serverSocketFuture.thenCompose(s -> acceptClient(s, executor));
-            CompletableFuture<Game> clientsConnectedFuture =
-                    client1ConnectionFuture.thenCombine(
-                            client2ConnectionFuture,
-                            (client1Connection, client2Connection) -> {
-                                log.log(Level.INFO, "[Server] Clients connected");
-                                return new Game(
-                                        3,
-                                        false,
-                                        new PlayerNode.Remote(
-                                                "X", new TcpTransportServer(client1Connection)),
-                                        new PlayerNode.Remote(
-                                                "O", new TcpTransportServer(client2Connection)));
-                            });
+            var client1SocketFuture = serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
+            var client2SocketFuture = serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
+            var connectedGame = client1SocketFuture.thenCombine(
+                client2SocketFuture,
+                (client1Socket, client2Socket) -> createGame(client1Socket, client2Socket));
 
             // Wait for both clients to finish connecting and start the game
-            var game = clientsConnectedFuture.get();
+            var game = connectedGame.get();
             game.play();
-            executor.shutdown();
-            executor.awaitTermination(10, TimeUnit.MINUTES);
+            log.log(Level.INFO, "[Server] Game complete.");
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            log.log(Level.ERROR, e);
         }
 
         // Close the server socket when done
         serverSocketFuture.thenAccept(TcpTransportTest::closeServerSocket);
+        executor.shutdown();
+        executor.awaitTermination(10, TimeUnit.MINUTES);
     }
 
-    private static CompletableFuture<ServerSocket> startServer(int port, ExecutorService executor) {
+    private Game createGame(Socket client1Socket, Socket client2Socket) {
+        log.log(Level.INFO, "[Server] Clients connected. Game ready to start.");
+        return new Game(
+                3,
+                false,
+                new PlayerNode.Remote(
+                        "X", new TcpTransportServer(client1Socket)),
+                new PlayerNode.Remote(
+                        "O", new TcpTransportServer(client2Socket)));
+    }
+
+    private static CompletableFuture<ServerSocket> startServerAsync(int port, ExecutorService executor) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        ServerSocket serverSocket = new ServerSocket(port);
+                        var serverSocket = new ServerSocket(port);
                         log.log(
                                 Level.INFO,
-                                "[Server] Game Server started. Listening on port {0}.",
+                                "[Server] Game Server started. Listening on port {0,number,#}.",
                                 port);
                         return serverSocket;
                     } catch (IOException e) {
@@ -85,14 +79,14 @@ public class TcpTransportTest {
                 executor);
     }
 
-    private static void startClient(String host, int port, ExecutorService executor) {
+    private static void startClientAsync(String host, int port, ExecutorService executor) {
         CompletableFuture.runAsync(
                 () -> {
                     try {
-                        Socket socket = new Socket(host, port);
+                        var socket = new Socket(host, port);
                         log.log(
                                 Level.INFO,
-                                "[Client] Client connected to server on port {0}",
+                                "[Client] Client connected to server on port {0,number,#}",
                                 port);
                         var client = Transports.newTcpTransportClient(BotPlayer.class, socket);
                         client.run();
@@ -103,7 +97,7 @@ public class TcpTransportTest {
                 executor);
     }
 
-    private static CompletableFuture<Socket> acceptClient(
+    private static CompletableFuture<Socket> acceptClientAsync(
             ServerSocket serverSocket, ExecutorService executor) {
         return CompletableFuture.supplyAsync(
                 () -> {
@@ -132,7 +126,7 @@ public class TcpTransportTest {
                                 + " closed");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error connecting to server on port " + e.getMessage(), e);
         }
     }
 }

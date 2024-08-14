@@ -25,6 +25,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
+        # https://github.com/actions/setup-java?tab=readme-ov-file#supported-distributions
         java-version: '22'
         distribution: 'temurin'
 

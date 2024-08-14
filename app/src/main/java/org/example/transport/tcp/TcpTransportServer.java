@@ -20,13 +20,13 @@ public class TcpTransportServer implements TransportServer {
 
     private final Socket socket;
 
-    private transient MessageHandler connection;
+    private transient MessageHandler handler;
 
     public TcpTransportServer(Socket socket) {
         this.socket = socket;
         try {
-            this.connection =
-                    new SecureMessageHandler.Client(
+            this.handler =
+                    new SecureMessageHandler.Server(
                             new RemoteMessageHandler(
                                     new ObjectOutputStream(socket.getOutputStream()),
                                     new ObjectInputStream(socket.getInputStream())));
@@ -37,27 +37,28 @@ public class TcpTransportServer implements TransportServer {
 
     @Override
     public void initialize(TransportConfiguration configuration) {
+        log.log(Level.DEBUG, "Initializing socket {0} for {1} to client for Tic-Tac-Toe.", socket, configuration.playerMarker());
         try {
-            connection.init();
-            connection.sendMessage(
+            handler.init();
+            handler.sendMessage(
                     String.format(
                             TcpProtocol.GAME_STARTED_JSON_FORMAT, configuration.playerMarker()));
         } catch (IOException e) {
+            log.log(Level.WARNING, "Error initializing socket {0} for {1} to client for Tic-Tac-Toe.", socket, configuration.playerMarker());
             throw new TransportException(e.getMessage(), e);
         }
-        log.log(Level.INFO, "Initialized socket {0} to client for Tic-Tac-Toe.", socket);
     }
 
     @Override
     public void close() throws Exception {
-        connection.sendMessage(TcpProtocol.EXIT_CODE);
-        connection.close();
+        handler.sendMessage(TcpProtocol.EXIT_CODE);
+        handler.close();
     }
 
     @Override
     public void send(GameBoard board) {
         try {
-            connection.sendMessage(
+            handler.sendMessage(
                     String.format(TcpProtocol.NEXT_MOVE_JSON_FORMAT, board.asJsonString()));
         } catch (IOException e) {
             throw new TransportException(e.getMessage(), e);
@@ -67,7 +68,7 @@ public class TcpTransportServer implements TransportServer {
     @Override
     public int accept(GameBoard board) {
         try {
-            var clientMessage = connection.receiveMessage();
+            var clientMessage = handler.receiveMessage();
             return Integer.parseInt(clientMessage);
         } catch (IOException e) {
             throw new TransportException(e.getMessage(), e);

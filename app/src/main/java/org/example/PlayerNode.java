@@ -69,9 +69,11 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
             int location = -1;
             do {
                 try {
+                    log.log(Level.DEBUG, "Sending game board state to client: {0}", board);
                     transport.send(board);
                     // After receiving the game board the player should send a move
                     location = transport.accept(board);
+                    log.log(Level.DEBUG, "Received move from client: {0}", location);
                 } catch (NumberFormatException e) {
                     log.log(Level.TRACE, "Invalid move from client: {0}", e.getMessage(), e);
                 }

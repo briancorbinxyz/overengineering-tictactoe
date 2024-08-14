@@ -2,8 +2,10 @@ package org.example.transport.tcp;
 
 import java.io.IOException;
 import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
 import java.util.function.ToIntFunction;
+
 import org.example.GameBoard;
 import org.example.MessageHandler;
 import org.example.Player;
@@ -26,11 +28,15 @@ public record TcpTransportClient<T extends Player>(
     }
 
     public void run() {
+        log.log(Level.DEBUG, "Started TCP transport client");
         try {
             // For now read the board and send a random move
-            String serverMessage;
+            String serverMessage = connection.receiveMessage();
+            log.log(Level.DEBUG, "Received initial message from server: {0}", serverMessage);
+
             while ((serverMessage = connection.receiveMessage()) != null
                     && !serverMessage.equals(TcpProtocol.EXIT_CODE)) {
+                log.log(Level.DEBUG, "Received message from server: {0}", serverMessage);
                 var board = TcpProtocol.fromProtocol(serverMessage);
                 board.ifPresentOrElse(
                         (GameBoard b) -> {

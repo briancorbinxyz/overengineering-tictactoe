@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.Closeable;
 import java.io.Serializable;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
@@ -65,4 +66,21 @@ public class PlayerNodes implements Serializable {
                             + "' already exists.");
         }
     }
+
+    public static void closeAll(PlayerNodes players2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'closeAll'");
+    }
+
+	public void close() {
+        players.values().forEach((p) -> {
+            if (p instanceof AutoCloseable c) {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                    log.log(Level.WARNING, "Unable to close player " + p, e);
+                }
+            }
+        });
+	}
 }

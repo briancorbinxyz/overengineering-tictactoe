@@ -16,7 +16,7 @@ import java.util.UUID;
  * be serialized and persisted to a file, and loaded from a file. The game can be played by
  * alternating moves between human and bot players.
  */
-public class Game implements Serializable {
+public class Game implements Serializable, AutoCloseable {
 
     private static final Logger log = System.getLogger(Game.class.getName());
 
@@ -68,6 +68,7 @@ public class Game implements Serializable {
         // Print Initial Setup
         players.render();
         while (winningPlayer.isEmpty() && movesAvailable) {
+            log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
             renderBoard();
             moveNumber += 1;
             board =
@@ -87,6 +88,7 @@ public class Game implements Serializable {
                 p -> log.log(Level.INFO, "Winner: Player {0}!", p),
                 () -> log.log(Level.INFO, "Tie Game!"));
         renderBoard();
+        close();
     }
 
     private Optional<String> checkWon(GameBoard board, String playerMarker) {
@@ -117,4 +119,9 @@ public class Game implements Serializable {
     private GameBoard activeGameBoard() {
         return boards.peekLast();
     }
+
+	@Override
+	public void close() throws Exception {
+        players.close();
+	}
 }

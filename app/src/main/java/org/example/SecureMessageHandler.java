@@ -207,6 +207,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
         public void init() throws IOException {
             try {
                 handler.init();
+                log.log(Level.DEBUG, "Initializing secure channel for {0}. Exchanging shared key.", getClass().getSimpleName());
                 sharedKey = exchangeSharedKey();
                 initialized = true;
                 log.log(
@@ -312,6 +313,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
             // Sender side
             try {
                 handler.init();
+                log.log(Level.DEBUG, "Initializing secure channel for {0}. Exchanging shared key.", getClass().getSimpleName());
                 sharedKey = exchangeSharedKey();
                 initialized = true;
                 log.log(
