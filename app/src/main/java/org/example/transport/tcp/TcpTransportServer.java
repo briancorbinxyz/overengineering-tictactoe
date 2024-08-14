@@ -14,18 +14,25 @@ import org.example.transport.TransportConfiguration;
 import org.example.transport.TransportException;
 import org.example.transport.TransportServer;
 
-public record TcpTransportServer(Socket socket, MessageHandler connection)
-        implements TransportServer {
+public class TcpTransportServer implements TransportServer {
 
     private static final Logger log = System.getLogger(TcpTransportServer.class.getName());
 
-    public TcpTransportServer(Socket socket) throws IOException {
-        this(
-                socket,
-                new SecureMessageHandler.Client(
-                        new RemoteMessageHandler(
-                                new ObjectOutputStream(socket.getOutputStream()),
-                                new ObjectInputStream(socket.getInputStream()))));
+    private final Socket socket;
+
+    private transient MessageHandler connection;
+
+    public TcpTransportServer(Socket socket) {
+        this.socket = socket;
+        try {
+            this.connection =
+                    new SecureMessageHandler.Client(
+                            new RemoteMessageHandler(
+                                    new ObjectOutputStream(socket.getOutputStream()),
+                                    new ObjectInputStream(socket.getInputStream())));
+        } catch (IOException e) {
+            throw new TransportException("IO exception: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -48,7 +55,7 @@ public record TcpTransportServer(Socket socket, MessageHandler connection)
     }
 
     @Override
-    public void sendState(GameBoard board) {
+    public void send(GameBoard board) {
         try {
             connection.sendMessage(
                     String.format(TcpProtocol.NEXT_MOVE_JSON_FORMAT, board.asJsonString()));
@@ -58,7 +65,7 @@ public record TcpTransportServer(Socket socket, MessageHandler connection)
     }
 
     @Override
-    public int acceptMove(GameBoard board) {
+    public int accept(GameBoard board) {
         try {
             var clientMessage = connection.receiveMessage();
             return Integer.parseInt(clientMessage);

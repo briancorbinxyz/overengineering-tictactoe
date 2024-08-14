@@ -6,7 +6,7 @@ public interface TransportServer extends AutoCloseable {
 
     public void initialize(TransportConfiguration config);
 
-    public void sendState(GameBoard board);
+    public void send(GameBoard board);
 
-    public int acceptMove(GameBoard board);
+    public int accept(GameBoard board);
 }
