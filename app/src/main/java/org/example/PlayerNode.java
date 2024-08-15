@@ -10,8 +10,8 @@ import org.example.transport.TransportServer;
 public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
 
     /**
-     * Gets the player's marker, which is a string representation of the player's identity.
-     *
+     * Gets the player's marker: a string representation of the player's identity.
+     * Returns the marker (e.g. "X" or "O") used by this player.
      * @return the player's marker
      */
     String playerMarker();
@@ -24,8 +24,18 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
      */
     public int applyAsInt(GameBoard board);
 
-    public record Local<P extends Player>(P player) implements PlayerNode, Serializable {
+    public final class Local<P extends Player> implements PlayerNode, Serializable {
+
         private static final long serialVersionUID = 1L;
+
+        private final P player;
+
+        private final String playerMarker;
+
+        public Local(String playerMarker, P player) {
+            this.playerMarker = playerMarker;
+            this.player = player;
+        }
 
         /**
          * Gets the player's next move to apply to the given game board.
@@ -40,14 +50,21 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
 
         @Override
         public String playerMarker() {
-            return player.playerMarker();
+            return playerMarker;
+        }
+
+        public Player player() {
+            return player;
         }
     }
 
-    public record Remote(String playerMarker, TransportServer transport)
-            implements PlayerNode, AutoCloseable {
+    public final class Remote implements PlayerNode, AutoCloseable {
 
         private static final Logger log = System.getLogger(Remote.class.getName());
+
+        private String playerMarker;
+
+        private final TransportServer transport;
 
         public Remote(String playerMarker, TransportServer transport) {
             this.playerMarker = playerMarker;

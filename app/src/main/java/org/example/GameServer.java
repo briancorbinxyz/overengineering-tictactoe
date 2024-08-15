@@ -69,6 +69,7 @@ public class GameServer {
                                     updateStatsAndGetConcurrentGames());
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
+                            game.close();
                         } catch (Exception e) {
                             log.log(Level.ERROR, e.getMessage(), e);
                             throw new RuntimeException(e);

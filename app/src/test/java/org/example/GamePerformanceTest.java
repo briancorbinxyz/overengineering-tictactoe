@@ -22,6 +22,7 @@ public class GamePerformanceTest {
         for (int i = 0; i < 1000; i++) {
             Game game = new Game(3, false, newBotPlayer("X"), newBotPlayer("O"));
             game.play();
+            game.close();
         }
     }
 
@@ -42,6 +43,7 @@ public class GamePerformanceTest {
                                                                 newBotPlayer("X"),
                                                                 newBotPlayer("O"));
                                                 game.play();
+                                                game.close();
                                             } catch (Exception e) {
                                                 throw new RuntimeException(e);
                                             }
@@ -66,6 +68,7 @@ public class GamePerformanceTest {
                                                                 newBotPlayer("X"),
                                                                 newBotPlayer("O"));
                                                 game.play();
+                                                game.close();
                                             } catch (Exception e) {
                                                 throw new RuntimeException(e);
                                             }
@@ -119,6 +122,7 @@ public class GamePerformanceTest {
                                                 "O", new TcpTransportServer(playerTwo))) {
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
+                            game.close();
                         } catch (Exception e) {
                             System.out.println(e);
                             throw new RuntimeException(e);
@@ -128,6 +132,6 @@ public class GamePerformanceTest {
     }
 
     private PlayerNode newBotPlayer(String playerMarker) {
-        return new PlayerNode.Local<>(new BotPlayer(playerMarker));
+        return new PlayerNode.Local<>(playerMarker, new BotPlayer());
     }
 }

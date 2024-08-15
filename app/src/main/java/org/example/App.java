@@ -20,6 +20,7 @@ public class App {
     public void run() throws Exception {
         var game = new Game();
         game.play();
+        game.close();
     }
 
     /**

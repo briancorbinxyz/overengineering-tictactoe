@@ -11,7 +11,7 @@ import java.util.Scanner;
  * Represents a human player in the game. The human player interacts with the game by providing
  * their next move through the console.
  */
-public record HumanPlayer(String playerMarker) implements Player, Serializable {
+public record HumanPlayer() implements Player, Serializable {
 
     private static final Logger log = System.getLogger(HumanPlayer.class.getName());
 
@@ -22,12 +22,7 @@ public record HumanPlayer(String playerMarker) implements Player, Serializable {
         int location;
         var io = System.console() != null ? new ConsoleInput() : new ScannerInput();
         do {
-            System.out.print(
-                    "Player '"
-                            + playerMarker
-                            + "' choose an available location between [0-"
-                            + (board.dimension() * board.dimension() - 1)
-                            + "]: ");
+            log.log(Level.INFO, "Choose an available location between [0-{0}]: ", (board.dimension() * board.dimension() - 1));
             try {
                 var msg = io.readLine();
                 location = Integer.parseInt(msg);

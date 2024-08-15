@@ -38,8 +38,8 @@ public class Game implements Serializable, AutoCloseable {
         this(
                 3,
                 true,
-                new PlayerNode.Local<>(new HumanPlayer("X")),
-                new PlayerNode.Local<>(new BotPlayer("O")));
+                new PlayerNode.Local<>("X", new HumanPlayer()),
+                new PlayerNode.Local<>("O", new BotPlayer()));
     }
 
     public Game(int size, boolean persistenceEnabled, PlayerNode... players) {
@@ -68,8 +68,8 @@ public class Game implements Serializable, AutoCloseable {
         // Print Initial Setup
         players.render();
         while (winningPlayer.isEmpty() && movesAvailable) {
-            log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
             renderBoard();
+            log.log(Level.INFO, "Current Player: {0}", currentPlayer.playerMarker());
             moveNumber += 1;
             board =
                     pushGameBoard(
