@@ -12,15 +12,15 @@ import org.example.Player;
 import org.example.transport.TransportException;
 
 public record TcpTransportClient<T extends Player>(
-        MessageHandler connection, ToIntFunction<GameBoard> moveSelector) implements AutoCloseable {
+        MessageHandler connection, T player) implements AutoCloseable {
 
     private static final Logger log =
             System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
-    public TcpTransportClient(MessageHandler connection, ToIntFunction<GameBoard> moveSelector) {
+    public TcpTransportClient(MessageHandler connection, T player) {
         try {
             this.connection = connection;
-            this.moveSelector = moveSelector;
+            this.player = player;
             this.connection.init();
         } catch (IOException e) {
             throw new TransportException(e);
@@ -40,7 +40,7 @@ public record TcpTransportClient<T extends Player>(
                 var board = TcpProtocol.fromProtocol(serverMessage);
                 board.ifPresentOrElse(
                         (GameBoard b) -> {
-                            int nextMove = moveSelector.applyAsInt(b);
+                            int nextMove = player.nextMove(b);
                             try {
                                 connection.sendMessage(String.valueOf(nextMove));
                             } catch (IOException e) {

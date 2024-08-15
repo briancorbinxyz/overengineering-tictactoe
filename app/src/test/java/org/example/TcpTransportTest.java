@@ -89,7 +89,7 @@ public class TcpTransportTest {
                                 Level.INFO,
                                 "[Client] Client connected to server on port {0,number,#}",
                                 port);
-                        var client = Transports.newTcpTransportClient(BotPlayer.class, socket);
+                        var client = Transports.newTcpTransportClient(new BotPlayer(), socket);
                         client.run();
                     } catch (IOException e) {
                         throw new RuntimeException("Error connecting to server on port " + port, e);
