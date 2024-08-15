@@ -10,8 +10,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+
 import org.example.transport.Transports;
 import org.example.transport.tcp.TcpTransportServer;
+
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 public class TcpTransportTest {
@@ -24,12 +28,21 @@ public class TcpTransportTest {
 
     @Test
     public void testCanCreateClientServerBotGame() throws Exception {
+        createClientServerGame(BotPlayer::new, BotPlayer::new);
+    }
+
+    @Ignore("This is a manual test that needs to be run manually")
+    public void testCanCreateClientServerHumanBotGame() throws Exception {
+        createClientServerGame(HumanPlayer::new, BotPlayer::new);
+    }
+
+    private void createClientServerGame(Supplier<Player> p1Supplier, Supplier<Player> p2Supplier) {
         var executor = Executors.newVirtualThreadPerTaskExecutor();
         var serverSocketFuture = startServerAsync(SERVER_PORT, executor);
         try {
             // Wait for the server to start before starting clients
-            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, executor));
-            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, executor));
+            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, p1Supplier::get, executor));
+            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, p2Supplier::get, executor));
 
             // Wait for both clients to connect
             var client1SocketFuture = serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
@@ -42,14 +55,14 @@ public class TcpTransportTest {
             var game = connectedGame.get();
             game.play();
             log.log(Level.INFO, "[Server] Game complete.");
+
+            // Close the server socket when done
+            serverSocketFuture.thenAccept(TcpTransportTest::closeServerSocket);
+            executor.shutdown();
+            executor.awaitTermination(10, TimeUnit.MINUTES);
         } catch (InterruptedException | ExecutionException e) {
             log.log(Level.ERROR, e);
         }
-
-        // Close the server socket when done
-        serverSocketFuture.thenAccept(TcpTransportTest::closeServerSocket);
-        executor.shutdown();
-        executor.awaitTermination(10, TimeUnit.MINUTES);
     }
 
     private Game createGame(Socket client1Socket, Socket client2Socket) {
@@ -80,7 +93,7 @@ public class TcpTransportTest {
                 executor);
     }
 
-    private static void startClientAsync(String host, int port, ExecutorService executor) {
+    private static void startClientAsync(String host, int port, Supplier<Player> player, ExecutorService executor) {
         CompletableFuture.runAsync(
                 () -> {
                     try {
@@ -89,7 +102,7 @@ public class TcpTransportTest {
                                 Level.INFO,
                                 "[Client] Client connected to server on port {0,number,#}",
                                 port);
-                        var client = Transports.newTcpTransportClient(new BotPlayer(), socket);
+                        var client = Transports.newTcpTransportClient(player.get(), socket);
                         client.run();
                     } catch (IOException e) {
                         throw new RuntimeException("Error connecting to server on port " + port, e);

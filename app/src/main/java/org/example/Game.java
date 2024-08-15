@@ -57,38 +57,42 @@ public class Game implements Serializable, AutoCloseable {
         return persistence.loadFrom(gameFile);
     }
 
-    public void play() throws Exception {
-        GamePersistence persistence = new GamePersistence();
-        File persistenceDir = gameFileDirectory();
-        GameBoard board = activeGameBoard();
-        boolean movesAvailable = board.hasMovesAvailable();
-        PlayerNode currentPlayer = players.byIndex(currentPlayerIdx);
-        Optional<String> winningPlayer = checkWon(board, currentPlayer.playerMarker());
+    public void play() {
+        try {
+            GamePersistence persistence = new GamePersistence();
+            File persistenceDir = gameFileDirectory();
+            GameBoard board = activeGameBoard();
+            boolean movesAvailable = board.hasMovesAvailable();
+            PlayerNode currentPlayer = players.byIndex(currentPlayerIdx);
+            Optional<String> winningPlayer = checkWon(board, currentPlayer.playerMarker());
 
-        // Print Initial Setup
-        players.render();
-        while (winningPlayer.isEmpty() && movesAvailable) {
-            renderBoard();
-            log.log(Level.INFO, "Current Player: {0}", currentPlayer.playerMarker());
-            moveNumber += 1;
-            board =
-                    pushGameBoard(
-                            board.withMove(
-                                    currentPlayer.playerMarker(), currentPlayer.applyAsInt(board)));
-            if (persistenceEnabled && board instanceof Serializable) {
-                persistence.saveTo(gameFile(persistenceDir), this);
+            // Print Initial Setup
+            players.render();
+            while (winningPlayer.isEmpty() && movesAvailable) {
+                renderBoard();
+                log.log(Level.INFO, "Current Player: {0}", currentPlayer.playerMarker());
+                moveNumber += 1;
+                board =
+                        pushGameBoard(
+                                board.withMove(
+                                        currentPlayer.playerMarker(), currentPlayer.applyAsInt(board)));
+                if (persistenceEnabled && board instanceof Serializable) {
+                    persistence.saveTo(gameFile(persistenceDir), this);
+                }
+                winningPlayer = checkWon(board, currentPlayer.playerMarker());
+                movesAvailable = board.hasMovesAvailable();
+                currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
+                currentPlayer = players.byIndex(currentPlayerIdx);
             }
-            winningPlayer = checkWon(board, currentPlayer.playerMarker());
-            movesAvailable = board.hasMovesAvailable();
-            currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
-            currentPlayer = players.byIndex(currentPlayerIdx);
-        }
 
-        winningPlayer.ifPresentOrElse(
-                p -> log.log(Level.INFO, "Winner: Player {0}!", p),
-                () -> log.log(Level.INFO, "Tie Game!"));
-        renderBoard();
-        close();
+            winningPlayer.ifPresentOrElse(
+                    p -> log.log(Level.INFO, "Winner: Player {0}!", p),
+                    () -> log.log(Level.INFO, "Tie Game!"));
+            renderBoard();
+            close();
+        } catch (Exception e) {
+            throw new GameServiceException("Failure whilst playing game: " + e.getMessage(), e);
+        }
     }
 
     private Optional<String> checkWon(GameBoard board, String playerMarker) {
