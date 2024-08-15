@@ -20,13 +20,14 @@ public class TcpTransportTest {
 
     private static final String SERVER_HOST = "localhost";
 
-    private static final int SERVER_PORT = 9090;
+    private static final int SERVER_PORT = getAvailablePort();
 
     @Test
     public void testCanCreateClientServerBotGame() throws Exception {
         var executor = Executors.newVirtualThreadPerTaskExecutor();
         var serverSocketFuture = startServerAsync(SERVER_PORT, executor);
         try {
+            // Wait for the server to start before starting clients
             serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, executor));
             serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, executor));
 
@@ -127,6 +128,14 @@ public class TcpTransportTest {
             }
         } catch (IOException e) {
             throw new RuntimeException("Error connecting to server on port " + e.getMessage(), e);
+        }
+    }
+
+    static int getAvailablePort() {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to find available port", e);
         }
     }
 }
