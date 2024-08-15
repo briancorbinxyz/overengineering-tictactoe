@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
-import java.util.function.ToIntFunction;
-
 import org.example.GameBoard;
 import org.example.MessageHandler;
 import org.example.Player;
 import org.example.transport.TransportException;
 
-public record TcpTransportClient<T extends Player>(
-        MessageHandler connection, T player) implements AutoCloseable {
+public record TcpTransportClient<T extends Player>(MessageHandler connection, T player)
+        implements AutoCloseable {
 
     private static final Logger log =
             System.getLogger(MethodHandles.lookup().lookupClass().getName());

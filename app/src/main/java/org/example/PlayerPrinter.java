@@ -27,9 +27,13 @@ public class PlayerPrinter {
 
     private String playerToType(PlayerNode player) {
         return switch (player) {
-            case PlayerNode.Local<?> l -> "Local (" + l.playerMarker() + ":" + l.player().getClass().getSimpleName() + ")";
+            case PlayerNode.Local<?> l ->
+                    "Local ("
+                            + l.playerMarker()
+                            + ":"
+                            + l.player().getClass().getSimpleName()
+                            + ")";
             case PlayerNode.Remote r -> "Remote (" + r.playerMarker() + ")";
         };
     }
-
 }

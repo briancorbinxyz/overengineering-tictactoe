@@ -83,7 +83,8 @@ public class GameClient {
                         // Contention will cause SocketException, down Server ConnectException
                         var socket = new Socket(serverHost, serverSocket);
                                 var client =
-                                        Transports.newTcpTransportClient(new BotPlayer(), socket); ) {
+                                        Transports.newTcpTransportClient(
+                                                new BotPlayer(), socket); ) {
                             startedClients.increment();
                             log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
                             client.run();

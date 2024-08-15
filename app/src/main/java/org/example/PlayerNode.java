@@ -10,8 +10,9 @@ import org.example.transport.TransportServer;
 public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
 
     /**
-     * Gets the player's marker: a string representation of the player's identity.
-     * Returns the marker (e.g. "X" or "O") used by this player.
+     * Gets the player's marker: a string representation of the player's identity. Returns the
+     * marker (e.g. "X" or "O") used by this player.
+     *
      * @return the player's marker
      */
     String playerMarker();

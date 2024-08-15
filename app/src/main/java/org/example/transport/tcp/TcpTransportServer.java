@@ -37,14 +37,22 @@ public class TcpTransportServer implements TransportServer {
 
     @Override
     public void initialize(TransportConfiguration configuration) {
-        log.log(Level.DEBUG, "Initializing socket {0} for {1} to client for Tic-Tac-Toe.", socket, configuration.playerMarker());
+        log.log(
+                Level.DEBUG,
+                "Initializing socket {0} for {1} to client for Tic-Tac-Toe.",
+                socket,
+                configuration.playerMarker());
         try {
             handler.init();
             handler.sendMessage(
                     String.format(
                             TcpProtocol.GAME_STARTED_JSON_FORMAT, configuration.playerMarker()));
         } catch (IOException e) {
-            log.log(Level.WARNING, "Error initializing socket {0} for {1} to client for Tic-Tac-Toe.", socket, configuration.playerMarker());
+            log.log(
+                    Level.WARNING,
+                    "Error initializing socket {0} for {1} to client for Tic-Tac-Toe.",
+                    socket,
+                    configuration.playerMarker());
             throw new TransportException(e.getMessage(), e);
         }
     }

@@ -11,10 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
 import org.example.transport.Transports;
 import org.example.transport.tcp.TcpTransportServer;
-
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
@@ -41,15 +39,21 @@ public class TcpTransportTest {
         var serverSocketFuture = startServerAsync(SERVER_PORT, executor);
         try {
             // Wait for the server to start before starting clients
-            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, p1Supplier::get, executor));
-            serverSocketFuture.thenRun(() -> startClientAsync(SERVER_HOST, SERVER_PORT, p2Supplier::get, executor));
+            serverSocketFuture.thenRun(
+                    () -> startClientAsync(SERVER_HOST, SERVER_PORT, p1Supplier::get, executor));
+            serverSocketFuture.thenRun(
+                    () -> startClientAsync(SERVER_HOST, SERVER_PORT, p2Supplier::get, executor));
 
             // Wait for both clients to connect
-            var client1SocketFuture = serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
-            var client2SocketFuture = serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
-            var connectedGame = client1SocketFuture.thenCombine(
-                client2SocketFuture,
-                (client1Socket, client2Socket) -> createGame(client1Socket, client2Socket));
+            var client1SocketFuture =
+                    serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
+            var client2SocketFuture =
+                    serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
+            var connectedGame =
+                    client1SocketFuture.thenCombine(
+                            client2SocketFuture,
+                            (client1Socket, client2Socket) ->
+                                    createGame(client1Socket, client2Socket));
 
             // Wait for both clients to finish connecting and start the game
             var game = connectedGame.get();
@@ -70,13 +74,12 @@ public class TcpTransportTest {
         return new Game(
                 3,
                 false,
-                new PlayerNode.Remote(
-                        "X", new TcpTransportServer(client1Socket)),
-                new PlayerNode.Remote(
-                        "O", new TcpTransportServer(client2Socket)));
+                new PlayerNode.Remote("X", new TcpTransportServer(client1Socket)),
+                new PlayerNode.Remote("O", new TcpTransportServer(client2Socket)));
     }
 
-    private static CompletableFuture<ServerSocket> startServerAsync(int port, ExecutorService executor) {
+    private static CompletableFuture<ServerSocket> startServerAsync(
+            int port, ExecutorService executor) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     try {
@@ -93,7 +96,8 @@ public class TcpTransportTest {
                 executor);
     }
 
-    private static void startClientAsync(String host, int port, Supplier<Player> player, ExecutorService executor) {
+    private static void startClientAsync(
+            String host, int port, Supplier<Player> player, ExecutorService executor) {
         CompletableFuture.runAsync(
                 () -> {
                     try {

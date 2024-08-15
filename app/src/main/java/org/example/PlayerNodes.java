@@ -66,15 +66,17 @@ public class PlayerNodes implements Serializable {
         }
     }
 
-	public void close() {
-        players.values().forEach((p) -> {
-            if (p instanceof AutoCloseable c) {
-                try {
-                    c.close();
-                } catch (Exception e) {
-                    log.log(Level.WARNING, "Unable to close player " + p, e);
-                }
-            }
-        });
-	}
+    public void close() {
+        players.values()
+                .forEach(
+                        (p) -> {
+                            if (p instanceof AutoCloseable c) {
+                                try {
+                                    c.close();
+                                } catch (Exception e) {
+                                    log.log(Level.WARNING, "Unable to close player " + p, e);
+                                }
+                            }
+                        });
+    }
 }

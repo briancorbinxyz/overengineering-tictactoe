@@ -75,7 +75,8 @@ public class Game implements Serializable, AutoCloseable {
                 board =
                         pushGameBoard(
                                 board.withMove(
-                                        currentPlayer.playerMarker(), currentPlayer.applyAsInt(board)));
+                                        currentPlayer.playerMarker(),
+                                        currentPlayer.applyAsInt(board)));
                 if (persistenceEnabled && board instanceof Serializable) {
                     persistence.saveTo(gameFile(persistenceDir), this);
                 }
@@ -124,8 +125,8 @@ public class Game implements Serializable, AutoCloseable {
         return boards.peekLast();
     }
 
-	@Override
-	public void close() throws Exception {
+    @Override
+    public void close() throws Exception {
         players.close();
-	}
+    }
 }

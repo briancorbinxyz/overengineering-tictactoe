@@ -22,7 +22,10 @@ public record HumanPlayer() implements Player, Serializable {
         int location;
         var io = System.console() != null ? new ConsoleInput() : new ScannerInput();
         do {
-            log.log(Level.INFO, "Choose an available location from [0-{0}]: ", (board.dimension() * board.dimension() - 1));
+            log.log(
+                    Level.INFO,
+                    "Choose an available location from [0-{0}]: ",
+                    (board.dimension() * board.dimension() - 1));
             try {
                 var msg = io.readLine();
                 location = Integer.parseInt(msg);
