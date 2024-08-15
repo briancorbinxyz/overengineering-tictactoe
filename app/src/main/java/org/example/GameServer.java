@@ -6,10 +6,14 @@ import java.lang.System.Logger.Level;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Supplier;
+
 import org.example.transport.tcp.TcpTransportServer;
 
 public class GameServer {
@@ -53,31 +57,40 @@ public class GameServer {
     private void listenForPlayers(ExecutorService executor, ServerSocket serverSocket)
             throws IOException {
         while (true) {
-            executor.submit(
-                    () -> {
-                        try (Socket socketPlayerOne = serverSocket.accept();
-                                Socket socketPlayerTwo = serverSocket.accept();
-                                var playerX =
-                                        new PlayerNode.Remote(
-                                                "X", new TcpTransportServer(socketPlayerOne));
-                                var playerO =
-                                        new PlayerNode.Remote(
-                                                "O", new TcpTransportServer(socketPlayerTwo))) {
-                            log.log(
-                                    Level.INFO,
-                                    "{0} concurrent games in progress.",
-                                    updateStatsAndGetConcurrentGames());
-                            Game game = new Game(3, false, playerX, playerO);
-                            game.play();
-                            game.close();
-                        } catch (Exception e) {
-                            log.log(Level.ERROR, e.getMessage(), e);
-                            throw new RuntimeException(e);
-                        } finally {
-                            concurrentGames.decrement();
-                        }
-                    });
+            var clientSocket1Future = CompletableFuture.supplyAsync(clientSocketAsync(serverSocket), executor);
+            var clientSocket2Future = CompletableFuture.supplyAsync(clientSocketAsync(serverSocket), executor);
+            try {
+                clientSocket1Future.thenCombineAsync(clientSocket2Future, (clientSocket1, clientSocket2) -> {
+                    try {
+                        var playerX = new PlayerNode.Remote( "X", new TcpTransportServer(clientSocket1));
+                        var playerO = new PlayerNode.Remote( "O", new TcpTransportServer(clientSocket2));
+                        log.log( Level.INFO, "{0} concurrent games in progress.", updateStatsAndGetConcurrentGames());
+                        Game game = new Game(3, false, playerX, playerO);
+                        game.play();
+                        game.close();
+                        return null;
+                    } catch (Exception e) {
+                        log.log(Level.ERROR, e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    } finally {
+                        concurrentGames.decrement();
+                    }
+                }, executor).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new GameServiceException("Error during game execution: " + e.getMessage(), e);
+            }
         }
+    }
+
+    private Supplier<Socket> clientSocketAsync(ServerSocket serverSocket) {
+        return () -> {
+            try {
+                return serverSocket.accept();
+            } catch (IOException e) {
+                log.log(Level.INFO, e);
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     private long updateStatsAndGetConcurrentGames() {
