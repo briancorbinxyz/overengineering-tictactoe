@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 import org.example.transport.Transports;
+import org.openjdk.jmh.runner.RunnerException;
 
 public class GameClient {
 
@@ -77,6 +78,13 @@ public class GameClient {
 
     private void connectToServer(ExecutorService executor) {
         while (submittedClients.sum() < 2 * maxGames) {
+            try {
+                // Slow down the client to avoid saturating the server
+                Thread.sleep(5L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
             executor.submit(
                     () -> {
                         try (
@@ -86,13 +94,14 @@ public class GameClient {
                                         Transports.newTcpTransportClient(
                                                 new BotPlayer(), socket); ) {
                             startedClients.increment();
+                            socket.setKeepAlive(true);
                             log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
                             client.run();
                             completedClients.increment();
                         } catch (ConnectException _) {
                             failedClients.increment();
                             log.log(Level.ERROR, "Connect exception, server down.");
-                        } catch (SocketException _) {
+                        } catch (SocketException e) {
                             failedClients.increment();
                             log.log(Level.ERROR, "Socket exception, server disconnected.");
                         } catch (Exception e) {

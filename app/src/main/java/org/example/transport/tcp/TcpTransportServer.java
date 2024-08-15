@@ -59,6 +59,9 @@ public class TcpTransportServer implements TransportServer {
 
     @Override
     public void close() throws Exception {
+        if (socket.isClosed()) {
+            return;
+        }
         handler.sendMessage(TcpProtocol.EXIT_CODE);
         handler.close();
     }
