@@ -18,13 +18,14 @@ public record HumanPlayer() implements Player, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public int nextMove(GameBoard board) {
+    public int nextMove(String playerMarker, GameBoard board) {
         int location;
         var io = System.console() != null ? new ConsoleInput() : new ScannerInput();
         do {
             log.log(
                     Level.INFO,
-                    "Choose an available location from [0-{0}]: ",
+                    "Player '{0}' choose an available location from [0-{1}]: ",
+                    playerMarker,
                     (board.dimension() * board.dimension() - 1));
             try {
                 var msg = io.readLine();

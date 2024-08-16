@@ -40,9 +40,11 @@ public class TcpTransportTest {
         try {
             // Wait for the server to start before starting clients
             serverSocketFuture.thenRun(
-                    () -> startClientAsync(SERVER_HOST, SERVER_PORT, p1Supplier::get, executor));
+                    () -> startClientAsync(SERVER_HOST, SERVER_PORT, p1Supplier::get, executor))
+                            .exceptionally((e) -> {log.log(Level.ERROR, "P1 Exception: " + e.getMessage(), e); return null;} );
             serverSocketFuture.thenRun(
-                    () -> startClientAsync(SERVER_HOST, SERVER_PORT, p2Supplier::get, executor));
+                    () -> startClientAsync(SERVER_HOST, SERVER_PORT, p2Supplier::get, executor))
+                            .exceptionally((e) -> {log.log(Level.ERROR, "P2 Exception: " + e.getMessage(), e); return null;} );
 
             // Wait for both clients to connect
             var client1SocketFuture =

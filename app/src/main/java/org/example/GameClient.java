@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 import org.example.transport.Transports;
-import org.openjdk.jmh.runner.RunnerException;
 
 public class GameClient {
 

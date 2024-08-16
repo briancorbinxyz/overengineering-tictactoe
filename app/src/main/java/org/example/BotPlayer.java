@@ -2,13 +2,15 @@ package org.example;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
 /**
  * Represents a bot player in the game. The bot player uses a random number generator to make moves
  * on the game board.
  */
-public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable {
+public record BotPlayer(BotStrategy botStrategy)
+        implements Player, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -16,31 +18,31 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
         this(BotStrategy.RANDOM);
     }
 
-    public int nextMove(GameBoard board) {
-        return botStrategy.apply(board);
+    @Override   
+    public int nextMove(String playerMarker, GameBoard board) {
+        return botStrategy.apply(playerMarker, board);
     }
 
     public static enum BotStrategy {
-        RANDOM(
-                (board) -> {
-                    var random = new SecureRandom();
-                    int dimension = board.dimension();
-                    int location;
-                    do {
-                        location = random.nextInt(dimension * dimension);
-                    } while (!board.isValidMove(location));
-                    return location;
-                }),
+        RANDOM((_, board) -> {
+            var random = new SecureRandom();
+            int dimension = board.dimension();
+            int location;
+            do {
+                location = random.nextInt(dimension * dimension);
+            } while (!board.isValidMove(location));
+            return location;
+        }),
         ;
 
-        public int apply(GameBoard board) {
-            return strategyFunction.applyAsInt(board);
+        public int apply(String playerMarker, GameBoard board) {
+            return strategyFunction.applyAsInt(playerMarker, board);
         }
 
-        private BotStrategy(ToIntFunction<GameBoard> strategyFunction) {
+        private BotStrategy(ToIntBiFunction<String, GameBoard> strategyFunction) {
             this.strategyFunction = strategyFunction;
         }
 
-        private ToIntFunction<GameBoard> strategyFunction;
+        private ToIntBiFunction<String, GameBoard> strategyFunction;
     }
 }

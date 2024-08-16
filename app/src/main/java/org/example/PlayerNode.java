@@ -46,7 +46,7 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
          */
         @Override
         public int applyAsInt(GameBoard board) {
-            return player.nextMove(board);
+            return player.nextMove(playerMarker, board);
         }
 
         @Override
