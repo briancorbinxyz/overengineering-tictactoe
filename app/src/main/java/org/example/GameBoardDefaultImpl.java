@@ -30,19 +30,6 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
         return boardAsString();
     }
 
-    public String validBoardPlacementsAsString() {
-        String boardString = "";
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                int index = j + i * dimension;
-                boardString +=
-                        blankElseIndex(content[index], index) + (j + 1 < dimension ? " " : "");
-            }
-            boardString += "\n";
-        }
-        return boardString;
-    }
-
     private String boardAsString() {
         String boardString = "";
         for (int i = 0; i < dimension; i++) {
@@ -121,14 +108,10 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
         return unit == null ? "\u005F" : unit;
     }
 
-    private String blankElseIndex(String unit, int index) {
-        return unit == null ? String.valueOf(index) : "\u005F";
-    }
-
     @Override
     public GameBoardDefaultImpl withMove(String playerMarker, int location) {
         if (!isValidMove(location)) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Invalid move: " + playerMarker + "@" + location);
         }
         String[] boardCopy = getBoardCopy();
         boardCopy[location] = playerMarker;

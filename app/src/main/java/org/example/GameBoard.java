@@ -1,5 +1,8 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a game board for a game. The game board has a square dimension and contains a grid of
  * game pieces. This interface defines the operations that can be performed on the game board.
@@ -13,6 +16,25 @@ public interface GameBoard extends JsonSerializable {
      * @return true if the location is a valid move, false otherwise
      */
     boolean isValidMove(int location);
+
+    /**
+     * Returns a list of available moves on the game board.
+     *
+     * @return a list of available moves on the game board
+     */
+    default List<Integer> availableMoves() {
+        int d = dimension();
+        List<Integer> availableMoves = new ArrayList<Integer>(d * d);
+        for (int i = 0; i < d; i++) {
+            for (int j = 0; j < d; j++) {
+                if (isValidMove(i * d + j)) {
+                    availableMoves.add(i * d + j);
+                }
+            }
+        }
+        return availableMoves;
+    }
+    ;
 
     /**
      * Checks if the given player has a winning chain of connected game pieces on the game board.

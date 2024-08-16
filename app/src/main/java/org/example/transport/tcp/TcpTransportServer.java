@@ -69,7 +69,8 @@ public class TcpTransportServer implements TransportServer {
     @Override
     public void send(GameBoard board) {
         try {
-            String nextMoveMsg = String.format(TcpProtocol.NEXT_MOVE_JSON_FORMAT, board.asJsonString());
+            String nextMoveMsg =
+                    String.format(TcpProtocol.NEXT_MOVE_JSON_FORMAT, board.asJsonString());
             log.log(Level.DEBUG, "Sending message to client: {0}", nextMoveMsg);
             handler.sendMessage(nextMoveMsg);
         } catch (IOException e) {

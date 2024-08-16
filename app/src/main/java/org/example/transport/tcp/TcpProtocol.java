@@ -1,8 +1,6 @@
 package org.example.transport.tcp;
 
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.example.GameBoard;
@@ -19,14 +17,16 @@ public class TcpProtocol {
                     + "\"assignedPlayerMarker\":\"%s\""
                     + "}";
 
-    public static final Pattern GAME_STARTED_JSON_PATTERN = Pattern.compile(
-            "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\",\\\"assignedPlayerMarker\\\":\\\"([^\\\"]+)\\\".*}");
+    public static final Pattern GAME_STARTED_JSON_PATTERN =
+            Pattern.compile(
+                    "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\",\\\"assignedPlayerMarker\\\":\\\"([^\\\"]+)\\\".*}");
 
     ///
     /// Next Move Message
     /// e.g.
     /// ```json
-    /// {"version":1,"message":"nextMove","board":{"dimension":3,"content":["X",null,"O",null,"X",null,"X",null,"O"]}}
+    ///
+    // {"version":1,"message":"nextMove","board":{"dimension":3,"content":["X",null,"O",null,"X",null,"X",null,"O"]}}
     /// ```
     public static final String NEXT_MOVE_JSON_FORMAT =
             "{" + "\"version\":1," + "\"message\":\"nextMove\"," + "\"board\":%s" + "}";
@@ -41,10 +41,10 @@ public class TcpProtocol {
         if (matcher.matches()) {
             int dimension = Integer.valueOf(matcher.group(3));
             board = new GameBoardDefaultImpl(dimension);
-            String [] rawContent = matcher.group(4).split(",");
+            String[] rawContent = matcher.group(4).split(",");
             for (int i = 0; i < rawContent.length; i++) {
                 if (rawContent[i] != null && !rawContent[i].equals("null")) {
-                    board = board.withMove(rawContent[i].replaceAll("\"",""), i);
+                    board = board.withMove(rawContent[i].replaceAll("\"", ""), i);
                 }
             }
         }

@@ -1,11 +1,10 @@
 package org.example.transport.tcp;
 
 import java.io.IOException;
-import java.util.function.Consumer;
-
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
 import org.example.GameBoard;
 import org.example.MessageHandler;
 import org.example.Player;
@@ -42,7 +41,7 @@ public record TcpTransportClient<T extends Player>(MessageHandler connection, T 
                         () -> {
                             throw new TransportException("Invalid message from transport");
                         });
-            }  
+            }
             handleExit(msg);
         } catch (IOException e) {
             throw new TransportException("IO exception: " + e.getMessage(), e);
@@ -76,9 +75,14 @@ public record TcpTransportClient<T extends Player>(MessageHandler connection, T 
     private String initPlayerMarker() throws IOException {
         String serverMessage = connection.receiveMessage();
         log.log(Level.DEBUG, "Received initial message from server: {0}", serverMessage);
-        String playerMarker = TcpProtocol.fromGameStartedState(serverMessage).orElseThrow(() -> new TransportException("Invalid server message received. Expected game started state."));
+        String playerMarker =
+                TcpProtocol.fromGameStartedState(serverMessage)
+                        .orElseThrow(
+                                () ->
+                                        new TransportException(
+                                                "Invalid server message received. Expected game"
+                                                        + " started state."));
         log.log(Level.DEBUG, "Received assigned player marker: '{0}'", playerMarker);
         return playerMarker;
     }
-
 }

@@ -6,6 +6,7 @@ package org.example;
 import java.io.File;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import org.example.BotPlayer.BotStrategy;
 
 /** A simple java tic-tac-toe game. */
 public class App {
@@ -18,7 +19,12 @@ public class App {
      * @throws Exception if there is an error whilst playing the game
      */
     public void run() throws Exception {
-        var game = new Game();
+        var game =
+                new Game(
+                        3,
+                        false,
+                        new PlayerNode.Local<>("X", new HumanPlayer()),
+                        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MINIMAX)));
         game.play();
         game.close();
     }

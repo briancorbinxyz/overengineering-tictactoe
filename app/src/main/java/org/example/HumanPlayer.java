@@ -24,7 +24,7 @@ public record HumanPlayer() implements Player, Serializable {
         do {
             log.log(
                     Level.INFO,
-                    "Player '{0}' choose an available location from [0-{1}]: ",
+                    "Player {0}: choose an available location from [0-{1}]: ",
                     playerMarker,
                     (board.dimension() * board.dimension() - 1));
             try {

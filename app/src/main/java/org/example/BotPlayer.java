@@ -3,14 +3,12 @@ package org.example;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.function.ToIntBiFunction;
-import java.util.function.ToIntFunction;
 
 /**
  * Represents a bot player in the game. The bot player uses a random number generator to make moves
  * on the game board.
  */
-public record BotPlayer(BotStrategy botStrategy)
-        implements Player, Serializable {
+public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -18,22 +16,27 @@ public record BotPlayer(BotStrategy botStrategy)
         this(BotStrategy.RANDOM);
     }
 
-    @Override   
+    @Override
     public int nextMove(String playerMarker, GameBoard board) {
         return botStrategy.apply(playerMarker, board);
     }
 
     public static enum BotStrategy {
-        RANDOM((_, board) -> {
-            var random = new SecureRandom();
-            int dimension = board.dimension();
-            int location;
-            do {
-                location = random.nextInt(dimension * dimension);
-            } while (!board.isValidMove(location));
-            return location;
-        }),
-        ;
+        RANDOM(
+                (_, board) -> {
+                    var random = new SecureRandom();
+                    int dimension = board.dimension();
+                    int location;
+                    do {
+                        location = random.nextInt(dimension * dimension);
+                    } while (!board.isValidMove(location));
+                    return location;
+                }),
+        MINIMAX(
+                (playerMarker, board) -> {
+                    var minimax = new Minimax(playerMarker, board);
+                    return minimax.bestMove();
+                });
 
         public int apply(String playerMarker, GameBoard board) {
             return strategyFunction.applyAsInt(playerMarker, board);

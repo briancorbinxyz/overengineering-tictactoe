@@ -70,7 +70,7 @@ public class Game implements Serializable, AutoCloseable {
             players.render();
             while (winningPlayer.isEmpty() && movesAvailable) {
                 renderBoard();
-                log.log(Level.INFO, "Current Player: {0}", currentPlayer.playerMarker());
+                log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
                 moveNumber += 1;
                 board =
                         pushGameBoard(
