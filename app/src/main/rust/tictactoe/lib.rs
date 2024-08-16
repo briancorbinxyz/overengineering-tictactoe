@@ -254,10 +254,10 @@ mod tictactoe {
         }
 
         pub fn has_chain(&self, player: u32) -> bool {
-            let mut chain = 0;
-
             // rows
+            let mut chain: u32;
             for row_index in 0..self.dimension {
+                chain = 0;
                 for col_index in 0..self.dimension {
                     if self.get(row_index, col_index) == player {
                         chain += 1;
@@ -271,6 +271,7 @@ mod tictactoe {
             }
             // cols
             for col_index in 0..self.dimension {
+                chain = 0;
                 for row_index in 0..self.dimension {
                     if self.get(row_index, col_index) == player {
                         chain += 1;
@@ -283,6 +284,7 @@ mod tictactoe {
                 }
             }
             // diagonals
+            chain = 0;
             for offset in 0..self.dimension {
                 if self.get(offset, offset) == player {
                     chain += 1;
@@ -293,6 +295,7 @@ mod tictactoe {
                     return true;
                 }
             }
+            chain = 0;
             for offset in 0..self.dimension {
                 if self.get(offset, self.dimension - offset - 1) == player {
                     chain += 1;
