@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
+
+import org.example.BotPlayer.BotStrategy;
 import org.example.transport.Transports;
 
 public class GameClient {
@@ -91,7 +93,7 @@ public class GameClient {
                         var socket = new Socket(serverHost, serverSocket);
                                 var client =
                                         Transports.newTcpTransportClient(
-                                                new BotPlayer(), socket); ) {
+                                                new BotPlayer(BotStrategy.MINIMAX), socket); ) {
                             startedClients.increment();
                             socket.setKeepAlive(true);
                             log.log(Level.INFO, "Started {0} clients.", startedClients.sum());
@@ -102,9 +104,10 @@ public class GameClient {
                             log.log(Level.ERROR, "Connect exception, server down.");
                         } catch (SocketException e) {
                             failedClients.increment();
-                            log.log(Level.ERROR, "Socket exception, server disconnected.");
+                            log.log(Level.ERROR, "Socket exception, server disconnected: {}", e.getMessage());
                         } catch (Exception e) {
                             failedClients.increment();
+                            log.log(Level.ERROR, "Unexpected exception: {}", e.getMessage());
                             throw new RuntimeException(e);
                         }
                     });

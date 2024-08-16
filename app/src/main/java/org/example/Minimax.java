@@ -63,7 +63,7 @@ public class Minimax {
 
     private void log(int location, int score, int depth) {
         String indent = "-".repeat(depth);
-        log.log(Level.INFO, "{0}{1}: Location: {2} Score: {3}", indent, maximizer, location, score);
+        log.log(Level.DEBUG, "{0}{1}: Location: {2} Score: {3}", indent, maximizer, location, score);
     }
 
 
