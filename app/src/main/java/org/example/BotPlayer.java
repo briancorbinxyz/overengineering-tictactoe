@@ -25,12 +25,8 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
         RANDOM(
                 (_, board) -> {
                     var random = new SecureRandom();
-                    int dimension = board.dimension();
-                    int location;
-                    do {
-                        location = random.nextInt(dimension * dimension);
-                    } while (!board.isValidMove(location));
-                    return location;
+                    var availableMoves = board.availableMoves();
+                    return availableMoves.get(random.nextInt(availableMoves.size()));
                 }),
         MINIMAX(
                 (playerMarker, board) -> {

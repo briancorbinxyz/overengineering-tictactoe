@@ -23,7 +23,8 @@ public class Minimax {
         int bestMove = -1;
         int maxScore = -Integer.MAX_VALUE;
         for (int move : board.availableMoves()) {
-            int score = minimax(board.withMove(maximizer, move), false, 0);
+            var newBoard = board.withMove(maximizer, move);
+            int score = minimax(newBoard, false, 0);
             log(move, score, 0);
             if (score > maxScore) {
                 maxScore = score;
@@ -63,9 +64,14 @@ public class Minimax {
 
     private void log(int location, int score, int depth) {
         String indent = "-".repeat(depth);
-        log.log(Level.DEBUG, "{0}{1}: Location: {2} Score: {3}", indent, maximizer, location, score);
+        log.log(
+                Level.DEBUG,
+                "{0}{1}: Location: {2} Score: {3}",
+                indent,
+                maximizer,
+                location,
+                score);
     }
-
 
     // TODO: This only works for the standard 1v1 game.
     private String opponent(String playerMarker) {

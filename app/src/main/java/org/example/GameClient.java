@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
-
 import org.example.BotPlayer.BotStrategy;
 import org.example.transport.Transports;
 
@@ -104,7 +103,10 @@ public class GameClient {
                             log.log(Level.ERROR, "Connect exception, server down.");
                         } catch (SocketException e) {
                             failedClients.increment();
-                            log.log(Level.ERROR, "Socket exception, server disconnected: {}", e.getMessage());
+                            log.log(
+                                    Level.ERROR,
+                                    "Socket exception, server disconnected: {}",
+                                    e.getMessage());
                         } catch (Exception e) {
                             failedClients.increment();
                             log.log(Level.ERROR, "Unexpected exception: {}", e.getMessage());
