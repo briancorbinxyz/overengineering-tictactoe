@@ -95,7 +95,7 @@ public class GameServer {
                             Game game = new Game(3, false, playerX, playerO);
                             game.play();
                             game.close();
-                            return null;
+                            return game;
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         } finally {

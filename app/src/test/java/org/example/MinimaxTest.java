@@ -1,5 +1,8 @@
 package org.example;
 
+import static org.example.TestData.*;
+
+import org.example.algo.Minimax;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -86,17 +89,5 @@ public class MinimaxTest {
         Assert.assertEquals(new Minimax("O", board[3]).bestMove(), 5);
         Assert.assertEquals(new Minimax("O", board[4]).bestMove(), 8);
         Assert.assertEquals(new Minimax("O", board[5]).bestMove(), 0);
-    }
-
-    private GameBoard createBoardWith(String[][] content) {
-        var board = new GameBoardDefaultImpl(3);
-        for (int row = 0; row < content.length; row++) {
-            for (int col = 0; col < content[row].length; col++) {
-                if (content[row][col] != null && !content[row][col].equals("_")) {
-                    board = board.withMove(content[row][col], row * 3 + col);
-                }
-            }
-        }
-        return board;
     }
 }

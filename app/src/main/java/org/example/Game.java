@@ -72,11 +72,11 @@ public class Game implements Serializable, AutoCloseable {
                 renderBoard();
                 log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
                 moveNumber += 1;
-                board =
-                        pushGameBoard(
-                                board.withMove(
-                                        currentPlayer.playerMarker(),
-                                        currentPlayer.applyAsInt(board)));
+                var state = new GameState(board, players.playerMarkerList(), currentPlayerIdx);
+                var newBoard =
+                        board.withMove(
+                                currentPlayer.playerMarker(), currentPlayer.applyAsInt(state));
+                board = pushGameBoard(newBoard);
                 if (persistenceEnabled && board instanceof Serializable) {
                     persistence.saveTo(gameFile(persistenceDir), this);
                 }

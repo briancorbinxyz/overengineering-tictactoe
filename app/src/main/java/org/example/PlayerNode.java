@@ -7,7 +7,7 @@ import java.util.function.ToIntFunction;
 import org.example.transport.TransportConfiguration;
 import org.example.transport.TransportServer;
 
-public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
+public sealed interface PlayerNode extends ToIntFunction<GameState> {
 
     /**
      * Gets the player's marker: a string representation of the player's identity. Returns the
@@ -18,12 +18,12 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
     String playerMarker();
 
     /**
-     * Gets the player's next move to apply to the given game board.
+     * Gets the player's next move to apply to the game board with the current game state.
      *
-     * @param board the game board to apply the move to
+     * @param board to apply the move to
      * @return the location on the game board where the move was made
      */
-    public int applyAsInt(GameBoard board);
+    public int applyAsInt(GameState state);
 
     public final class Local<P extends Player> implements PlayerNode, Serializable {
 
@@ -45,8 +45,8 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
          * @return the location on the game board where the move was made
          */
         @Override
-        public int applyAsInt(GameBoard board) {
-            return player.nextMove(playerMarker, board);
+        public int applyAsInt(GameState state) {
+            return player.nextMove(state);
         }
 
         @Override
@@ -56,6 +56,11 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
 
         public Player player() {
             return player;
+        }
+        
+        @Override
+        public String toString() {
+            return "Local{" + "playerMarker=" + playerMarker + ", player=" + player + "}";
         }
     }
 
@@ -83,20 +88,20 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
          * @return the location on the game board where the move was made
          */
         @Override
-        public int applyAsInt(GameBoard board) {
-            int location = -1;
+        public int applyAsInt(GameState state) {
+            int move = -1;
             do {
                 try {
-                    log.log(Level.DEBUG, "Sending game board state to client: {0}", board);
-                    transport.send(board);
-                    // After receiving the game board the player should send a move
-                    location = transport.accept(board);
-                    log.log(Level.DEBUG, "Received move from client: {0}", location);
+                    log.log(Level.DEBUG, "Sending game state to client: {0}", state);
+                    transport.send(state);
+                    // After receiving the game state the player should send a move
+                    move = transport.accept();
+                    log.log(Level.DEBUG, "Received move from client: {0}", move);
                 } catch (NumberFormatException e) {
                     log.log(Level.TRACE, "Invalid move from client: {0}", e.getMessage(), e);
                 }
-            } while (!board.isValidMove(location));
-            return location;
+            } while (!state.board().isValidMove(move));
+            return move;
         }
 
         @Override
@@ -107,6 +112,11 @@ public sealed interface PlayerNode extends ToIntFunction<GameBoard> {
         @Override
         public String playerMarker() {
             return playerMarker;
+        }
+
+        @Override
+        public String toString() {
+            return "Remote{" + "playerMarker=" + playerMarker + ", transport=" + transport.getClass().getSimpleName() + '}';
         }
     }
 }

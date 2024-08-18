@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
-import java.util.function.Consumer;
-import org.example.GameBoard;
+
+import org.example.GameState;
 import org.example.MessageHandler;
 import org.example.Player;
 import org.example.transport.TransportException;
@@ -30,15 +30,16 @@ public record TcpTransportClient<T extends Player>(MessageHandler connection, T 
         log.log(Level.DEBUG, "Started TCP transport client");
         try {
             String playerMarker = initPlayerMarker();
+            log.log(Level.DEBUG, "Playing as {0}", playerMarker);
 
             String msg;
             while ((msg = connection.receiveMessage()) != null
                     && !msg.equals(TcpProtocol.EXIT_CODE)) {
-                log.log(Level.DEBUG, "Received message from server: {0}", msg);
-                var board = TcpProtocol.fromNextMoveState(msg);
-                board.ifPresentOrElse(
-                        makeMove(playerMarker),
+                log.log(Level.DEBUG, "Received message from server: {0} for {1}", msg, player);
+                TcpProtocol.fromNextMoveState(msg).ifPresentOrElse(
+                        (state) -> makeMove(state),
                         () -> {
+                            log.log(Level.ERROR, "Invalid message from transport");
                             throw new TransportException("Invalid message from transport");
                         });
             }
@@ -48,15 +49,13 @@ public record TcpTransportClient<T extends Player>(MessageHandler connection, T 
         }
     }
 
-    private Consumer<GameBoard> makeMove(String playerMarker) {
-        return (GameBoard b) -> {
-            int nextMove = player.nextMove(playerMarker, b);
-            try {
-                connection.sendMessage(String.valueOf(nextMove));
-            } catch (IOException e) {
-                throw new TransportException("IO exception: " + e.getMessage(), e);
-            }
-        };
+    private void makeMove(GameState state) {
+        int nextMove = player.nextMove(state);
+        try {
+            connection.sendMessage(String.valueOf(nextMove));
+        } catch (IOException e) {
+            throw new TransportException("IO exception: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -82,7 +81,7 @@ public record TcpTransportClient<T extends Player>(MessageHandler connection, T 
                                         new TransportException(
                                                 "Invalid server message received. Expected game"
                                                         + " started state."));
-        log.log(Level.DEBUG, "Received assigned player marker: '{0}'", playerMarker);
+        log.log(Level.DEBUG, "Received assigned player marker: {0}", playerMarker);
         return playerMarker;
     }
 }

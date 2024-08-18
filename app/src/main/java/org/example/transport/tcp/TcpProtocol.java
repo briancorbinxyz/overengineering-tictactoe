@@ -1,10 +1,11 @@
 package org.example.transport.tcp;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.example.GameBoard;
 import org.example.GameBoardDefaultImpl;
+import org.example.GameState;
 
 public class TcpProtocol {
 
@@ -25,30 +26,35 @@ public class TcpProtocol {
     /// Next Move Message
     /// e.g.
     /// ```json
-    ///
-    // {"version":1,"message":"nextMove","board":{"dimension":3,"content":["X",null,"O",null,"X",null,"X",null,"O"]}}
+    // {"version":1,"message":"nextMove","state":{"playerMarkers":["X","O"],"currentPlayerIndex":1,"board":{"dimension":3,"content":["X","O",null,null,"X",null,null,null,null]}}}
     /// ```
     public static final String NEXT_MOVE_JSON_FORMAT =
-            "{" + "\"version\":1," + "\"message\":\"nextMove\"," + "\"board\":%s" + "}";
+            "{" + "\"version\":1," + "\"message\":\"nextMove\"," + "\"state\":%s" + "}";
 
     public static final Pattern NEXT_MOVE_JSON_PATTERN =
             Pattern.compile(
-                    "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\",\\\"board\\\":\\{\\\"dimension\\\":(\\d+),\\\"content\\\":\\[(.*)\\]\\}.*\\}");
+                    "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\","
+                        + "\\\"state\\\":\\{\\\"playerMarkers\\\":\\[(.*)\\],\\\"currentPlayerIndex\\\":(\\d+),"
+                        + "\\\"board\\\":\\{\\\"dimension\\\":(\\d+),\\\"content\\\":\\[(.*)\\]\\}.*\\}"
+                        + "}");
 
-    public static Optional<GameBoard> fromNextMoveState(String serverMessage) {
+    public static Optional<GameState> fromNextMoveState(String serverMessage) {
         Matcher matcher = TcpProtocol.NEXT_MOVE_JSON_PATTERN.matcher(serverMessage);
-        GameBoard board = null;
+        GameState state = null;
         if (matcher.matches()) {
-            int dimension = Integer.valueOf(matcher.group(3));
-            board = new GameBoardDefaultImpl(dimension);
+            String[] playerMarkers = matcher.group(3).replaceAll("\"", "").split(",");
+            int currentPlayerIndex = Integer.valueOf(matcher.group(4));
+            int dimension = Integer.valueOf(matcher.group(5));
+            var board = new GameBoardDefaultImpl(dimension);
             String[] rawContent = matcher.group(4).split(",");
             for (int i = 0; i < rawContent.length; i++) {
                 if (rawContent[i] != null && !rawContent[i].equals("null")) {
                     board = board.withMove(rawContent[i].replaceAll("\"", ""), i);
                 }
             }
+            state = new GameState(board, List.of(playerMarkers), currentPlayerIndex);
         }
-        return Optional.ofNullable(board);
+        return Optional.ofNullable(state);
     }
 
     public static Optional<String> fromGameStartedState(String serverMessage) {

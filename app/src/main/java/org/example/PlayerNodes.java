@@ -41,7 +41,7 @@ public class PlayerNodes implements Serializable {
 
     public void render() {
         PlayerPrinter printer = new PlayerPrinter();
-        log.log(Level.INFO, "Players: {0}", playerMarkers());
+        log.log(Level.INFO, "Players: {0} ({1})", playerMarkers(), players.values());
         for (PlayerNode player : players.values()) {
             log.log(Level.INFO, "- {0}", printer.getPlayerIdentifier(player));
         }
@@ -49,6 +49,10 @@ public class PlayerNodes implements Serializable {
 
     public String playerMarkers() {
         return String.join(", ", players.sequencedKeySet());
+    }
+
+    public List<String> playerMarkerList() {
+        return new ArrayList<>(playerMarkers);
     }
 
     private void tryAddPlayer(PlayerNode player) {

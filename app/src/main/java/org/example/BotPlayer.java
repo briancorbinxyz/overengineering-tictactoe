@@ -2,7 +2,8 @@ package org.example;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
-import java.util.function.ToIntBiFunction;
+import java.util.function.ToIntFunction;
+import org.example.algo.Minimax;
 
 /**
  * Represents a bot player in the game. The bot player uses a random number generator to make moves
@@ -17,31 +18,31 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
     }
 
     @Override
-    public int nextMove(String playerMarker, GameBoard board) {
-        return botStrategy.apply(playerMarker, board);
+    public int nextMove(GameState state) {
+        return botStrategy.apply(state);
     }
 
     public static enum BotStrategy {
         RANDOM(
-                (_, board) -> {
+                (state) -> {
                     var random = new SecureRandom();
-                    var availableMoves = board.availableMoves();
+                    var availableMoves = state.board().availableMoves();
                     return availableMoves.get(random.nextInt(availableMoves.size()));
                 }),
         MINIMAX(
-                (playerMarker, board) -> {
-                    var minimax = new Minimax(playerMarker, board);
+                (state) -> {
+                    var minimax = new Minimax(state.currentPlayer(), state.board());
                     return minimax.bestMove();
                 });
 
-        public int apply(String playerMarker, GameBoard board) {
-            return strategyFunction.applyAsInt(playerMarker, board);
+        public int apply(GameState state) {
+            return strategyFunction.applyAsInt(state);
         }
 
-        private BotStrategy(ToIntBiFunction<String, GameBoard> strategyFunction) {
+        private BotStrategy(ToIntFunction<GameState> strategyFunction) {
             this.strategyFunction = strategyFunction;
         }
 
-        private ToIntBiFunction<String, GameBoard> strategyFunction;
+        private ToIntFunction<GameState> strategyFunction;
     }
 }

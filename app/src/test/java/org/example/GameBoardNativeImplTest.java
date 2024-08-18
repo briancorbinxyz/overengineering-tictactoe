@@ -1,5 +1,6 @@
 package org.example;
 
+import static org.example.TestData.*;
 import static org.testng.Assert.assertNotNull;
 
 import java.lang.System.Logger;
@@ -74,18 +75,6 @@ public class GameBoardNativeImplTest {
         Assert.assertTrue(board[3].hasChain("X"));
         Assert.assertFalse(board[3].hasChain("O"));
         Assert.assertFalse(board[4].hasChain("O"));
-    }
-
-    private GameBoard createBoardWith(String[][] content) {
-        GameBoard board = new GameBoardNativeImpl(3);
-        for (int row = 0; row < content.length; row++) {
-            for (int col = 0; col < content[row].length; col++) {
-                if (content[row][col] != null && !content[row][col].equals("_")) {
-                    board = board.withMove(content[row][col], row * 3 + col);
-                }
-            }
-        }
-        return board;
     }
 
     private void printSystemProperties() {

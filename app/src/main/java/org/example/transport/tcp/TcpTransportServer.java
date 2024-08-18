@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.Socket;
-import org.example.GameBoard;
+import org.example.GameState;
 import org.example.MessageHandler;
 import org.example.RemoteMessageHandler;
 import org.example.SecureMessageHandler;
@@ -14,6 +14,7 @@ import org.example.transport.TransportConfiguration;
 import org.example.transport.TransportException;
 import org.example.transport.TransportServer;
 
+/** A {@link TransportServer} implementation that uses TCP sockets. */
 public class TcpTransportServer implements TransportServer {
 
     private static final Logger log = System.getLogger(TcpTransportServer.class.getName());
@@ -67,10 +68,10 @@ public class TcpTransportServer implements TransportServer {
     }
 
     @Override
-    public void send(GameBoard board) {
+    public void send(GameState state) {
         try {
-            String nextMoveMsg =
-                    String.format(TcpProtocol.NEXT_MOVE_JSON_FORMAT, board.asJsonString());
+            var nextMoveMsg =
+                    String.format(TcpProtocol.NEXT_MOVE_JSON_FORMAT, state.asJsonString());
             log.log(Level.DEBUG, "Sending message to client: {0}", nextMoveMsg);
             handler.sendMessage(nextMoveMsg);
         } catch (IOException e) {
@@ -79,7 +80,7 @@ public class TcpTransportServer implements TransportServer {
     }
 
     @Override
-    public int accept(GameBoard board) {
+    public int accept() {
         try {
             var clientMessage = handler.receiveMessage();
             return Integer.parseInt(clientMessage);

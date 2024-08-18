@@ -18,25 +18,25 @@ public record HumanPlayer() implements Player, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public int nextMove(String playerMarker, GameBoard board) {
-        int location;
+    public int nextMove(GameState state) {
+        int move;
         var io = System.console() != null ? new ConsoleInput() : new ScannerInput();
         do {
             log.log(
                     Level.INFO,
                     "Player {0}: choose an available location from [0-{1}]: ",
-                    playerMarker,
-                    (board.dimension() * board.dimension() - 1));
+                    state.currentPlayer(),
+                    (state.board().dimension() * state.board().dimension() - 1));
             try {
                 var msg = io.readLine();
-                location = Integer.parseInt(msg);
+                move = Integer.parseInt(msg);
             } catch (NumberFormatException e) {
                 // expected if user enters non-integer carry on.
                 log.log(Level.TRACE, "Invalid location: {0}", e.getMessage(), e);
-                location = -1;
+                move = -1;
             }
-        } while (!board.isValidMove(location));
-        return location;
+        } while (!state.board().isValidMove(move));
+        return move;
     }
 
     static sealed interface Input {

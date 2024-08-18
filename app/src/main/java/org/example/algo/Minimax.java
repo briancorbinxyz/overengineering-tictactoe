@@ -1,7 +1,8 @@
-package org.example;
+package org.example.algo;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import org.example.GameBoard;
 
 public class Minimax {
 
@@ -47,7 +48,7 @@ public class Minimax {
             int value = -Integer.MAX_VALUE;
             for (int move : board.availableMoves()) {
                 var newBoard = board.withMove(maximizer, move);
-                var score = minimax(newBoard, false, depth + 1);
+                int score = minimax(newBoard, false, depth + 1);
                 value = Math.max(value, score);
             }
             return value;
@@ -55,7 +56,7 @@ public class Minimax {
             int value = Integer.MAX_VALUE;
             for (int move : board.availableMoves()) {
                 var newBoard = board.withMove(opponent(maximizer), move);
-                var score = minimax(newBoard, true, depth + 1);
+                int score = minimax(newBoard, true, depth + 1);
                 value = Math.min(value, score);
             }
             return value;
