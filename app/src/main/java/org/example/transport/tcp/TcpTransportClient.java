@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
-
 import org.example.GameState;
 import org.example.MessageHandler;
 import org.example.Player;
@@ -36,12 +35,13 @@ public record TcpTransportClient<T extends Player>(MessageHandler connection, T 
             while ((msg = connection.receiveMessage()) != null
                     && !msg.equals(TcpProtocol.EXIT_CODE)) {
                 log.log(Level.DEBUG, "Received message from server: {0} for {1}", msg, player);
-                TcpProtocol.fromNextMoveState(msg).ifPresentOrElse(
-                        (state) -> makeMove(state),
-                        () -> {
-                            log.log(Level.ERROR, "Invalid message from transport");
-                            throw new TransportException("Invalid message from transport");
-                        });
+                TcpProtocol.fromNextMoveState(msg)
+                        .ifPresentOrElse(
+                                (state) -> makeMove(state),
+                                () -> {
+                                    log.log(Level.ERROR, "Invalid message from transport");
+                                    throw new TransportException("Invalid message from transport");
+                                });
             }
             handleExit(msg);
         } catch (IOException e) {

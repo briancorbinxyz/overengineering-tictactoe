@@ -2,7 +2,7 @@ package org.example;
 
 public class TestData {
     public static GameBoard createBoardWith(String[][] content) {
-        var board = new GameBoardDefaultImpl(3);
+        GameBoard board = new GameBoardNativeImpl(3);
         for (int row = 0; row < content.length; row++) {
             for (int col = 0; col < content[row].length; col++) {
                 if (content[row][col] != null && !content[row][col].equals("_")) {

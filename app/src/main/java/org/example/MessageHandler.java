@@ -6,7 +6,8 @@ import java.io.IOException;
  * Provides an interface for handling secure message communication. This interface defines methods
  * for initializing the message handler, sending messages, and receiving messages.
  *
- * Implementations of this interface must be thread-safe and handle any necessary synchronization.
+ * <p>Implementations of this interface must be thread-safe and handle any necessary
+ * synchronization.
  */
 public interface MessageHandler extends AutoCloseable {
 

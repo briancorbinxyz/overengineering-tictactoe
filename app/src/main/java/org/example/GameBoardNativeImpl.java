@@ -50,6 +50,9 @@ public class GameBoardNativeImpl implements GameBoard {
 
     @Override
     public GameBoard withMove(String playerMarker, int location) {
+        if (!isValidMove(location)) {
+            throw new InvalidMoveException("Invalid move: " + playerMarker + "@" + location);
+        }
         return board.withMove(playerMarker, location);
     }
 

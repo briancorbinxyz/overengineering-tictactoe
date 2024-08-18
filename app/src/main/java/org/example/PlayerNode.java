@@ -57,7 +57,7 @@ public sealed interface PlayerNode extends ToIntFunction<GameState> {
         public Player player() {
             return player;
         }
-        
+
         @Override
         public String toString() {
             return "Local{" + "playerMarker=" + playerMarker + ", player=" + player + "}";
@@ -96,7 +96,10 @@ public sealed interface PlayerNode extends ToIntFunction<GameState> {
                     transport.send(state);
                     // After receiving the game state the player should send a move
                     move = transport.accept();
-                    log.log(Level.DEBUG, "Received move from client: {0}", move);
+                    if (log.isLoggable(Level.DEBUG)) {
+                        log.log(Level.DEBUG, "Received move from client: {0}", move);
+                        log.log(Level.DEBUG, "Move is valid: {0}", state.board().isValidMove(move));
+                    }
                 } catch (NumberFormatException e) {
                     log.log(Level.TRACE, "Invalid move from client: {0}", e.getMessage(), e);
                 }
@@ -116,7 +119,12 @@ public sealed interface PlayerNode extends ToIntFunction<GameState> {
 
         @Override
         public String toString() {
-            return "Remote{" + "playerMarker=" + playerMarker + ", transport=" + transport.getClass().getSimpleName() + '}';
+            return "Remote{"
+                    + "playerMarker="
+                    + playerMarker
+                    + ", transport="
+                    + transport.getClass().getSimpleName()
+                    + '}';
         }
     }
 }

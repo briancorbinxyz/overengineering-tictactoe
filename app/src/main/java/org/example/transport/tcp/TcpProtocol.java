@@ -46,7 +46,7 @@ public class TcpProtocol {
             int currentPlayerIndex = Integer.valueOf(matcher.group(4));
             int dimension = Integer.valueOf(matcher.group(5));
             var board = new GameBoardDefaultImpl(dimension);
-            String[] rawContent = matcher.group(4).split(",");
+            String[] rawContent = matcher.group(6).split(",");
             for (int i = 0; i < rawContent.length; i++) {
                 if (rawContent[i] != null && !rawContent[i].equals("null")) {
                     board = board.withMove(rawContent[i].replaceAll("\"", ""), i);
