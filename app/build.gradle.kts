@@ -126,7 +126,6 @@ spotless {
     java {
         googleJavaFormat("1.23.0")
             .reflowLongStrings()
-            .aosp()
     }
 }
 

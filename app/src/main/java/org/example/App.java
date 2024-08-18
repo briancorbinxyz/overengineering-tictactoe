@@ -11,58 +11,58 @@ import org.example.BotPlayer.BotStrategy;
 /** A simple java tic-tac-toe game. */
 public class App {
 
-    private static final Logger log = System.getLogger(App.class.getName());
+  private static final Logger log = System.getLogger(App.class.getName());
 
-    /**
-     * Runs the game.
-     *
-     * @throws Exception if there is an error whilst playing the game
-     */
-    public void run() throws Exception {
-        var game =
-                new Game(
-                        3,
-                        false,
-                        new PlayerNode.Local<>("X", new HumanPlayer()),
-                        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MINIMAX)));
-        game.play();
-        game.close();
-    }
+  /**
+   * Runs the game.
+   *
+   * @throws Exception if there is an error whilst playing the game
+   */
+  public void run() throws Exception {
+    var game =
+        new Game(
+            3,
+            false,
+            new PlayerNode.Local<>("X", new HumanPlayer()),
+            new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MINIMAX)));
+    game.play();
+    game.close();
+  }
 
-    /**
-     * Runs the game from the specified file.
-     *
-     * @param gameFile the file containing the saved game state to load
-     * @throws Exception if there is an error whilst playing the game or loading the game state from
-     *     the file
-     */
-    public void runFrom(File gameFile) throws Exception {
-        var game = Game.from(gameFile);
-        game.play();
-    }
+  /**
+   * Runs the game from the specified file.
+   *
+   * @param gameFile the file containing the saved game state to load
+   * @throws Exception if there is an error whilst playing the game or loading the game state from
+   *     the file
+   */
+  public void runFrom(File gameFile) throws Exception {
+    var game = Game.from(gameFile);
+    game.play();
+  }
 
-    /**
-     * Returns a greeting message for the Tic-Tac-Toe game.
-     *
-     * @return the greeting message
-     */
-    public String getGreeting() {
-        return "Welcome to Tic-Tac-Toe!";
-    }
+  /**
+   * Returns a greeting message for the Tic-Tac-Toe game.
+   *
+   * @return the greeting message
+   */
+  public String getGreeting() {
+    return "Welcome to Tic-Tac-Toe!";
+  }
 
-    /**
-     * The main entry point for the Tic-Tac-Toe application.
-     *
-     * <p>If command-line arguments are provided, it will load a saved game state from the specified
-     * file. Otherwise, it will start a new game.
-     */
-    public static void main(String[] args) throws Exception {
-        App app = new App();
-        log.log(Level.INFO, () -> app.getGreeting());
-        if (args.length > 0) {
-            app.runFrom(new File(args[0]));
-        } else {
-            app.run();
-        }
+  /**
+   * The main entry point for the Tic-Tac-Toe application.
+   *
+   * <p>If command-line arguments are provided, it will load a saved game state from the specified
+   * file. Otherwise, it will start a new game.
+   */
+  public static void main(String[] args) throws Exception {
+    App app = new App();
+    log.log(Level.INFO, () -> app.getGreeting());
+    if (args.length > 0) {
+      app.runFrom(new File(args[0]));
+    } else {
+      app.run();
     }
+  }
 }

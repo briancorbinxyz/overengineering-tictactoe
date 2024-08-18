@@ -10,8 +10,8 @@ package org.example;
 /// }
 public sealed interface Player permits HumanPlayer, BotPlayer {
 
-    /// Chooses the next valid move on the game board.
-    /// @param board the current state of the game
-    /// @return the index of the next valid move on the board
-    int nextMove(GameState gameState);
+  /// Chooses the next valid move on the game board.
+  /// @param board the current state of the game
+  /// @return the index of the next valid move on the board
+  int nextMove(GameState gameState);
 }

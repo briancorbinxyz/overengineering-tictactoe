@@ -11,38 +11,38 @@ import org.example.algo.Minimax;
  */
 public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public BotPlayer() {
-        this(BotStrategy.RANDOM);
+  public BotPlayer() {
+    this(BotStrategy.RANDOM);
+  }
+
+  @Override
+  public int nextMove(GameState state) {
+    return botStrategy.apply(state);
+  }
+
+  public static enum BotStrategy {
+    RANDOM(
+        (state) -> {
+          var random = new SecureRandom();
+          var availableMoves = state.board().availableMoves();
+          return availableMoves.get(random.nextInt(availableMoves.size()));
+        }),
+    MINIMAX(
+        (state) -> {
+          var minimax = new Minimax(state.currentPlayer(), state.board());
+          return minimax.bestMove();
+        });
+
+    public int apply(GameState state) {
+      return strategyFunction.applyAsInt(state);
     }
 
-    @Override
-    public int nextMove(GameState state) {
-        return botStrategy.apply(state);
+    private BotStrategy(ToIntFunction<GameState> strategyFunction) {
+      this.strategyFunction = strategyFunction;
     }
 
-    public static enum BotStrategy {
-        RANDOM(
-                (state) -> {
-                    var random = new SecureRandom();
-                    var availableMoves = state.board().availableMoves();
-                    return availableMoves.get(random.nextInt(availableMoves.size()));
-                }),
-        MINIMAX(
-                (state) -> {
-                    var minimax = new Minimax(state.currentPlayer(), state.board());
-                    return minimax.bestMove();
-                });
-
-        public int apply(GameState state) {
-            return strategyFunction.applyAsInt(state);
-        }
-
-        private BotStrategy(ToIntFunction<GameState> strategyFunction) {
-            this.strategyFunction = strategyFunction;
-        }
-
-        private ToIntFunction<GameState> strategyFunction;
-    }
+    private ToIntFunction<GameState> strategyFunction;
+  }
 }

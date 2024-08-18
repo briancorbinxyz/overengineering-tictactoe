@@ -11,13 +11,13 @@ import org.example.transport.tcp.TcpTransportClient;
 
 public class Transports {
 
-    public static <P extends Player> TcpTransportClient<P> newTcpTransportClient(
-            P player, Socket socket) throws IOException {
-        return new TcpTransportClient<P>(
-                new SecureMessageHandler.Client(
-                        new RemoteMessageHandler(
-                                new ObjectOutputStream(socket.getOutputStream()),
-                                new ObjectInputStream(socket.getInputStream()))),
-                player);
-    }
+  public static <P extends Player> TcpTransportClient<P> newTcpTransportClient(
+      P player, Socket socket) throws IOException {
+    return new TcpTransportClient<P>(
+        new SecureMessageHandler.Client(
+            new RemoteMessageHandler(
+                new ObjectOutputStream(socket.getOutputStream()),
+                new ObjectInputStream(socket.getInputStream()))),
+        player);
+  }
 }

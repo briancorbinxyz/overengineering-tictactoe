@@ -23,34 +23,34 @@ import java.lang.System.Logger.Level;
  */
 public class GamePersistence {
 
-    private static final Logger log = System.getLogger(GamePersistence.class.getName());
+  private static final Logger log = System.getLogger(GamePersistence.class.getName());
 
-    public void saveTo(File gameFile, Game game) throws IOException {
-        try (FileOutputStream os = new FileOutputStream(gameFile);
-                ObjectOutputStream o = new ObjectOutputStream(os)) {
-            o.writeObject(game);
-        }
-        log.log(Level.DEBUG, "Saved to game state to: {0}", gameFile);
+  public void saveTo(File gameFile, Game game) throws IOException {
+    try (FileOutputStream os = new FileOutputStream(gameFile);
+        ObjectOutputStream o = new ObjectOutputStream(os)) {
+      o.writeObject(game);
     }
+    log.log(Level.DEBUG, "Saved to game state to: {0}", gameFile);
+  }
 
-    public Game loadFrom(File gameFile) throws IOException, ClassNotFoundException {
-        try (FileInputStream is = new FileInputStream(gameFile);
-                ObjectInputStream o = new ObjectInputStream(is)) {
-            o.setObjectInputFilter(new GamePersistenceFilter());
-            return Game.class.cast(o.readObject());
-        }
+  public Game loadFrom(File gameFile) throws IOException, ClassNotFoundException {
+    try (FileInputStream is = new FileInputStream(gameFile);
+        ObjectInputStream o = new ObjectInputStream(is)) {
+      o.setObjectInputFilter(new GamePersistenceFilter());
+      return Game.class.cast(o.readObject());
     }
+  }
 
-    private static class GamePersistenceFilter implements ObjectInputFilter {
-        // OVER-ENGINEER Reject any loaded classes games > 1000 object references
-        private static final long MAX_REFERENCES = 1000;
+  private static class GamePersistenceFilter implements ObjectInputFilter {
+    // OVER-ENGINEER Reject any loaded classes games > 1000 object references
+    private static final long MAX_REFERENCES = 1000;
 
-        public Status checkInput(FilterInfo filterInfo) {
-            return switch (filterInfo) {
-                case FilterInfo fi when fi.references() > MAX_REFERENCES -> Status.REJECTED;
-                case FilterInfo fi when fi.serialClass() != null -> Status.ALLOWED;
-                default -> Status.UNDECIDED;
-            };
-        }
+    public Status checkInput(FilterInfo filterInfo) {
+      return switch (filterInfo) {
+        case FilterInfo fi when fi.references() > MAX_REFERENCES -> Status.REJECTED;
+        case FilterInfo fi when fi.serialClass() != null -> Status.ALLOWED;
+        default -> Status.UNDECIDED;
+      };
     }
+  }
 }
