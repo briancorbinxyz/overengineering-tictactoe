@@ -87,7 +87,7 @@ class TicTacToeGameBoard implements GameBoard {
 
   @Override
   public boolean isValidMove(int location) {
-    return getValueAtIndex(location) == 0 && location >= 0 && location < dimension() * dimension();
+    return location >= 0 && location < dimension() * dimension() && getValueAtIndex(location) == 0;
   }
 
   @Override

@@ -3,6 +3,8 @@ package org.example;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.function.ToIntFunction;
+
+import org.example.algo.MaxN;
 import org.example.algo.Minimax;
 
 /**
@@ -33,7 +35,13 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
         (state) -> {
           var minimax = new Minimax(state.currentPlayer(), state.board());
           return minimax.bestMove();
-        });
+        }),
+    MAXN(
+        (state) -> {
+          var maxn = new MaxN(state);
+          return maxn.bestMove();
+        }),
+        ;
 
     public int apply(GameState state) {
       return strategyFunction.applyAsInt(state);
