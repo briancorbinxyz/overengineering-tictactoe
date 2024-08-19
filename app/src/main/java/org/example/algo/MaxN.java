@@ -40,7 +40,7 @@ public class MaxN {
   }
 
   private int[] maxn(GameBoard board, int currentPlayerIdx, int depth) {
-    if (board.hasChain(playerAt(currentPlayerIdx))) {
+    if (board.hasChain(playerMarkerAt(currentPlayerIdx))) {
       int[] scores = new int[numberOfPlayers()];
       scores[currentPlayerIdx] = MAX_SCORE - depth;
       return scores;
@@ -52,7 +52,7 @@ public class MaxN {
     Arrays.fill(bestScores, Integer.MIN_VALUE);
 
     for (int move : board.availableMoves()) {
-      var newBoard = board.withMove(playerAt(currentPlayerIdx), move);
+      var newBoard = board.withMove(playerMarkerAt(currentPlayerIdx), move);
       int[] scores = maxn(newBoard, nextPlayerIndex(currentPlayerIdx), depth + 1);
 
       if (scores[currentPlayerIdx] > bestScores[currentPlayerIdx]) {
@@ -79,7 +79,7 @@ public class MaxN {
     return (playerIndex + 1) % numberOfPlayers();
   }
 
-  private String playerAt(int playerIndex) {
+  private String playerMarkerAt(int playerIndex) {
     return state.playerMarkers().get(playerIndex);
   }
 
