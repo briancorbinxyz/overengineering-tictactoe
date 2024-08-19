@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.example.GameBoardDefaultImpl;
+
+import org.example.GameBoard;
 import org.example.GameState;
 
 public class TcpProtocol {
@@ -40,7 +41,7 @@ public class TcpProtocol {
       String[] playerMarkers = matcher.group(3).replaceAll("\"", "").split(",");
       int currentPlayerIndex = Integer.valueOf(matcher.group(4));
       int dimension = Integer.valueOf(matcher.group(5));
-      var board = new GameBoardDefaultImpl(dimension);
+      var board = GameBoard.with(dimension);
       String[] rawContent = matcher.group(6).split(",");
       for (int i = 0; i < rawContent.length; i++) {
         if (rawContent[i] != null && !rawContent[i].equals("null")) {

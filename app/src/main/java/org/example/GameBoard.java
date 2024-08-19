@@ -34,7 +34,6 @@ public interface GameBoard extends JsonSerializable {
     }
     return availableMoves;
   }
-  ;
 
   /**
    * Checks if the given player has a winning chain of connected game pieces on the game board.
@@ -86,4 +85,15 @@ public interface GameBoard extends JsonSerializable {
    * @return a string representation of the game board.
    */
   String toString();
+
+  /**
+   * Creates a new {@link GameBoard} instance with the given dimension.
+   *
+   * @param dimension the dimension of the game board, which is the number of rows or columns
+   * @return a new {@link GameBoard} instance with the specified dimension
+   */
+  static GameBoard with(int dimension) {
+    // Prefer the native implementation of the game board for performance.
+    return new GameBoardNativeImpl(dimension);
+  }
 }
