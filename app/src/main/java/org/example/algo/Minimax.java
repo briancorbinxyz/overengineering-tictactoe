@@ -2,7 +2,11 @@ package org.example.algo;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+
+import java.util.List;
+
 import org.example.GameBoard;
+import org.example.GameState;
 
 public class Minimax {
 
@@ -14,10 +18,15 @@ public class Minimax {
 
   private final String maximizer;
   private final GameBoard board;
+  private final List<String> playerMarkers;
 
-  public Minimax(String maximizingPlayer, GameBoard board) {
-    this.maximizer = maximizingPlayer;
-    this.board = board;
+  public Minimax(GameState state) {
+    this.board = state.board();
+    this.maximizer = state.currentPlayer();
+    if (state.playerMarkers().size() != 2) {
+      throw new IllegalArgumentException("Minimax requires exactly two players");
+    }
+    this.playerMarkers = state.playerMarkers();
   }
 
   public int bestMove() {
@@ -68,8 +77,7 @@ public class Minimax {
     log.log(Level.DEBUG, "{0}{1}: Location: {2} Score: {3}", indent, maximizer, location, score);
   }
 
-  // TODO: This only works for the standard 1v1 game.
   private String opponent(String playerMarker) {
-    return playerMarker.equals("X") ? "O" : "X";
+    return playerMarkers.stream().dropWhile(playerMarker::equals).findFirst().orElseThrow();
   }
 }

@@ -33,7 +33,7 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
         }),
     MINIMAX(
         (state) -> {
-          var minimax = new Minimax(state.currentPlayer(), state.board());
+          var minimax = new Minimax(state);
           return minimax.bestMove();
         }),
     MAXN(
