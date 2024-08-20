@@ -12,7 +12,6 @@ public class Paranoid {
 
   private static final int MAX_SCORE = 100;
   private static final int MIN_SCORE = -100;
-  private static final int DRAW_SCORE = 0;
 
   private final GameState state;
 

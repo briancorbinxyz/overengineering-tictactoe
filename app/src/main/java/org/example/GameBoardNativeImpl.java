@@ -24,7 +24,7 @@ public class GameBoardNativeImpl implements GameBoard {
   }
 
   public GameBoardNativeImpl(int dimension) {
-    this.library = new TicTacToeLibrary();
+    this.library = LibraryHolder.TTT.instance();
     this.board = library.newGameBoard(dimension);
   }
 
@@ -65,4 +65,15 @@ public class GameBoardNativeImpl implements GameBoard {
   public String asJsonString() {
     return board.asJsonString();
   }
+
+  private static enum LibraryHolder {
+    TTT;
+    
+    private TicTacToeLibrary instance = new TicTacToeLibrary();
+
+    public TicTacToeLibrary instance() {
+      return instance;
+    }
+  }
+
 }
