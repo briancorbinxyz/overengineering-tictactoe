@@ -6,6 +6,7 @@ import java.util.function.ToIntFunction;
 
 import org.example.algo.MaxN;
 import org.example.algo.Minimax;
+import org.example.algo.Paranoid;
 
 /**
  * Represents a bot player in the game. The bot player uses a random number generator to make moves
@@ -39,6 +40,11 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
     MAXN(
         (state) -> {
           var maxn = new MaxN(state);
+          return maxn.bestMove();
+        }),
+    PARANOID(
+        (state) -> {
+          var maxn = new Paranoid(state);
           return maxn.bestMove();
         }),
         ;
