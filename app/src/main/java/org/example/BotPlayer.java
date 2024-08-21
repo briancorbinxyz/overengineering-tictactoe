@@ -2,10 +2,12 @@ package org.example;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.function.ToIntFunction;
 
 import org.example.algo.MaxN;
 import org.example.algo.Minimax;
+import org.example.algo.MonteCarloTreeSearch;
 import org.example.algo.Paranoid;
 
 /**
@@ -44,8 +46,13 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
         }),
     PARANOID(
         (state) -> {
-          var maxn = new Paranoid(state);
-          return maxn.bestMove();
+          var paranoid = new Paranoid(state);
+          return paranoid.bestMove();
+        }),
+    MCTS(
+        (state) -> {
+          var montecarlo = new MonteCarloTreeSearch(state, TimeUnit.SECONDS.toMillis(5));
+          return montecarlo.bestMove();
         }),
         ;
 

@@ -117,12 +117,6 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
     return new GameBoardDefaultImpl(dimension, boardCopy);
   }
 
-  private String[] getBoardCopy() {
-    String[] boardCopy = new String[dimension * dimension];
-    System.arraycopy(content, 0, boardCopy, 0, boardCopy.length);
-    return boardCopy;
-  }
-
   @Override
   public String asJsonString() {
     StringBuilder json = new StringBuilder();
@@ -136,4 +130,15 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
     json.append("}");
     return json.toString();
   }
+
+  public GameBoard clone() {
+    return new GameBoardDefaultImpl(dimension, getBoardCopy());
+  }
+
+  private String[] getBoardCopy() {
+    String[] boardCopy = new String[dimension * dimension];
+    System.arraycopy(content, 0, boardCopy, 0, boardCopy.length);
+    return boardCopy;
+  }
+
 }

@@ -24,7 +24,7 @@ public class App {
             3,
             false,
             new PlayerNode.Local<>("X", new HumanPlayer()),
-            new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MAXN)));
+            new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MCTS)));
             
     game.play();
     game.close();
