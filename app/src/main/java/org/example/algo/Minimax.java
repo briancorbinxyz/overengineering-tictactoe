@@ -2,9 +2,7 @@ package org.example.algo;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-
 import java.util.List;
-
 import org.example.GameBoard;
 import org.example.GameState;
 

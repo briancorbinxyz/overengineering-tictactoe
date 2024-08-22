@@ -1,15 +1,12 @@
 package org.example;
 
 import static org.example.TestData.*;
-
-import org.example.algo.MonteCarloTreeSearch;
-
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
+import org.example.algo.MonteCarloTreeSearch;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 public class MonteCarloTreeSearchTest {
 
@@ -39,10 +36,13 @@ public class MonteCarloTreeSearchTest {
               {"O", "O", "_"}
             });
 
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[0], List.of("X", "O"), 1)).bestMove(), 2);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[0], List.of("X", "O"), 1)).bestMove(), 2);
     Assert.assertTrue(board[1].withMove("X", 8).hasChain("X"));
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 8);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[2], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[2], List.of("X", "O"), 1)).bestMove(), 8);
   }
 
   @Test
@@ -90,27 +90,37 @@ public class MonteCarloTreeSearchTest {
               {"O", "X", "_"},
               {"O", "_", "_"}
             });
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[0], List.of("X", "O"), 0)).bestMove(), 2);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[1], List.of("X", "O"), 0)).bestMove(), 8);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[2], List.of("X", "O"), 0)).bestMove(), 7);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[3], List.of("X", "O"), 1)).bestMove(), 5);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[4], List.of("X", "O"), 1)).bestMove(), 8);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board[5], List.of("X", "O"), 1)).bestMove(), 0);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[0], List.of("X", "O"), 0)).bestMove(), 2);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[1], List.of("X", "O"), 0)).bestMove(), 8);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[2], List.of("X", "O"), 0)).bestMove(), 7);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[3], List.of("X", "O"), 1)).bestMove(), 5);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[4], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board[5], List.of("X", "O"), 1)).bestMove(), 0);
   }
 
   @Test
   public void testMonteCarloTreeSearchShouldSupportAMultiPlayerGame() {
     // The player '/' should try to win,
-    var board = createBoardWith(
+    var board =
+        createBoardWith(
             new String[][] {
               {"X", "X", "/"},
               {"O", "_", "/"},
               {"O", "_", "_"}
             });
-    assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("/", "X", "O"), 0)).bestMove(), 8);
+    assertEquals(
+        new MonteCarloTreeSearch(new GameState(board, List.of("/", "X", "O"), 0)).bestMove(), 8);
     // Monte Carlo Tree Search may or may not be able to predict the player '/'
     // and block
-    // assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("X", "O", "/"), 0)).bestMove(), 8);
-    //assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("O", "/", "X"), 0)).bestMove(), 8);
+    // assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("X", "O", "/"),
+    // 0)).bestMove(), 8);
+    // assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("O", "/", "X"),
+    // 0)).bestMove(), 8);
   }
 }

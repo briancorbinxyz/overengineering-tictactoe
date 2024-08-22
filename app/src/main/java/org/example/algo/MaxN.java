@@ -2,9 +2,7 @@ package org.example.algo;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-
 import java.util.Arrays;
-
 import org.example.GameBoard;
 import org.example.GameState;
 
@@ -19,7 +17,6 @@ public class MaxN {
   public MaxN(GameState state) {
     this.state = state;
   }
-
 
   public int bestMove() {
     int bestMove = -1;
@@ -86,8 +83,13 @@ public class MaxN {
   private void log(int location, int[] scores, int depth) {
     String indent = "-".repeat(depth);
     if (log.isLoggable(Level.DEBUG)) {
-      log.log(Level.DEBUG, "{0}{1}: Location: {2} Scores: {3}", indent, currentPlayer(), location, Arrays.toString(scores));
+      log.log(
+          Level.DEBUG,
+          "{0}{1}: Location: {2} Scores: {3}",
+          indent,
+          currentPlayer(),
+          location,
+          Arrays.toString(scores));
     }
   }
-
 }

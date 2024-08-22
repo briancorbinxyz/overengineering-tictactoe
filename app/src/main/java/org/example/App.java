@@ -19,15 +19,26 @@ public class App {
    * @throws Exception if there is an error whilst playing the game
    */
   public void run() throws Exception {
-    var game =
-        new Game(
-            3,
-            false,
-            new PlayerNode.Local<>("X", new HumanPlayer()),
-            new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MCTS)));
-            
+    var game = newStandardGame();
     game.play();
     game.close();
+  }
+
+  private Game newStandardGame() {
+    return new Game(
+        3,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MINIMAX)));
+  }
+
+  private Game newMultiplayerGame() {
+    return new Game(
+        5,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MCTS)),
+        new PlayerNode.Local<>("Y", new BotPlayer(BotStrategy.MCTS)));
   }
 
   /**

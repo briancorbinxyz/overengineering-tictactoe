@@ -6,7 +6,6 @@ import static org.testng.Assert.assertTrue;
 import org.example.GameBoard;
 import org.example.GameBoardDefaultImpl;
 import org.example.GameBoardNativeImpl;
-
 import org.testng.annotations.Test;
 
 public class GameBoardTest {
@@ -34,6 +33,7 @@ public class GameBoardTest {
     GameBoard gameBoard = new GameBoardNativeImpl(3);
     assertEquals(gameBoard.availableMoves().size(), 9);
   }
+
   @Test
   public void testPopulatedGameBoardHasCorrectNumberOfAvailableMoves() {
     var gameBoard =

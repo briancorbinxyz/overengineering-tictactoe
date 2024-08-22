@@ -2,7 +2,6 @@ package org.example.algo;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-
 import org.example.GameBoard;
 import org.example.GameState;
 
@@ -91,5 +90,4 @@ public class Paranoid {
     String indent = "-".repeat(depth);
     log.log(Level.DEBUG, "{0}{1}: Location: {2} Score: {3}", indent, maximizer(), location, score);
   }
-
 }

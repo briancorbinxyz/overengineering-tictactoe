@@ -44,7 +44,8 @@ public class GameStateTest {
                   {"_", "_", "_"}
                 }),
             List.of("X", "O"),
-            0, 3);
+            0,
+            3);
     Assert.assertEquals(gameStateAfterMove.lastMove(), 3);
     Assert.assertEquals(gameStateAfterMove.asJsonString(), expectedGameState.asJsonString());
   }

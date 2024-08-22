@@ -1,15 +1,12 @@
 package org.example;
 
 import static org.example.TestData.*;
-
-import org.example.algo.Paranoid;
-
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
+import org.example.algo.Paranoid;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 public class ParanoidTest {
 
@@ -104,7 +101,8 @@ public class ParanoidTest {
   @Test
   public void testParanoidShouldSupportAMultiPlayerGame() {
     // The player '/' should try to win,
-    var board = createBoardWith(
+    var board =
+        createBoardWith(
             new String[][] {
               {"X", "X", "/"},
               {"O", "_", "/"},

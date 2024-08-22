@@ -68,12 +68,11 @@ public class GameBoardNativeImpl implements GameBoard {
 
   private static enum LibraryHolder {
     TTT;
-    
+
     private TicTacToeLibrary instance = new TicTacToeLibrary();
 
     public TicTacToeLibrary instance() {
       return instance;
     }
   }
-
 }

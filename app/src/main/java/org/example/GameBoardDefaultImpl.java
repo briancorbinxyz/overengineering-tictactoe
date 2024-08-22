@@ -140,5 +140,4 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
     System.arraycopy(content, 0, boardCopy, 0, boardCopy.length);
     return boardCopy;
   }
-
 }

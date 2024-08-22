@@ -1,15 +1,12 @@
 package org.example;
 
 import static org.example.TestData.*;
-
-import org.example.algo.Minimax;
-
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
+import org.example.algo.Minimax;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 public class MinimaxTest {
 
@@ -99,7 +96,8 @@ public class MinimaxTest {
 
   @Test
   public void testMinimaxSupportsNonStandardPlayers() {
-    var board = createBoardWith(
+    var board =
+        createBoardWith(
             new String[][] {
               {"♠", "_", "_"},
               {"♣", "♠", "_"},
@@ -110,7 +108,8 @@ public class MinimaxTest {
 
   @Test
   public void testMinimaxRejectsGamesWithMoreTThanTwoPlayers() {
-    var board = createBoardWith(
+    var board =
+        createBoardWith(
             new String[][] {
               {"♠", "♦", "_"},
               {"♣", "♠", "_"},

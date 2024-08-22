@@ -1,15 +1,12 @@
 package org.example;
 
 import static org.example.TestData.*;
-
-import org.example.algo.MaxN;
-
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
+import org.example.algo.MaxN;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 public class MaxNTest {
 
@@ -101,7 +98,8 @@ public class MaxNTest {
   @Test
   public void testMaxNShouldSupportAMultiPlayerGame() {
     // The player '/' should try to win,
-    var board = createBoardWith(
+    var board =
+        createBoardWith(
             new String[][] {
               {"X", "X", "/"},
               {"O", "_", "/"},

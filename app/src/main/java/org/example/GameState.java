@@ -3,7 +3,8 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 
-public record GameState(GameBoard board, List<String> playerMarkers, int currentPlayerIndex, int lastMove)
+public record GameState(
+    GameBoard board, List<String> playerMarkers, int currentPlayerIndex, int lastMove)
     implements JsonSerializable {
 
   public GameState(GameBoard board, List<String> playerMarkers, int currentPlayerIndex) {
@@ -11,7 +12,11 @@ public record GameState(GameBoard board, List<String> playerMarkers, int current
   }
 
   public GameState(GameState state) {
-    this(state.board, new ArrayList<>(state.playerMarkers), state.currentPlayerIndex, state.lastMove);
+    this(
+        state.board,
+        new ArrayList<>(state.playerMarkers),
+        state.currentPlayerIndex,
+        state.lastMove);
   }
 
   public String currentPlayer() {
@@ -52,5 +57,4 @@ public record GameState(GameBoard board, List<String> playerMarkers, int current
     int newCurrentPlayerIndex = (currentPlayerIndex + 1) % playerMarkers.size();
     return new GameState(newBoard, playerMarkers, newCurrentPlayerIndex, move);
   }
-
 }
