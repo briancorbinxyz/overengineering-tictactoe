@@ -29,10 +29,18 @@ public class App {
         3,
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MINIMAX)));
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.ALPHABETA)));
   }
 
-  private Game newMultiplayerGame() {
+  private Game newLargeStandardGame() {
+    return new Game(
+        4,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.ALPHABETA)));
+  }
+
+  private Game newMultiplayerGameMCTS() {
     return new Game(
         5,
         false,
@@ -41,6 +49,25 @@ public class App {
         new PlayerNode.Local<>("Y", new BotPlayer(BotStrategy.MCTS)));
   }
 
+  private Game newMultiplayerGameMaxN() {
+    // slow!
+    return new Game(
+        4,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MAXN)),
+        new PlayerNode.Local<>("Y", new BotPlayer(BotStrategy.MAXN)));
+  }
+
+  private Game newMultiplayerGameParanoid() {
+    // slow!
+    return new Game(
+        4,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.PARANOID)),
+        new PlayerNode.Local<>("Y", new BotPlayer(BotStrategy.PARANOID)));
+  }
   /**
    * Runs the game from the specified file.
    *

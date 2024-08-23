@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.ToIntFunction;
 import org.example.algo.MaxN;
 import org.example.algo.Minimax;
+import org.example.algo.AlphaBeta;
 import org.example.algo.MonteCarloTreeSearch;
 import org.example.algo.Paranoid;
 
@@ -37,6 +38,11 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
         (state) -> {
           var minimax = new Minimax(state);
           return minimax.bestMove();
+        }),
+    ALPHABETA(
+        (state) -> {
+          var alphabeta = new AlphaBeta(state);
+          return alphabeta.bestMove();
         }),
     MAXN(
         (state) -> {
