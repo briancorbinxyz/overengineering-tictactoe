@@ -61,6 +61,8 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
         }),
     ;
 
+    private ToIntFunction<GameState> strategyFunction;
+
     public int apply(GameState state) {
       return strategyFunction.applyAsInt(state);
     }
@@ -69,6 +71,5 @@ public record BotPlayer(BotStrategy botStrategy) implements Player, Serializable
       this.strategyFunction = strategyFunction;
     }
 
-    private ToIntFunction<GameState> strategyFunction;
   }
 }

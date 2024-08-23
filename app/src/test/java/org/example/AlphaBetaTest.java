@@ -119,4 +119,30 @@ public class AlphaBetaTest {
         IllegalArgumentException.class,
         () -> new AlphaBeta(new GameState(board, List.of("♣", "♠", "♦"), 1)));
   }
+
+  @Test
+  public void testAlphaBetaCanPlayLargeGames() {
+    var board =
+        createBoardWith(
+            new String[][] {
+              {"♣", "_", "_","_"},
+              {"♣", "♠", "_", "_"},
+              {"♣", "♠", "_", "_"},
+              {"_", "♠", "_", "_"}
+            });
+    assertEquals(new AlphaBeta(new GameState(board, List.of("♣", "♠"), 1)).bestMove(), 1);
+  }
+
+  @Test
+  public void testAlphaBetaCanPlayLargerGamesWhenDepthLimited() {
+    var board =
+        createBoardWith(
+            new String[][] {
+              {"♠", "_", "_","_"},
+              {"♣", "_", "_", "_"},
+              {"_", "_", "_", "_"},
+              {"_", "_", "_", "_"}
+            });
+    assertEquals(new AlphaBeta(new GameState(board, List.of("♣", "♠"), 1)).bestMove(), 1);
+  }
 }

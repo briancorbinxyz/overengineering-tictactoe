@@ -17,6 +17,7 @@ public class AlphaBeta {
   private final String maximizer;
   private final GameBoard board;
   private final List<String> playerMarkers;
+  private final StrategyConfig config;
 
   public AlphaBeta(GameState state) {
     this.board = state.board();
@@ -25,6 +26,7 @@ public class AlphaBeta {
       throw new IllegalArgumentException("Minimax AlphaBeta requires exactly two players");
     }
     this.playerMarkers = state.playerMarkers();
+    this.config = StrategyConfig.newBuilder().build();
   }
 
   public int bestMove() {
@@ -51,7 +53,7 @@ public class AlphaBeta {
       return MAX_SCORE - depth;
     } else if (board.hasChain(opponent(maximizer))) {
       return MIN_SCORE + depth;
-    } else if (!board.hasMovesAvailable()) {
+    } else if (!board.hasMovesAvailable() || config.exceedsMaxDepth(depth)) {
       return DRAW_SCORE;
     }
 

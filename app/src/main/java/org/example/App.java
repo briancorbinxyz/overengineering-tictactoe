@@ -29,7 +29,7 @@ public class App {
         3,
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.ALPHABETA)));
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MINIMAX)));
   }
 
   private Game newLargeStandardGame() {
