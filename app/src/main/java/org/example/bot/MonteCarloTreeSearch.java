@@ -1,4 +1,4 @@
-package org.example.algo;
+package org.example.bot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,23 +8,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.example.GameState;
 
-public class MonteCarloTreeSearch {
+public final class MonteCarloTreeSearch implements BotStrategy {
 
   private final GameState initialState;
-  private final Long maxIterationTimeMillis;
+  private final BotStrategyConfig config;
 
   private static final double MIN_SCORE = 0.5;
   private static final double MAX_SCORE = 1.0;
   private static final double DRAW_SCORE = 0.0;
 
   public MonteCarloTreeSearch(GameState state) {
-    this.initialState = state;
-    this.maxIterationTimeMillis = TimeUnit.SECONDS.toMillis(1);
+    this(state, BotStrategyConfig.newBuilder().maxTimeMillis(TimeUnit.SECONDS, 1).build());
   }
 
-  public MonteCarloTreeSearch(GameState state, long maxIterationTime) {
+  public MonteCarloTreeSearch(GameState state, BotStrategyConfig config) {
     this.initialState = state;
-    this.maxIterationTimeMillis = maxIterationTime;
+    this.config = config;
   }
 
   public int bestMove() {
@@ -35,7 +34,7 @@ public class MonteCarloTreeSearch {
     MCTSNode root = new MCTSNode(state, null);
     var startTime = System.currentTimeMillis();
 
-    while (System.currentTimeMillis() - startTime < maxIterationTimeMillis) {
+    while (!config.exceedsMaxTimeMillis(System.currentTimeMillis() - startTime)) {
       MCTSNode node = treePolicy(root);
       double[] reward = defaultPolicy(node.state);
       backpropagate(node, reward);

@@ -6,7 +6,8 @@ package org.example;
 import java.io.File;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import org.example.BotPlayer.BotStrategy;
+import org.example.bot.BotStrategy;
+import org.example.bot.BotStrategyConfig;
 
 /** A simple java tic-tac-toe game. */
 public class App {
@@ -19,7 +20,7 @@ public class App {
    * @throws Exception if there is an error whilst playing the game
    */
   public void run() throws Exception {
-    var game = newStandardGame();
+    var game = newMultiplayerGameMCTS();
     game.play();
     game.close();
   }
@@ -37,12 +38,15 @@ public class App {
         4,
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.ALPHABETA)));
+        new PlayerNode.Local<>(
+            "O",
+            new BotPlayer(
+                BotStrategy.alphabeta(BotStrategyConfig.newBuilder().maxDepth(3).build()))));
   }
 
   private Game newMultiplayerGameMCTS() {
     return new Game(
-        5,
+        10,
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
         new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MCTS)),
@@ -52,22 +56,33 @@ public class App {
   private Game newMultiplayerGameMaxN() {
     // slow!
     return new Game(
-        4,
+        5,
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MAXN)),
-        new PlayerNode.Local<>("Y", new BotPlayer(BotStrategy.MAXN)));
+        new PlayerNode.Local<>(
+            "O",
+            new BotPlayer(BotStrategy.maxn(BotStrategyConfig.newBuilder().maxDepth(3).build()))),
+        new PlayerNode.Local<>(
+            "Y",
+            new BotPlayer(BotStrategy.maxn(BotStrategyConfig.newBuilder().maxDepth(3).build()))));
   }
 
   private Game newMultiplayerGameParanoid() {
     // slow!
     return new Game(
-        4,
+        10,
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.PARANOID)),
-        new PlayerNode.Local<>("Y", new BotPlayer(BotStrategy.PARANOID)));
+        new PlayerNode.Local<>(
+            "O",
+            new BotPlayer(
+                BotStrategy.paranoid(BotStrategyConfig.newBuilder().maxDepth(2).build()))),
+        new PlayerNode.Local<>(
+            "Y",
+            new BotPlayer(
+                BotStrategy.paranoid(BotStrategyConfig.newBuilder().maxDepth(2).build()))));
   }
+
   /**
    * Runs the game from the specified file.
    *

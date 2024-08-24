@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
-import org.example.BotPlayer.BotStrategy;
+import org.example.bot.BotStrategy;
 import org.example.transport.Transports;
 
 public class GameClient {

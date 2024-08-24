@@ -4,7 +4,7 @@ import static org.example.TestData.*;
 import static org.testng.Assert.assertEquals;
 
 import java.util.List;
-import org.example.algo.Paranoid;
+import org.example.bot.Paranoid;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

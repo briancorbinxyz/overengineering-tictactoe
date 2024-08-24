@@ -1,11 +1,11 @@
-package org.example.algo;
+package org.example.bot;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.example.GameBoard;
 import org.example.GameState;
 
-public class Paranoid {
+public final class Paranoid implements BotStrategy {
 
   private static final Logger log = System.getLogger(Paranoid.class.getName());
 
@@ -13,9 +13,16 @@ public class Paranoid {
   private static final int MIN_SCORE = -100;
 
   private final GameState state;
+  private final BotStrategyConfig config;
 
   public Paranoid(GameState state) {
     this.state = state;
+    this.config = BotStrategyConfig.empty();
+  }
+
+  public Paranoid(GameState state, BotStrategyConfig config) {
+    this.state = state;
+    this.config = config;
   }
 
   public int bestMove() {
@@ -41,7 +48,7 @@ public class Paranoid {
       return MAX_SCORE - depth;
     } else if (board.hasChain(playerMarkerAt(currentPlayerIdx))) {
       return MIN_SCORE + depth;
-    } else if (!board.hasMovesAvailable()) {
+    } else if (!board.hasMovesAvailable() || config.exceedsMaxDepth(depth)) {
       return MIN_SCORE + depth;
     }
 

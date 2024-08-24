@@ -4,7 +4,7 @@ import static org.example.TestData.*;
 import static org.testng.Assert.assertEquals;
 
 import java.util.List;
-import org.example.algo.MaxN;
+import org.example.bot.MaxN;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

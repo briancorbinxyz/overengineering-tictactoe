@@ -4,7 +4,8 @@ import static org.example.TestData.*;
 import static org.testng.Assert.assertEquals;
 
 import java.util.List;
-import org.example.algo.AlphaBeta;
+import org.example.bot.AlphaBeta;
+import org.example.bot.BotStrategyConfig;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -125,7 +126,7 @@ public class AlphaBetaTest {
     var board =
         createBoardWith(
             new String[][] {
-              {"♣", "_", "_","_"},
+              {"♣", "_", "_", "_"},
               {"♣", "♠", "_", "_"},
               {"♣", "♠", "_", "_"},
               {"_", "♠", "_", "_"}
@@ -135,14 +136,18 @@ public class AlphaBetaTest {
 
   @Test
   public void testAlphaBetaCanPlayLargerGamesWhenDepthLimited() {
+    // This test is a bit slow, but it's a good test to run to make sure that the algorithm can
+    // handle larger games.
     var board =
         createBoardWith(
             new String[][] {
-              {"♠", "_", "_","_"},
+              {"♠", "_", "_", "_"},
               {"♣", "_", "_", "_"},
               {"_", "_", "_", "_"},
               {"_", "_", "_", "_"}
             });
-    assertEquals(new AlphaBeta(new GameState(board, List.of("♣", "♠"), 1)).bestMove(), 1);
+    GameState state = new GameState(board, List.of("♣", "♠"), 1);
+    BotStrategyConfig config = BotStrategyConfig.newBuilder().maxDepth(5).build();
+    assertEquals(new AlphaBeta(state, config).bestMove(), 1);
   }
 }
