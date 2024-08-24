@@ -17,7 +17,8 @@ import org.example.GameBoard;
 
 public final class TicTacToeLibrary {
 
-  private static final Logger log = System.getLogger(MethodHandles.lookup().lookupClass().getName());
+  private static final Logger log =
+      System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
   static final String LIBRARY_NAME = "tictactoe";
 

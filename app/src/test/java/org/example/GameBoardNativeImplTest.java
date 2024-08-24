@@ -82,7 +82,7 @@ public class GameBoardNativeImplTest {
   @Ignore("This test is for debugging and memory profiling only")
   public void should_clean_up_native_resources() {
     long idx = 0;
-    while(true) {
+    while (true) {
       GameBoard gameBoard = new GameBoardNativeImpl();
       gameBoard = null;
       if (idx++ % 100 == 0) {
