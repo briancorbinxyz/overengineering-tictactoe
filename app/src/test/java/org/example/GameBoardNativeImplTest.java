@@ -7,6 +7,7 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 public class GameBoardNativeImplTest {
@@ -75,6 +76,20 @@ public class GameBoardNativeImplTest {
     Assert.assertTrue(board[3].hasChain("X"));
     Assert.assertFalse(board[3].hasChain("O"));
     Assert.assertFalse(board[4].hasChain("O"));
+  }
+
+  @Test
+  @Ignore("This test is for debugging and memory profiling only")
+  public void should_clean_up_native_resources() {
+    long idx = 0;
+    while(true) {
+      GameBoard gameBoard = new GameBoardNativeImpl();
+      gameBoard = null;
+      if (idx++ % 100 == 0) {
+        System.gc();
+        log.log(Level.INFO, "GC'd " + idx / 100 + " times at " + idx + " iterations");
+      }
+    }
   }
 
   private void printSystemProperties() {

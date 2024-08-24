@@ -34,8 +34,24 @@ class TicTacToeGameBoard implements GameBoard {
 
   private final Cleaner cleaner;
 
-  @SuppressWarnings("unused")
-  private final Cleaner.Cleanable cleanable;
+  private static class CleanupTask implements Runnable {
+    private final MemorySegment board;
+    private final MethodHandle freeGameBoard;
+
+    public CleanupTask(MemorySegment board, MethodHandle freeGameBoard) {
+      this.board = board;
+      this.freeGameBoard = freeGameBoard;
+    }
+
+    public void run() {
+      try {
+        log.log(Level.DEBUG, "Cleaning up native resources for TicTacToeGameBoard");
+        freeGameBoard.invoke(board);
+      } catch (Throwable t) {
+        log.log(Level.ERROR, "Failed to free game board", t);
+      }
+    }
+  }
 
   private MethodHandle newGameBoard;
   private MethodHandle freeGameBoard;
@@ -53,13 +69,7 @@ class TicTacToeGameBoard implements GameBoard {
     this.initGameBoardMethods();
     this.board = newGameBoard(dimension);
     this.cleaner = cleaner;
-    this.cleanable =
-        cleaner.register(
-            this,
-            () -> {
-              log.log(Level.DEBUG, "Cleaning up native resources for TicTacToeGameBoard");
-              freeGameBoard();
-            });
+    cleaner.register(this, new CleanupTask(board, freeGameBoard));
   }
 
   TicTacToeGameBoard(
@@ -76,13 +86,7 @@ class TicTacToeGameBoard implements GameBoard {
     this.initGameBoardMethods();
     this.board = board;
     this.cleaner = cleaner;
-    this.cleanable =
-        cleaner.register(
-            this,
-            () -> {
-              log.log(Level.DEBUG, "Cleaning up native resources for TicTacToeGameBoard");
-              freeGameBoard();
-            });
+    cleaner.register(this, new CleanupTask(board, freeGameBoard));
   }
 
   @Override
@@ -254,14 +258,6 @@ class TicTacToeGameBoard implements GameBoard {
     } catch (Throwable e) {
       log.log(Level.ERROR, "Error creating new game board of dimension {0}", dimension, e);
       throw new RuntimeException(e);
-    }
-  }
-
-  private void freeGameBoard() {
-    try {
-      freeGameBoard.invokeExact(board);
-    } catch (Throwable e) {
-      log.log(Level.ERROR, "Error cleaning up game board", e);
     }
   }
 

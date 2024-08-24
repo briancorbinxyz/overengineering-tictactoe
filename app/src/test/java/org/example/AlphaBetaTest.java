@@ -137,7 +137,9 @@ public class AlphaBetaTest {
     assertEquals(new AlphaBeta(new GameState(board, List.of("♣", "♠"), 1)).bestMove(), 1);
   }
 
-  @Ignore( "This test is slow, but it's a good test to run to make sure that the algorithm can handle larger games.")
+  @Ignore(
+      "This test is slow, but it's a good test to run to make sure that the algorithm can handle"
+          + " larger games.")
   public void testAlphaBetaCanPlayLargerGamesWhenDepthLimited() {
     // This test is a bit slow, but it's a good test to run to make sure that the algorithm can
     // handle larger games.
