@@ -65,7 +65,7 @@ public final class AlphaBeta implements BotStrategy {
       int value = -Integer.MAX_VALUE;
       for (int move : board.availableMoves()) {
         var newBoard = board.withMove(maximizer, move);
-        int score = alphabeta(newBoard, false, depth + 1);
+        int score = alphabeta(newBoard, false, alpha, beta, depth + 1);
         value = Math.max(value, score);
         if (value > beta) {
           break;
@@ -77,7 +77,7 @@ public final class AlphaBeta implements BotStrategy {
       int value = Integer.MAX_VALUE;
       for (int move : board.availableMoves()) {
         var newBoard = board.withMove(opponent(maximizer), move);
-        int score = alphabeta(newBoard, true, depth + 1);
+        int score = alphabeta(newBoard, true, alpha, beta, depth + 1);
         value = Math.min(value, score);
         if (value < alpha) {
           break;

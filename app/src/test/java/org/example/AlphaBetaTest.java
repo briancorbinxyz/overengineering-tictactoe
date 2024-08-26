@@ -155,4 +155,28 @@ public class AlphaBetaTest {
     BotStrategyConfig config = BotStrategyConfig.newBuilder().maxDepth(3).build();
     assertTrue(new AlphaBeta(state, config).bestMove() > 0);
   }
+
+  @Test
+  public void testAlphaBetaCanPlayBlogConfiguration() {
+    var board =
+    createBoardWith(
+        new String[][] {
+          {"X", "_", "O"},
+          {"O", "_", "_"},
+          {"O", "X", "X"}
+        });
+    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 4); 
+  }
+
+  @Test
+  public void testAlphaBetaCanPlayBlogConfigurationTwo() {
+    var board =
+    createBoardWith(
+        new String[][] {
+          {"O", "O", "_"},
+          {"X", "X", "_"},
+          {"_", "_", "_"}
+        });
+    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 2); 
+  }
 }
