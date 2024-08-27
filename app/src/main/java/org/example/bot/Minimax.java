@@ -32,7 +32,7 @@ public final class Minimax implements BotStrategy {
   public int bestMove() {
     int bestMove = -1;
     int maxScore = -Integer.MAX_VALUE;
-    for (int move : initialState.board().availableMoves()) {
+    for (int move : initialState.availableMoves()) {
       var newState = initialState.afterPlayerMoves(move);
       int score = minimax(newState, false, 0);
       log(move, score, 0);
@@ -56,16 +56,16 @@ public final class Minimax implements BotStrategy {
     if (isMaximizing) {
       int value = -Integer.MAX_VALUE;
       for (int move : state.availableMoves()) {
-        var newBoard = state.afterPlayerMoves(move);
-        int score = minimax(newBoard, false, depth + 1);
+        var newState = state.afterPlayerMoves(move);
+        int score = minimax(newState, false, depth + 1);
         value = Math.max(value, score);
       }
       return value;
     } else {
       int value = Integer.MAX_VALUE;
       for (int move : state.availableMoves()) {
-        var newBoard = state.afterPlayerMoves(move);
-        int score = minimax(newBoard, true, depth + 1);
+        var newState = state.afterPlayerMoves(move);
+        int score = minimax(newState, true, depth + 1);
         value = Math.min(value, score);
       }
       return value;

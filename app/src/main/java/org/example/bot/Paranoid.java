@@ -33,6 +33,7 @@ public final class Paranoid implements BotStrategy {
       int score = paranoid(newState, 0);
       log(move, score, 0);
 
+      System.out.println("Paranoid: " + score);
       if (score > maxScore) {
         maxScore = score;
         bestMove = move;

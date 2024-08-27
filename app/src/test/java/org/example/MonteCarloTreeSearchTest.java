@@ -1,9 +1,11 @@
 package org.example;
 
 import static org.example.TestData.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testng.Assert.assertEquals;
 
 import java.util.List;
+
 import org.example.bot.BotStrategyConfig;
 import org.example.bot.MonteCarloTreeSearch;
 import org.testng.Assert;
@@ -142,5 +144,41 @@ public class MonteCarloTreeSearchTest {
                 BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build())
             .bestMove(),
         8);
+  }
+
+  @Test
+  public void testMonteCarloTreeSearchShouldSupportBlogPostGame() {
+    // With a low number of iterations it could pick any move
+    // from those still available.
+    var board =
+        createBoardWith(
+            new String[][] {
+              {"X", "_", "O"},
+              {"O", "_", "_"},
+              {"O", "X", "X"}
+            });
+    var mcts =
+        new MonteCarloTreeSearch(
+            new GameState(board, List.of("O", "X"), 0),
+            BotStrategyConfig.newBuilder().maxIterations(1).build());
+    assertTrue(List.of(1, 4, 5).contains(mcts.bestMove()));
+  }
+
+  @Test
+  public void testMonteCarloTreeSearchShouldSupportBlogPostGameTwo() {
+    // With a high number of iterations it should pick the move
+    // that leads to the most wins.
+    var board =
+        createBoardWith(
+            new String[][] {
+              {"X", "_", "O"},
+              {"O", "_", "_"},
+              {"O", "X", "X"}
+            });
+    var mcts =
+        new MonteCarloTreeSearch(
+            new GameState(board, List.of("O", "X"), 0),
+            BotStrategyConfig.newBuilder().maxIterations(1000).build());
+    assertEquals(mcts.bestMove(), 4);
   }
 }
