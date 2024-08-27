@@ -11,6 +11,7 @@ public final class MaxN implements BotStrategy {
   private static final Logger log = System.getLogger(MaxN.class.getName());
 
   private static final int MAX_SCORE = 100;
+  private static final int MIN_SCORE = -100;
 
   private final GameState state;
   private final BotStrategyConfig config;
@@ -29,11 +30,13 @@ public final class MaxN implements BotStrategy {
     int[] maxScores = new int[numberOfPlayers()];
     Arrays.fill(maxScores, Integer.MIN_VALUE);
 
+    System.out.println("Available moves: " + state.board().availableMoves());
     for (int move : state.board().availableMoves()) {
       GameBoard newBoard = state.board().withMove(currentPlayer(), move);
-      int[] scores = maxn(newBoard, nextPlayerIndex(currentPlayerIndex()), 0);
+      int[] scores = maxn(newBoard, currentPlayerIndex(), 0);
       log(move, scores, 0);
 
+    System.out.println("Scores: " + Arrays.toString(scores));
       if (scores[currentPlayerIndex()] > maxScores[currentPlayerIndex()]) {
         maxScores = scores;
         bestMove = move;
@@ -45,6 +48,7 @@ public final class MaxN implements BotStrategy {
   private int[] maxn(GameBoard board, int currentPlayerIdx, int depth) {
     if (board.hasChain(playerMarkerAt(currentPlayerIdx))) {
       int[] scores = new int[numberOfPlayers()];
+      Arrays.fill(scores, MIN_SCORE + depth);
       scores[currentPlayerIdx] = MAX_SCORE - depth;
       return scores;
     } else if (!board.hasMovesAvailable()) {
@@ -55,13 +59,15 @@ public final class MaxN implements BotStrategy {
     Arrays.fill(bestScores, Integer.MIN_VALUE);
 
     for (int move : board.availableMoves()) {
-      var newBoard = board.withMove(playerMarkerAt(currentPlayerIdx), move);
+      var newBoard = board.withMove(playerMarkerAt(nextPlayerIndex(currentPlayerIdx)), move);
       int[] scores = maxn(newBoard, nextPlayerIndex(currentPlayerIdx), depth + 1);
 
+      System.out.println("Next Player: " + currentPlayerIdx + " Best Scores: " + Arrays.toString(bestScores));
       if (scores[currentPlayerIdx] > bestScores[currentPlayerIdx]) {
         bestScores = scores;
       }
     }
+
 
     return bestScores;
   }
