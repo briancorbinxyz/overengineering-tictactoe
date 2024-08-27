@@ -13,7 +13,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
   private final GameState initialState;
   private final BotStrategyConfig config;
 
-  private static final double MIN_SCORE = 0.5;
+  private static final double MIN_SCORE = -0.5;
   private static final double MAX_SCORE = 1.0;
   private static final double DRAW_SCORE = 0.0;
 
@@ -77,6 +77,32 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     public boolean isFullyExpanded() {
       return children.size() == state.board().availableMoves().size();
     }
+
+    public String toString() {
+      var builder = new StringBuilder();
+      builder.append(state.lastMove() > -1? state.playerMarkers().get(state.lastPlayerIndex()) : "None");
+      builder.append(":");
+      builder.append(state.lastMove());
+      builder.append("} Next: ");
+      builder.append(state.currentPlayer());
+      builder.append(" (");
+      builder.append(visits);
+      builder.append(") \n");
+      builder.append(" {");
+      builder.append(" (");
+      for (int i = 0; i < scores.length; i++) {
+        builder.append(state.playerMarkers().get(i));
+        builder.append(": ");
+        builder.append(scores[i]);
+        builder.append(i < scores.length - 1? ", " : "");
+      }
+      builder.append(")");
+      for (MCTSNode child : children) {
+        builder.append("\n");
+        builder.append(child);
+      }
+      return builder.toString();
+    }
   }
 
   private MCTSNode treePolicy(MCTSNode node) {
@@ -124,7 +150,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     for (int i = 0; i < state.playerMarkers().size(); i++) {
       if (i == winningPlayerIndex) {
         reward[i] = MAX_SCORE;
-      } else if (i != -1) {
+      } else if (winningPlayerIndex != -1) {
         reward[i] = MIN_SCORE;
       } else {
         reward[i] = DRAW_SCORE;

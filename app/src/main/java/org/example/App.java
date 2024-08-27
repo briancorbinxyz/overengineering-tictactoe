@@ -20,7 +20,7 @@ public class App {
    * @throws Exception if there is an error whilst playing the game
    */
   public void run() throws Exception {
-    var game = newLargeStandardGame();
+    var game = newStandardGameMCTS();
     game.play();
     game.close();
   }
@@ -47,6 +47,14 @@ public class App {
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
         new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.PARANOID)));
+  }
+
+  private Game newStandardGameMCTS() {
+    return new Game(
+        3,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MCTS)));
   }
 
   private Game newLargeStandardGame() {
