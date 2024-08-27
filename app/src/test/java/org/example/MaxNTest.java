@@ -8,10 +8,22 @@ import org.example.bot.MaxN;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-// Unlike minimax which understands "their loss is my gain", max n doesn't
-// so the player 'X', or 'O' will not, unfortunately, try to block
-// they'll just predictably go for the first move resulting in a tie
 public class MaxNTest {
+
+  @Test
+  public void testMaxNShouldPreventOpponentWinningNextMoveOne() {
+    // Should behave similarly to minimax for a two-player game
+    var board = new GameBoard[1];
+    board[0] =
+        createBoardWith(
+            new String[][] {
+              {"X", "_", "_"},
+              {"O", "X", "_"},
+              {"O", "_", "_"}
+            });
+    Assert.assertTrue(board[0].withMove("X", 8).hasChain("X"));
+    assertEquals(new MaxN(new GameState(board[0], List.of("X", "O"), 1)).bestMove(), 8);
+  }
 
   @Test
   public void testMaxNShouldPreventOpponentWinningNextMove() {
@@ -41,7 +53,7 @@ public class MaxNTest {
 
     assertEquals(new MaxN(new GameState(board[0], List.of("X", "O"), 1)).bestMove(), 2);
     Assert.assertTrue(board[1].withMove("X", 8).hasChain("X"));
-    assertEquals(new MaxN(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 7);
+    assertEquals(new MaxN(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 8);
     assertEquals(new MaxN(new GameState(board[2], List.of("X", "O"), 1)).bestMove(), 8);
   }
 
@@ -109,13 +121,13 @@ public class MaxNTest {
               {"O", "_", "_"}
             });
     assertEquals(new MaxN(new GameState(board, List.of("/", "X", "O"), 0)).bestMove(), 8);
-    assertEquals(new MaxN(new GameState(board, List.of("X", "O", "/"), 0)).bestMove(), 4);
-    assertEquals(new MaxN(new GameState(board, List.of("O", "/", "X"), 0)).bestMove(), 4);
+    assertEquals(new MaxN(new GameState(board, List.of("X", "/", "O"), 0)).bestMove(), 8);
+    assertEquals(new MaxN(new GameState(board, List.of("O", "/", "X"), 0)).bestMove(), 8);
   }
 
   @Test
   public void testMaxNShouldSupportAMultiPlayerGameFromBlog() {
-    // The player '/' should try to win,
+    // The player 'O' should try to win,
     var board =
         createBoardWith(
             new String[][] {

@@ -3,7 +3,6 @@ package org.example.bot;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Arrays;
-import org.example.GameBoard;
 import org.example.GameState;
 
 public final class MaxN implements BotStrategy {
@@ -13,15 +12,15 @@ public final class MaxN implements BotStrategy {
   private static final int MAX_SCORE = 100;
   private static final int MIN_SCORE = -100;
 
-  private final GameState state;
+  private final GameState initialState;
   private final BotStrategyConfig config;
 
   public MaxN(GameState state) {
     this(state, BotStrategyConfig.empty());
   }
 
-  public MaxN(GameState state, BotStrategyConfig config) {
-    this.state = state;
+  public MaxN(GameState initialState, BotStrategyConfig config) {
+    this.initialState = initialState;
     this.config = config;
   }
 
@@ -30,14 +29,12 @@ public final class MaxN implements BotStrategy {
     int[] maxScores = new int[numberOfPlayers()];
     Arrays.fill(maxScores, Integer.MIN_VALUE);
 
-    System.out.println("Available moves: " + state.board().availableMoves());
-    for (int move : state.board().availableMoves()) {
-      GameBoard newBoard = state.board().withMove(currentPlayer(), move);
-      int[] scores = maxn(newBoard, currentPlayerIndex(), 0);
+    for (int move : initialState.availableMoves()) {
+      var newState = initialState.afterPlayerMoves(move);
+      int[] scores = maxn(newState, 0);
       log(move, scores, 0);
 
-    System.out.println("Scores: " + Arrays.toString(scores));
-      if (scores[currentPlayerIndex()] > maxScores[currentPlayerIndex()]) {
+      if (scores[newState.lastPlayerIndex()] > maxScores[newState.lastPlayerIndex()]) {
         maxScores = scores;
         bestMove = move;
       }
@@ -45,51 +42,37 @@ public final class MaxN implements BotStrategy {
     return bestMove;
   }
 
-  private int[] maxn(GameBoard board, int currentPlayerIdx, int depth) {
-    if (board.hasChain(playerMarkerAt(currentPlayerIdx))) {
+  private int[] maxn(GameState state, int depth) {
+    if (state.lastPlayerHasChain()) {
       int[] scores = new int[numberOfPlayers()];
       Arrays.fill(scores, MIN_SCORE + depth);
-      scores[currentPlayerIdx] = MAX_SCORE - depth;
+      scores[state.lastPlayerIndex()] = MAX_SCORE - depth;
       return scores;
-    } else if (!board.hasMovesAvailable()) {
+    } else if (!state.hasMovesAvailable() || config.exceedsMaxDepth(depth)) {
       return new int[numberOfPlayers()]; // Draw, all scores 0
     }
 
     int[] bestScores = new int[numberOfPlayers()];
     Arrays.fill(bestScores, Integer.MIN_VALUE);
 
-    for (int move : board.availableMoves()) {
-      var newBoard = board.withMove(playerMarkerAt(nextPlayerIndex(currentPlayerIdx)), move);
-      int[] scores = maxn(newBoard, nextPlayerIndex(currentPlayerIdx), depth + 1);
+    for (int move : state.availableMoves()) {
+      var newState = state.afterPlayerMoves(move);
+      int[] scores = maxn(newState, depth + 1);
 
-      System.out.println("Next Player: " + currentPlayerIdx + " Best Scores: " + Arrays.toString(bestScores));
-      if (scores[currentPlayerIdx] > bestScores[currentPlayerIdx]) {
+      if (scores[state.currentPlayerIndex()] > bestScores[state.currentPlayerIndex()]) {
         bestScores = scores;
       }
     }
-
 
     return bestScores;
   }
 
   private String currentPlayer() {
-    return state.currentPlayer();
-  }
-
-  private int currentPlayerIndex() {
-    return state.currentPlayerIndex();
+    return initialState.currentPlayer();
   }
 
   private int numberOfPlayers() {
-    return state.playerMarkers().size();
-  }
-
-  private int nextPlayerIndex(int playerIndex) {
-    return (playerIndex + 1) % numberOfPlayers();
-  }
-
-  private String playerMarkerAt(int playerIndex) {
-    return state.playerMarkers().get(playerIndex);
+    return initialState.playerMarkers().size();
   }
 
   private void log(int location, int[] scores, int depth) {

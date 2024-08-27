@@ -34,7 +34,7 @@ public class GameStateTest {
               {"_", "_", "_"}
             });
     var gameState = new GameState(gameBoard, List.of("X", "O"), 1);
-    var gameStateAfterMove = gameState.withMove(3);
+    var gameStateAfterMove = gameState.afterPlayerMoves(3);
     var expectedGameState =
         new GameState(
             createBoardWith(

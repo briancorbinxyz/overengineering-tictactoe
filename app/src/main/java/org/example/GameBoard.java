@@ -35,6 +35,15 @@ public interface GameBoard extends JsonSerializable {
     return availableMoves;
   }
 
+  default boolean isEmpty() {
+    for (int i = 0; i < dimension() * dimension(); i++) {
+      if (!isValidMove(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * Checks if the given player has a winning chain of connected game pieces on the game board.
    *

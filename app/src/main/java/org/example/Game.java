@@ -24,13 +24,11 @@ public class Game implements Serializable, AutoCloseable {
 
   private final UUID gameId;
 
-  private final Deque<GameBoard> boards;
+  private final Deque<GameState> gameState;
 
-  private final PlayerNodes players;
+  private final PlayerNodes playerNodes;
 
   private final boolean persistenceEnabled;
-
-  private int currentPlayerIdx;
 
   private int moveNumber;
 
@@ -43,12 +41,11 @@ public class Game implements Serializable, AutoCloseable {
   }
 
   public Game(int size, boolean persistenceEnabled, PlayerNode... players) {
-    this.boards = new ArrayDeque<>();
-    this.boards.add(GameBoard.with(size));
-    this.players = PlayerNodes.of(players);
+    this.playerNodes = PlayerNodes.of(players);
     this.gameId = UUID.randomUUID();
     this.moveNumber = 0;
-    this.currentPlayerIdx = 0;
+    this.gameState = new ArrayDeque<>();
+    this.gameState.add(new GameState(GameBoard.with(size), this.playerNodes.playerMarkerList(), 0));
     this.persistenceEnabled = persistenceEnabled;
   }
 
@@ -61,28 +58,25 @@ public class Game implements Serializable, AutoCloseable {
     try {
       GamePersistence persistence = new GamePersistence();
       File persistenceDir = gameFileDirectory();
-      GameBoard board = activeGameBoard();
-      boolean movesAvailable = board.hasMovesAvailable();
-      PlayerNode currentPlayer = players.byIndex(currentPlayerIdx);
-      Optional<String> winningPlayer = checkWon(board, currentPlayer.playerMarker());
+      GameState state = currentGameState();
+      boolean movesAvailable = state.hasMovesAvailable();
+      PlayerNode currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
+      Optional<String> winningPlayer = checkWon(state);
 
       // Print Initial Setup
-      players.render();
+      playerNodes.render();
       while (winningPlayer.isEmpty() && movesAvailable) {
         renderBoard();
         log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
         moveNumber += 1;
-        var state = new GameState(board, players.playerMarkerList(), currentPlayerIdx);
-        var newBoard =
-            board.withMove(currentPlayer.playerMarker(), currentPlayer.applyAsInt(state));
-        board = pushGameBoard(newBoard);
-        if (persistenceEnabled && board instanceof Serializable) {
+        var newState = state.afterPlayerMoves(currentPlayer.applyAsInt(state));
+        state = pushGameState(newState);
+        if (persistenceEnabled && state.board() instanceof Serializable) {
           persistence.saveTo(gameFile(persistenceDir), this);
         }
-        winningPlayer = checkWon(board, currentPlayer.playerMarker());
-        movesAvailable = board.hasMovesAvailable();
-        currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
-        currentPlayer = players.byIndex(currentPlayerIdx);
+        winningPlayer = checkWon(state);
+        movesAvailable = state.hasMovesAvailable();
+        currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
       }
 
       winningPlayer.ifPresentOrElse(
@@ -95,8 +89,8 @@ public class Game implements Serializable, AutoCloseable {
     }
   }
 
-  private Optional<String> checkWon(GameBoard board, String playerMarker) {
-    return board.hasChain(playerMarker) ? Optional.of(playerMarker) : Optional.empty();
+  private Optional<String> checkWon(GameState state) {
+    return state.lastMove() > -1 && state.lastPlayerHasChain() ? Optional.of(state.playerMarkers().get(state.lastPlayerIndex())) : Optional.empty();
   }
 
   private File gameFileDirectory() throws IOException {
@@ -107,9 +101,9 @@ public class Game implements Serializable, AutoCloseable {
     return new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game");
   }
 
-  private GameBoard pushGameBoard(GameBoard board) {
-    boards.add(board);
-    return board;
+  private GameState pushGameState(GameState state) {
+    gameState.add(state);
+    return state;
   }
 
   public UUID getGameId() {
@@ -117,15 +111,15 @@ public class Game implements Serializable, AutoCloseable {
   }
 
   private void renderBoard() {
-    log.log(Level.INFO, "\n" + activeGameBoard());
+    log.log(Level.INFO, "\n" + currentGameState().board());
   }
 
-  private GameBoard activeGameBoard() {
-    return boards.peekLast();
+  private GameState currentGameState() {
+    return gameState.peekLast();
   }
 
   @Override
   public void close() throws Exception {
-    players.close();
+    playerNodes.close();
   }
 }

@@ -109,10 +109,20 @@ public class ParanoidTest {
               {"O", "_", "_"}
             });
     assertEquals(new Paranoid(new GameState(board, List.of("/", "X", "O"), 0)).bestMove(), 8);
-    // Unlike minimax which understands "their loss is my gain", max n doesn't
-    // so the player 'X', or 'O' will not, unfortunately, try to block
-    // they'll just predictably go for the first move resulting in a tie
-    assertEquals(new Paranoid(new GameState(board, List.of("X", "O", "/"), 0)).bestMove(), 4);
-    assertEquals(new Paranoid(new GameState(board, List.of("O", "/", "X"), 0)).bestMove(), 4);
+    assertEquals(new Paranoid(new GameState(board, List.of("X", "/", "O"), 0)).bestMove(), 8);
+    assertEquals(new Paranoid(new GameState(board, List.of("O", "/", "X"), 0)).bestMove(), 8);
+  }
+
+  @Test
+  public void testParanoidShouldSupportAMultiPlayerGameTwo() {
+    // The player '/' should try to win,
+    var board =
+        createBoardWith(
+            new String[][] {
+              {"O", "/", "/"},
+              {"X", "_", "X"},
+              {"O", "_", "_"}
+            });
+    assertEquals(new Paranoid(new GameState(board, List.of("O", "X", "/"), 0)).bestMove(), 4);
   }
 }

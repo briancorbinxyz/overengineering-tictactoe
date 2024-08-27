@@ -1,11 +1,12 @@
 package org.example;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public record GameState(
     GameBoard board, List<String> playerMarkers, int currentPlayerIndex, int lastMove)
-    implements JsonSerializable {
+    implements JsonSerializable, Serializable {
 
   public GameState(GameBoard board, List<String> playerMarkers, int currentPlayerIndex) {
     this(board, playerMarkers, currentPlayerIndex, -1);
@@ -21,6 +22,18 @@ public record GameState(
 
   public String currentPlayer() {
     return playerMarkers.get(currentPlayerIndex);
+  }
+
+  public boolean hasMovesAvailable() {
+    return board.hasMovesAvailable();
+  }
+
+  public boolean hasChain(String player) {
+    return board.hasChain(player);
+  }
+
+  public List<Integer> availableMoves() {
+    return board.availableMoves();
   }
 
   public boolean isTerminal() {
@@ -52,9 +65,24 @@ public record GameState(
     return json.toString();
   }
 
-  public GameState withMove(int move) {
+  public GameState afterPlayerMoves(int move) {
     GameBoard newBoard = board.withMove(currentPlayer(), move);
     int newCurrentPlayerIndex = (currentPlayerIndex + 1) % playerMarkers.size();
     return new GameState(newBoard, playerMarkers, newCurrentPlayerIndex, move);
+  }
+
+  public boolean lastPlayerHasChain() {
+    return board.hasChain(lastPlayer());
+  }
+
+  private String lastPlayer() {
+    if (lastMove < 0 || board.isEmpty()) {
+      throw new GameServiceException("null last player");
+    }
+    return playerMarkers.get(lastPlayerIndex());
+  }
+
+  public int lastPlayerIndex() {
+    return (currentPlayerIndex + playerMarkers.size() - 1) % playerMarkers.size();
   }
 }

@@ -96,7 +96,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
         node.children.stream().map(child -> child.state.lastMove()).collect(Collectors.toList()));
 
     int move = untriedMoves.get(new Random().nextInt(untriedMoves.size()));
-    GameState newState = node.state.withMove(move);
+    GameState newState = node.state.afterPlayerMoves(move);
     MCTSNode child = new MCTSNode(newState, node);
     node.children.add(child);
     return child;
@@ -107,7 +107,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     while (!tempState.isTerminal()) {
       List<Integer> moves = tempState.board().availableMoves();
       int move = moves.get(new Random().nextInt(moves.size()));
-      tempState = tempState.withMove(move);
+      tempState = tempState.afterPlayerMoves(move);
     }
     return defaultReward(tempState);
   }

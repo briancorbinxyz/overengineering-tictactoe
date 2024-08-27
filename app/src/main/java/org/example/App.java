@@ -20,7 +20,7 @@ public class App {
    * @throws Exception if there is an error whilst playing the game
    */
   public void run() throws Exception {
-    var game = newMultiplayerGameMCTS();
+    var game = newLargeStandardGame();
     game.play();
     game.close();
   }
@@ -30,7 +30,23 @@ public class App {
         3,
         false,
         new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MINIMAX)));
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.ALPHABETA)));
+  }
+
+  private Game newStandardGameMaxN() {
+    return new Game(
+        3,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MAXN)));
+  }
+
+  private Game newStandardGameParanoid() {
+    return new Game(
+        3,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.PARANOID)));
   }
 
   private Game newLargeStandardGame() {
@@ -41,7 +57,7 @@ public class App {
         new PlayerNode.Local<>(
             "O",
             new BotPlayer(
-                BotStrategy.alphabeta(BotStrategyConfig.newBuilder().maxDepth(3).build()))));
+                BotStrategy.alphabeta(BotStrategyConfig.newBuilder().maxDepth(4).build()))));
   }
 
   private Game newMultiplayerGameMCTS() {

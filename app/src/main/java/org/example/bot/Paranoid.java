@@ -12,16 +12,16 @@ public final class Paranoid implements BotStrategy {
   private static final int MAX_SCORE = 100;
   private static final int MIN_SCORE = -100;
 
-  private final GameState state;
+  private final GameState initialState;
   private final BotStrategyConfig config;
 
-  public Paranoid(GameState state) {
-    this.state = state;
+  public Paranoid(GameState initialState) {
+    this.initialState = initialState;
     this.config = BotStrategyConfig.empty();
   }
 
   public Paranoid(GameState state, BotStrategyConfig config) {
-    this.state = state;
+    this.initialState = state;
     this.config = config;
   }
 
@@ -29,9 +29,9 @@ public final class Paranoid implements BotStrategy {
     int bestMove = -1;
     int maxScore = Integer.MIN_VALUE;
 
-    for (int move : state.board().availableMoves()) {
-      GameBoard newBoard = state.board().withMove(maximizer(), move);
-      int score = paranoid(newBoard, nextPlayerIndex(maximizerIndex()), 0);
+    for (int move : initialState.board().availableMoves()) {
+      GameState newState = initialState.afterPlayerMoves(move);
+      int score = paranoid(newState, 0);
       log(move, score, 0);
 
       if (score > maxScore) {
@@ -42,31 +42,31 @@ public final class Paranoid implements BotStrategy {
     return bestMove;
   }
 
-  private int paranoid(GameBoard board, int currentPlayerIdx, int depth) {
+  private int paranoid(GameState state, int depth) {
     // Terminal state checks
-    if (board.hasChain(maximizer())) {
+    if (state.hasChain(maximizer())) {
       return MAX_SCORE - depth;
-    } else if (board.hasChain(playerMarkerAt(currentPlayerIdx))) {
+    } else if (state.lastPlayerIndex() != maximizerIndex() && state.lastPlayerHasChain()) {
       return MIN_SCORE + depth;
-    } else if (!board.hasMovesAvailable() || config.exceedsMaxDepth(depth)) {
+    } else if (!state.hasMovesAvailable() || config.exceedsMaxDepth(depth)) {
       return MIN_SCORE + depth;
     }
 
-    if (maximizerIndex() == currentPlayerIdx) {
+    if (maximizerIndex() == state.currentPlayerIndex()) {
       // Our turn: maximize our score
       int maxScore = -Integer.MAX_VALUE;
-      for (int move : board.availableMoves()) {
-        GameBoard newBoard = board.withMove(playerMarkerAt(currentPlayerIdx), move);
-        int score = paranoid(newBoard, nextPlayerIndex(currentPlayerIdx), depth + 1);
+      for (int move : state.availableMoves()) {
+        GameState newState = state.afterPlayerMoves(move);
+        int score = paranoid(newState, depth + 1);
         maxScore = Math.max(maxScore, score);
       }
       return maxScore;
     } else {
       // Opponent's turn: minimize our score
       int minScore = Integer.MAX_VALUE;
-      for (int move : board.availableMoves()) {
-        GameBoard newBoard = board.withMove(playerMarkerAt(currentPlayerIdx), move);
-        int score = paranoid(newBoard, nextPlayerIndex(currentPlayerIdx), depth + 1);
+      for (int move : state.availableMoves()) {
+        GameState newState = state.afterPlayerMoves(move);
+        int score = paranoid(newState, depth + 1);
         minScore = Math.min(minScore, score);
       }
       return minScore;
@@ -74,23 +74,11 @@ public final class Paranoid implements BotStrategy {
   }
 
   private String maximizer() {
-    return state.currentPlayer();
+    return initialState.currentPlayer();
   }
 
   private int maximizerIndex() {
-    return state.currentPlayerIndex();
-  }
-
-  private int numberOfPlayers() {
-    return state.playerMarkers().size();
-  }
-
-  private int nextPlayerIndex(int playerIndex) {
-    return (playerIndex + 1) % numberOfPlayers();
-  }
-
-  private String playerMarkerAt(int playerIndex) {
-    return state.playerMarkers().get(playerIndex);
+    return initialState.currentPlayerIndex();
   }
 
   private void log(int location, int score, int depth) {

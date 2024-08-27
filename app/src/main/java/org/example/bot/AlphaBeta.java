@@ -2,8 +2,6 @@ package org.example.bot;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.util.List;
-import org.example.GameBoard;
 import org.example.GameState;
 
 public final class AlphaBeta implements BotStrategy {
@@ -15,29 +13,27 @@ public final class AlphaBeta implements BotStrategy {
   private static final int DRAW_SCORE = 0;
 
   private final String maximizer;
-  private final GameBoard board;
-  private final List<String> playerMarkers;
+  private final GameState initialState;
   private final BotStrategyConfig config;
 
   public AlphaBeta(GameState state) {
     this(state, BotStrategyConfig.newBuilder().build());
   }
 
-  public AlphaBeta(GameState state, BotStrategyConfig config) {
-    this.board = state.board();
-    this.maximizer = state.currentPlayer();
-    if (state.playerMarkers().size() != 2) {
+  public AlphaBeta(GameState initialState, BotStrategyConfig config) {
+    this.initialState = initialState;
+    this.maximizer = initialState.currentPlayer();
+    if (initialState.playerMarkers().size() != 2) {
       throw new IllegalArgumentException("Minimax AlphaBeta requires exactly two players");
     }
-    this.playerMarkers = state.playerMarkers();
     this.config = config;
   }
 
   public int bestMove() {
     int bestMove = -1;
     int maxScore = -Integer.MAX_VALUE;
-    for (int move : board.availableMoves()) {
-      var newBoard = board.withMove(maximizer, move);
+    for (int move : initialState.availableMoves()) {
+      var newBoard = initialState.afterPlayerMoves(move);
       int score = alphabeta(newBoard, false, 0);
       log(move, score, 0);
       if (score > maxScore) {
@@ -48,23 +44,23 @@ public final class AlphaBeta implements BotStrategy {
     return bestMove;
   }
 
-  private int alphabeta(GameBoard board, boolean isMaximizing, int depth) {
-    return alphabeta(board, isMaximizing, -Integer.MAX_VALUE, Integer.MAX_VALUE, depth);
+  private int alphabeta(GameState state, boolean isMaximizing, int depth) {
+    return alphabeta(state, isMaximizing, -Integer.MAX_VALUE, Integer.MAX_VALUE, depth);
   }
 
-  private int alphabeta(GameBoard board, boolean isMaximizing, int alpha, int beta, int depth) {
-    if (board.hasChain(maximizer)) {
+  private int alphabeta(GameState state, boolean isMaximizing, int alpha, int beta, int depth) {
+    if (state.hasChain(maximizer)) {
       return MAX_SCORE - depth;
-    } else if (board.hasChain(opponent(maximizer))) {
+    } else if (state.hasChain(opponent(maximizer))) {
       return MIN_SCORE + depth;
-    } else if (!board.hasMovesAvailable() || config.exceedsMaxDepth(depth)) {
+    } else if (!state.hasMovesAvailable() || config.exceedsMaxDepth(depth)) {
       return DRAW_SCORE;
     }
 
     if (isMaximizing) {
       int value = -Integer.MAX_VALUE;
-      for (int move : board.availableMoves()) {
-        var newBoard = board.withMove(maximizer, move);
+      for (int move : state.availableMoves()) {
+        var newBoard = state.afterPlayerMoves(move);
         int score = alphabeta(newBoard, false, alpha, beta, depth + 1);
         value = Math.max(value, score);
         if (value > beta) {
@@ -75,8 +71,8 @@ public final class AlphaBeta implements BotStrategy {
       return value;
     } else {
       int value = Integer.MAX_VALUE;
-      for (int move : board.availableMoves()) {
-        var newBoard = board.withMove(opponent(maximizer), move);
+      for (int move : state.availableMoves()) {
+        var newBoard = state.afterPlayerMoves(move);
         int score = alphabeta(newBoard, true, alpha, beta, depth + 1);
         value = Math.min(value, score);
         if (value < alpha) {
@@ -94,6 +90,6 @@ public final class AlphaBeta implements BotStrategy {
   }
 
   private String opponent(String playerMarker) {
-    return playerMarkers.stream().dropWhile(playerMarker::equals).findFirst().orElseThrow();
+    return initialState.playerMarkers().stream().dropWhile(playerMarker::equals).findFirst().orElseThrow();
   }
 }
