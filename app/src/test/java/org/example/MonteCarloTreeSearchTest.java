@@ -4,7 +4,6 @@ import static org.example.TestData.*;
 import static org.testng.Assert.assertEquals;
 
 import java.util.List;
-
 import org.example.bot.BotStrategyConfig;
 import org.example.bot.MonteCarloTreeSearch;
 import org.testng.Assert;
@@ -116,14 +115,32 @@ public class MonteCarloTreeSearchTest {
               {"O", "_", "/"},
               {"O", "_", "_"}
             });
-    var mcts = new MonteCarloTreeSearch(new GameState(board, List.of("/", "X", "O"), 0), BotStrategyConfig.newBuilder().maxTimeMillis(1000L).build());
+    var mcts =
+        new MonteCarloTreeSearch(
+            new GameState(board, List.of("/", "X", "O"), 0),
+            BotStrategyConfig.newBuilder().maxTimeMillis(1000L).build());
     assertEquals(mcts.bestMove(), 8);
     // Monte Carlo Tree Search will be able to predict the player '/'
     // and block given sufficient time. Unlike other algo's MCTS doesn't assume
     // perfect moves by the opponent(s), so won't *assume* it doesn't have to block
     // due to the next opponent being expected to block.
-    assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("X", "/", "O"), 0), BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build()).bestMove(), 8);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("X", "O", "/"), 0), BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build()).bestMove(), 8);
-    assertEquals(new MonteCarloTreeSearch(new GameState(board, List.of("O", "/", "X"), 0), BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build()).bestMove(), 8);
+    assertEquals(
+        new MonteCarloTreeSearch(
+                new GameState(board, List.of("X", "/", "O"), 0),
+                BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build())
+            .bestMove(),
+        8);
+    assertEquals(
+        new MonteCarloTreeSearch(
+                new GameState(board, List.of("X", "O", "/"), 0),
+                BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build())
+            .bestMove(),
+        8);
+    assertEquals(
+        new MonteCarloTreeSearch(
+                new GameState(board, List.of("O", "/", "X"), 0),
+                BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build())
+            .bestMove(),
+        8);
   }
 }

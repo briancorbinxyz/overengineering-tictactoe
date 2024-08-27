@@ -80,7 +80,8 @@ public final class MonteCarloTreeSearch implements BotStrategy {
 
     public String toString() {
       var builder = new StringBuilder();
-      builder.append(state.lastMove() > -1? state.playerMarkers().get(state.lastPlayerIndex()) : "None");
+      builder.append(
+          state.lastMove() > -1 ? state.playerMarkers().get(state.lastPlayerIndex()) : "None");
       builder.append(":");
       builder.append(state.lastMove());
       builder.append("} Next: ");
@@ -94,7 +95,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
         builder.append(state.playerMarkers().get(i));
         builder.append(": ");
         builder.append(scores[i]);
-        builder.append(i < scores.length - 1? ", " : "");
+        builder.append(i < scores.length - 1 ? ", " : "");
       }
       builder.append(")");
       for (MCTSNode child : children) {
