@@ -2,7 +2,6 @@ package org.example.bot;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import org.example.GameBoard;
 import org.example.GameState;
 
 public final class Paranoid implements BotStrategy {

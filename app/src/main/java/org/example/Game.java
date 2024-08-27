@@ -90,7 +90,9 @@ public class Game implements Serializable, AutoCloseable {
   }
 
   private Optional<String> checkWon(GameState state) {
-    return state.lastMove() > -1 && state.lastPlayerHasChain() ? Optional.of(state.playerMarkers().get(state.lastPlayerIndex())) : Optional.empty();
+    return state.lastMove() > -1 && state.lastPlayerHasChain()
+        ? Optional.of(state.playerMarkers().get(state.lastPlayerIndex()))
+        : Optional.empty();
   }
 
   private File gameFileDirectory() throws IOException {

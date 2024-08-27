@@ -159,24 +159,24 @@ public class AlphaBetaTest {
   @Test
   public void testAlphaBetaCanPlayBlogConfiguration() {
     var board =
-    createBoardWith(
-        new String[][] {
-          {"X", "_", "O"},
-          {"O", "_", "_"},
-          {"O", "X", "X"}
-        });
-    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 4); 
+        createBoardWith(
+            new String[][] {
+              {"X", "_", "O"},
+              {"O", "_", "_"},
+              {"O", "X", "X"}
+            });
+    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 4);
   }
 
   @Test
   public void testAlphaBetaCanPlayBlogConfigurationTwo() {
     var board =
-    createBoardWith(
-        new String[][] {
-          {"O", "O", "_"},
-          {"X", "X", "_"},
-          {"_", "_", "_"}
-        });
-    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 2); 
+        createBoardWith(
+            new String[][] {
+              {"O", "O", "_"},
+              {"X", "X", "_"},
+              {"_", "_", "_"}
+            });
+    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 2);
   }
 }

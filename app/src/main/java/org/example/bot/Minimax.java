@@ -78,6 +78,9 @@ public final class Minimax implements BotStrategy {
   }
 
   private String opponent(String playerMarker) {
-    return initialState.playerMarkers().stream().dropWhile(playerMarker::equals).findFirst().orElseThrow();
+    return initialState.playerMarkers().stream()
+        .dropWhile(playerMarker::equals)
+        .findFirst()
+        .orElseThrow();
   }
 }
