@@ -8,9 +8,9 @@ import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
 public class AppTest {
-    @Test
-    public void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
-    }
+  @Test
+  public void appHasAGreeting() {
+    App classUnderTest = new App();
+    assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+  }
 }

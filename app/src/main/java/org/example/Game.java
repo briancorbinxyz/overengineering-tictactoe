@@ -16,102 +16,112 @@ import java.util.UUID;
  * be serialized and persisted to a file, and loaded from a file. The game can be played by
  * alternating moves between human and bot players.
  */
-public class Game implements Serializable {
+public class Game implements Serializable, AutoCloseable {
 
-    private static final Logger log = System.getLogger(Game.class.getName());
+  private static final Logger log = System.getLogger(Game.class.getName());
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private final UUID gameId;
+  private final UUID gameId;
 
-    private final Deque<GameBoard> boards;
+  private final Deque<GameState> gameState;
 
-    private final Players players;
+  private final PlayerNodes playerNodes;
 
-    private final boolean persistenceEnabled;
+  private final boolean persistenceEnabled;
 
-    private int currentPlayerIdx;
+  private int moveNumber;
 
-    private int moveNumber;
+  public Game() {
+    this(
+        3,
+        true,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer()));
+  }
 
-    public Game() {
-        this(3, true, new HumanPlayer("X"), new BotPlayer("O"));
-    }
+  public Game(int size, boolean persistenceEnabled, PlayerNode... players) {
+    this.playerNodes = PlayerNodes.of(players);
+    this.gameId = UUID.randomUUID();
+    this.moveNumber = 0;
+    this.gameState = new ArrayDeque<>();
+    this.gameState.add(new GameState(GameBoard.with(size), this.playerNodes.playerMarkerList(), 0));
+    this.persistenceEnabled = persistenceEnabled;
+  }
 
-    public Game(int size, boolean persistenceEnabled, Player... players) {
-        this.boards = new ArrayDeque<>();
-        this.boards.add(new GameBoardNativeImpl(size));
-        this.players = Players.of(players);
-        this.gameId = UUID.randomUUID();
-        this.moveNumber = 0;
-        this.currentPlayerIdx = 0;
-        this.persistenceEnabled = persistenceEnabled;
-    }
+  public static Game from(File gameFile) throws IOException, ClassNotFoundException {
+    GamePersistence persistence = new GamePersistence();
+    return persistence.loadFrom(gameFile);
+  }
 
-    public static Game from(File gameFile) throws IOException, ClassNotFoundException {
-        GamePersistence persistence = new GamePersistence();
-        return persistence.loadFrom(gameFile);
-    }
+  public void play() {
+    try {
+      GamePersistence persistence = new GamePersistence();
+      File persistenceDir = gameFileDirectory();
+      GameState state = currentGameState();
+      boolean movesAvailable = state.hasMovesAvailable();
+      PlayerNode currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
+      Optional<String> winningPlayer = checkWon(state);
 
-    public void play() throws Exception {
-        GamePersistence persistence = new GamePersistence();
-        File persistenceDir = gameFileDirectory();
-        GameBoard board = activeGameBoard();
-        boolean movesAvailable = board.hasMovesAvailable();
-        Player currentPlayer = players.byIndex(currentPlayerIdx);
-        Optional<Player> winningPlayer = checkWon(board, currentPlayer);
-
-        // Print Initial Setup
-        players.render();
-        while (winningPlayer.isEmpty() && movesAvailable) {
-            renderBoard();
-            moveNumber += 1;
-            board =
-                    pushGameBoard(
-                            board.withMove(
-                                    currentPlayer.getPlayerMarker(),
-                                    currentPlayer.nextMove(board)));
-            if (persistenceEnabled && board instanceof Serializable) {
-                persistence.saveTo(gameFile(persistenceDir), this);
-            }
-            winningPlayer = checkWon(board, currentPlayer);
-            movesAvailable = board.hasMovesAvailable();
-            currentPlayerIdx = players.nextPlayerIndex(currentPlayerIdx);
-            currentPlayer = players.byIndex(currentPlayerIdx);
-        }
-
-        winningPlayer.ifPresentOrElse(
-                player -> log.log(Level.INFO, "Winner: Player {0}!", player.getPlayerMarker()),
-                () -> log.log(Level.INFO, "Tie Game!"));
+      // Print Initial Setup
+      playerNodes.render();
+      while (winningPlayer.isEmpty() && movesAvailable) {
         renderBoard();
-    }
+        log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
+        moveNumber += 1;
+        var newState = state.afterPlayerMoves(currentPlayer.applyAsInt(state));
+        state = pushGameState(newState);
+        if (persistenceEnabled && state.board() instanceof Serializable) {
+          persistence.saveTo(gameFile(persistenceDir), this);
+        }
+        winningPlayer = checkWon(state);
+        movesAvailable = state.hasMovesAvailable();
+        currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
+      }
 
-    private Optional<Player> checkWon(GameBoard board, Player player) {
-        return board.hasChain(player.getPlayerMarker()) ? Optional.of(player) : Optional.empty();
+      winningPlayer.ifPresentOrElse(
+          p -> log.log(Level.INFO, "Winner: Player {0}!", p),
+          () -> log.log(Level.INFO, "Tie Game!"));
+      renderBoard();
+      close();
+    } catch (Exception e) {
+      throw new GameServiceException("Failure whilst playing game: " + e.getMessage(), e);
     }
+  }
 
-    private File gameFileDirectory() throws IOException {
-        return Files.createTempDirectory(String.valueOf(gameId)).toFile();
-    }
+  private Optional<String> checkWon(GameState state) {
+    return state.lastMove() > -1 && state.lastPlayerHasChain()
+        ? Optional.of(state.playerMarkers().get(state.lastPlayerIndex()))
+        : Optional.empty();
+  }
 
-    private File gameFile(File persistenceDir) {
-        return new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game");
-    }
+  private File gameFileDirectory() throws IOException {
+    return Files.createTempDirectory(String.valueOf(gameId)).toFile();
+  }
 
-    private GameBoard pushGameBoard(GameBoard board) {
-        boards.add(board);
-        return board;
-    }
+  private File gameFile(File persistenceDir) {
+    return new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game");
+  }
 
-    public UUID getGameId() {
-        return gameId;
-    }
+  private GameState pushGameState(GameState state) {
+    gameState.add(state);
+    return state;
+  }
 
-    private void renderBoard() {
-        log.log(Level.INFO, "\n" + activeGameBoard());
-    }
+  public UUID getGameId() {
+    return gameId;
+  }
 
-    private GameBoard activeGameBoard() {
-        return boards.peekLast();
-    }
+  private void renderBoard() {
+    log.log(Level.INFO, "\n" + currentGameState().board());
+  }
+
+  private GameState currentGameState() {
+    return gameState.peekLast();
+  }
+
+  @Override
+  public void close() throws Exception {
+    playerNodes.close();
+  }
 }

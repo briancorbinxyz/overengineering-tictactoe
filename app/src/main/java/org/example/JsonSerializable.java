@@ -5,7 +5,7 @@ package org.example;
 /// method, which returns the JSON representation of the object.
 public interface JsonSerializable {
 
-    /// Returns the JSON representation of the object.
-    /// @return the JSON string representation of the object.
-    String asJsonString();
+  /// Returns the JSON representation of the object.
+  /// @return the JSON string representation of the object.
+  String asJsonString();
 }

@@ -3,19 +3,18 @@
 <configuration>
   <import class="ch.qos.logback.classic.encoder.JsonEncoder"/>
   <import class="ch.qos.logback.core.ConsoleAppender"/>
+  <import class="ch.qos.logback.classic.filter.ThresholdFilter"/>
 
   <appender name="CONSOLE" class="ConsoleAppender">
-    <encoder class="JsonEncoder">
-      <withFormattedMessage>false</withFormattedMessage>
-      <withMessage>true</withMessage>
-      <withArguments>false</withArguments>
-      <withContext>false</withContext>
-      <withMDC>false</withMDC>
+    <encoder>
+      <pattern>%boldWhite(%date) %yellow([%thread]) %highlight(%-5level) %cyan(%-20logger{20}) - %msg %n</pattern>
     </encoder>
+    <filter class="ThresholdFilter">
+      <level>${log.level:-DEBUG}</level>
+    </filter>
   </appender>
 
-  <root>
-    <level value="DEBUG"/>
+  <root level="INFO">
     <appender-ref ref="CONSOLE"/>
   </root>
 </configuration>

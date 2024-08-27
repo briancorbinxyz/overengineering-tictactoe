@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
@@ -126,7 +128,6 @@ spotless {
     java {
         googleJavaFormat("1.23.0")
             .reflowLongStrings()
-            .aosp()
     }
 }
 
@@ -195,4 +196,29 @@ tasks.named<JavaExec>("run") {
     environment("PATH", libPath) // For Windows
     environment("LD_LIBRARY_PATH", libPath) // For Linux
     environment("DYLD_LIBRARY_PATH", libPath) // For macOS
+}
+
+
+/// Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
+tasks.register("installGitHook") {
+    doLast {
+        val hooksDir = file("${rootDir}/.git/hooks")
+        val preCommitFile = File(hooksDir, "pre-commit")
+
+        if (!preCommitFile.exists()) {
+            preCommitFile.writeText(
+                """
+                #!/bin/sh
+                ./gradlew spotlessApply
+                """.trimIndent()
+            )
+            preCommitFile.setExecutable(true)
+            println("Pre-commit hook installed.")
+        } else {
+            println("Pre-commit hook already exists.")
+        }
+    }
+}
+tasks.named("build") {
+    dependsOn("installGitHook")
 }

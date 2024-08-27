@@ -7,6 +7,8 @@ Tic-Tac-Toe in Java deliberately over-engineered to apply features of Java intro
 
 Pairs with the ongoing blog post: [Road to JDK 25 - Over-Engineering Tic-Tac-Toe](https://thelifeof.briancorbin.xyz/Library/03-Resources/Road-to-JDK-25---Over-Engineering-Tic-Tac-Toe!) also serialized to Medium @ [Road to JDK 25 - Over-Engineering Tic-Tac-Toe On Medium](https://briancorbinxyz.medium.com/list/road-to-jdk-25-d0f656f66a8f)
 
+---
+
 ### Features
 
 https://openjdk.org/projects/jdk/23/
@@ -50,3 +52,16 @@ https://openjdk.org/projects/jdk/17/
 - **JEP409**:	Sealed Classes
 - **JEP410**:	Remove the Experimental AOT and JIT Compiler
 - **JEP415**:	Context-Specific Deserialization Filters
+
+---
+
+### Algorithms
+
+The following algorithms are used by the AI BOT in this project:
+
+- [Random](https://en.wikipedia.org/wiki/Randomness) See: [Random.java](app/src/main/java/org/example/bot/Random.java)
+- [Minimax](https://en.wikipedia.org/wiki/Minimax) See: [Minimax.java](app/src/main/java/org/example/bot/Minimax.java)
+- [Alpha-Beta](https://en.wikipedia.org/wiki/Alpha-beta_pruning) See: [AlphaBeta.java](app/src/main/java/org/example/bot/AlphaBeta.java)
+- [MaxN](https://en.wikipedia.org/wiki/Maxn_algorithm) See: [MaxN.java](app/src/main/java/org/example/bot/MaxN.java)
+- [Paranoid](https://en.wikipedia.org/wiki/Paranoid_AI) See: [Paranoid.java](app/src/main/java/org/example/bot/Paranoid.java)
+- [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) See [MonteCarlo.java](app/src/main/java/org/example/bot/MonteCarloTreeSearch.java)
