@@ -103,7 +103,7 @@ dependencies {
 tasks.register<JavaExec>("jmh") {
     mainClass.set("org.openjdk.jmh.Main")
     classpath = sourceSets["main"].runtimeClasspath
-    args = listOf("org.example.interop.benchmark.PlayerIdsBenchmark")
+    args = listOf("org.xxdc.oss.example.interop.benchmark.PlayerIdsBenchmark")
 }
 
 testing {
@@ -149,11 +149,11 @@ graalvmNative {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass = "org.xxdc.oss.example.App"
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
@@ -172,7 +172,7 @@ tasks.withType<Test>().all {
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
@@ -189,7 +189,7 @@ tasks.named<JavaExec>("run") {
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
