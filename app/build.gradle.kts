@@ -5,6 +5,7 @@ plugins {
     application
     id("org.graalvm.buildtools.native") version "0.10.2"
     id("com.diffplug.spotless") version "7.0.0.BETA1"
+    `maven-publish`
 }
 
 repositories {
@@ -12,6 +13,8 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
 }
+
+val jdkVersion = "22"
 
 // JDK22: Foreign Function Interface (FFI)
 // Support building native Rust library using Cargo:
@@ -103,7 +106,7 @@ dependencies {
 tasks.register<JavaExec>("jmh") {
     mainClass.set("org.openjdk.jmh.Main")
     classpath = sourceSets["main"].runtimeClasspath
-    args = listOf("org.example.interop.benchmark.PlayerIdsBenchmark")
+    args = listOf("org.xxdc.oss.example.interop.benchmark.PlayerIdsBenchmark")
 }
 
 testing {
@@ -119,8 +122,10 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(jdkVersion)
     }
+    withJavadocJar()
+    withSourcesJar()
 }
 
 // Code formatting (./gradlew spotlessApply)
@@ -138,7 +143,7 @@ graalvmNative {
             javaLauncher = javaToolchains.launcherFor {
                 // NB: On MacOS ARM ARCH the native-image implementation is not available
                 // for the versions of GRAAL_VM Community edition - selecting Oracle
-                languageVersion = JavaLanguageVersion.of(23)
+                languageVersion = JavaLanguageVersion.of(jdkVersion)
                 vendor = JvmVendorSpec.matching("Oracle")
                 // languageVersion = JavaLanguageVersion.of(17)
                 // vendor = JvmVendorSpec.GRAAL_VM
@@ -149,11 +154,11 @@ graalvmNative {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass = "org.xxdc.oss.example.App"
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
@@ -164,6 +169,53 @@ tasks.run.configure {
     standardInput = System.`in`
 }
 
+// https://docs.gradle.org/current/userguide/publishing_maven.html
+publishing {
+    repositories {
+        // Publish to GitHub Packages
+        // https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-java-packages-with-gradle
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "org.xxdc.oss.example"
+            artifactId = "tictactoe"
+            version = "1.0.0-jdk$jdkVersion"
+            from(components["java"])
+            pom {
+                name.set("tictactoe")
+                description.set("An Over-Engineered Tic Tac Toe game")
+                url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                    developers {
+                        developer {
+                            id.set("briancorbinxyz")
+                            name.set("Brian Corbin")
+                            email.set("mail@briancorbin.xyz")
+                        }
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/briancorbinxyz/overengineering-tictactoe.git")
+                    developerConnection.set("scm:git:ssh://github.com/briancorbinxyz/overengineering-tictactoe.git")
+                    url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
+                }
+            }
+        }
+    }
+}
+
 tasks.withType<Test>().all {
     systemProperty(
         "java.library.path", libPath 
@@ -172,7 +224,7 @@ tasks.withType<Test>().all {
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
@@ -189,7 +241,7 @@ tasks.named<JavaExec>("run") {
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")

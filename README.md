@@ -57,11 +57,18 @@ https://openjdk.org/projects/jdk/17/
 
 ### Algorithms
 
-The following algorithms are used by the AI BOT in this project:
+The following algorithms are used by the AI BOT in this project (For a detailed discussion see [Road to JDK 25 - An Algorithmic Interlude](https://briancorbinxyz.medium.com/over-engineering-tic-tac-toe-an-algorithmic-interlude-8af3aa13173a):
 
 - [Random](https://en.wikipedia.org/wiki/Randomness) See: [Random.java](app/src/main/java/org/example/bot/Random.java)
 - [Minimax](https://en.wikipedia.org/wiki/Minimax) See: [Minimax.java](app/src/main/java/org/example/bot/Minimax.java)
-- [Alpha-Beta](https://en.wikipedia.org/wiki/Alpha-beta_pruning) See: [AlphaBeta.java](app/src/main/java/org/example/bot/AlphaBeta.java)
+- [Minimax w. Alpha-Beta](https://en.wikipedia.org/wiki/Alpha-beta_pruning) See: [AlphaBeta.java](app/src/main/java/org/example/bot/AlphaBeta.java)
 - [MaxN](https://en.wikipedia.org/wiki/Maxn_algorithm) See: [MaxN.java](app/src/main/java/org/example/bot/MaxN.java)
 - [Paranoid](https://en.wikipedia.org/wiki/Paranoid_AI) See: [Paranoid.java](app/src/main/java/org/example/bot/Paranoid.java)
-- [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) See [MonteCarlo.java](app/src/main/java/org/example/bot/MonteCarloTreeSearch.java)
+- [Monte Carlo Tree Search](https://en.wikipedia.org/wiki/Monte_Carlo_method) See [MonteCarloTreeSearch.java](app/src/main/java/org/example/bot/MonteCarloTreeSearch.java)
+
+
+---
+
+### Quick Start
+
+- To run the single game application, use the following command: `./gradlew run`
