@@ -2,7 +2,6 @@ package org.xxdc.oss.example.bot;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.ToIntFunction;
-
 import org.xxdc.oss.example.GameState;
 
 public sealed interface BotStrategy

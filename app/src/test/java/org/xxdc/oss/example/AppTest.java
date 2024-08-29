@@ -7,8 +7,6 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.*;
 
-import org.xxdc.oss.example.App;
-
 public class AppTest {
   @Test
   public void appHasAGreeting() {

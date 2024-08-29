@@ -5,10 +5,8 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 import java.util.regex.Matcher;
-
-import org.xxdc.oss.example.transport.tcp.TcpProtocol;
-
 import org.testng.annotations.Test;
+import org.xxdc.oss.example.transport.tcp.TcpProtocol;
 
 public class TcpProtocolTest {
 

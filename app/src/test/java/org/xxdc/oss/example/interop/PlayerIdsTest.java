@@ -4,8 +4,6 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import org.xxdc.oss.example.interop.PlayerIds;
-
 public class PlayerIdsTest {
 
   @Test

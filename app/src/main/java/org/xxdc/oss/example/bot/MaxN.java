@@ -3,7 +3,6 @@ package org.xxdc.oss.example.bot;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.Arrays;
-
 import org.xxdc.oss.example.GameState;
 
 public final class MaxN implements BotStrategy {

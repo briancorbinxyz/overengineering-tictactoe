@@ -1,18 +1,14 @@
 package org.xxdc.oss.example;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import static org.xxdc.oss.example.TestData.*;
 
 import java.util.List;
-
-import org.xxdc.oss.example.GameBoard;
-import org.xxdc.oss.example.GameState;
-import org.xxdc.oss.example.bot.BotStrategyConfig;
-import org.xxdc.oss.example.bot.MonteCarloTreeSearch;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.xxdc.oss.example.bot.BotStrategyConfig;
+import org.xxdc.oss.example.bot.MonteCarloTreeSearch;
 
 public class MonteCarloTreeSearchTest {
 

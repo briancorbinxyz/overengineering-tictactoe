@@ -1,8 +1,5 @@
 package org.xxdc.oss.example;
 
-import org.xxdc.oss.example.GameBoard;
-import org.xxdc.oss.example.GameBoardNativeImpl;
-
 public class TestData {
   public static GameBoard createBoardWith(String[][] content) {
     GameBoard board = new GameBoardNativeImpl(content.length);

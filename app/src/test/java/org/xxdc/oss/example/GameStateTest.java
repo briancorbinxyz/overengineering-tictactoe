@@ -1,11 +1,8 @@
 package org.xxdc.oss.example;
 
-import java.util.List;
-
-import org.xxdc.oss.example.GameState;
-
 import static org.xxdc.oss.example.TestData.createBoardWith;
 
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

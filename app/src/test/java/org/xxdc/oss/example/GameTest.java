@@ -2,10 +2,6 @@ package org.xxdc.oss.example;
 
 import org.testng.annotations.Test;
 
-import org.xxdc.oss.example.BotPlayer;
-import org.xxdc.oss.example.Game;
-import org.xxdc.oss.example.PlayerNode;
-
 public class GameTest {
 
   @Test

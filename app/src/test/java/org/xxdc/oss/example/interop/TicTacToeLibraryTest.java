@@ -5,8 +5,6 @@ import static org.testng.Assert.assertNotNull;
 
 import org.testng.annotations.Test;
 
-import org.xxdc.oss.example.interop.TicTacToeLibrary;
-
 public class TicTacToeLibraryTest {
 
   @Test

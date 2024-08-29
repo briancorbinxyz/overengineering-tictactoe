@@ -33,9 +33,8 @@ import javax.crypto.spec.IvParameterSpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
-import org.xxdc.oss.example.security.KyberKEMProvider;
-
 import org.testng.annotations.Test;
+import org.xxdc.oss.example.security.KyberKEMProvider;
 
 /**
  * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key generation and

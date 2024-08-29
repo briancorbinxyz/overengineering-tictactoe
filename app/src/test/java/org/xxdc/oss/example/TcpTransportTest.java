@@ -11,17 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import org.xxdc.oss.example.BotPlayer;
-import org.xxdc.oss.example.Game;
-import org.xxdc.oss.example.HumanPlayer;
-import org.xxdc.oss.example.Player;
-import org.xxdc.oss.example.PlayerNode;
-import org.xxdc.oss.example.transport.Transports;
-import org.xxdc.oss.example.transport.tcp.TcpTransportServer;
-
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
+import org.xxdc.oss.example.transport.Transports;
+import org.xxdc.oss.example.transport.tcp.TcpTransportServer;
 
 public class TcpTransportTest {
 

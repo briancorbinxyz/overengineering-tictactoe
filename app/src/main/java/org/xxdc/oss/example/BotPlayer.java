@@ -2,7 +2,6 @@ package org.xxdc.oss.example;
 
 import java.io.Serializable;
 import java.util.function.ToIntFunction;
-
 import org.xxdc.oss.example.bot.BotStrategy;
 
 /**

@@ -6,10 +6,6 @@ import static org.xxdc.oss.example.TestData.*;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
-
-import org.xxdc.oss.example.GameBoard;
-import org.xxdc.oss.example.GameBoardNativeImpl;
-
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;

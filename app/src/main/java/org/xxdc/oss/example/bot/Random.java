@@ -2,7 +2,6 @@ package org.xxdc.oss.example.bot;
 
 import java.security.SecureRandom;
 import java.util.random.RandomGenerator;
-
 import org.xxdc.oss.example.GameState;
 
 public final class Random implements BotStrategy {

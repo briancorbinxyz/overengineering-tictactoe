@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.function.ToIntFunction;
-
 import org.xxdc.oss.example.transport.TransportConfiguration;
 import org.xxdc.oss.example.transport.TransportServer;
 

@@ -4,12 +4,10 @@
 package org.xxdc.oss.example;
 
 import java.io.File;
-
-import org.xxdc.oss.example.bot.BotStrategy;
-import org.xxdc.oss.example.bot.BotStrategyConfig;
-
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import org.xxdc.oss.example.bot.BotStrategy;
+import org.xxdc.oss.example.bot.BotStrategyConfig;
 
 /** A simple java tic-tac-toe game. */
 public class App {

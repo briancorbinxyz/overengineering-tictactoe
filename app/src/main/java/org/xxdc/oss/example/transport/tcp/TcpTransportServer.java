@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.Socket;
-
 import org.xxdc.oss.example.GameState;
 import org.xxdc.oss.example.MessageHandler;
 import org.xxdc.oss.example.RemoteMessageHandler;

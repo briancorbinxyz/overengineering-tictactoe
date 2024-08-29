@@ -5,6 +5,7 @@ plugins {
     application
     id("org.graalvm.buildtools.native") version "0.10.2"
     id("com.diffplug.spotless") version "7.0.0.BETA1"
+    `maven-publish`
 }
 
 repositories {
@@ -12,6 +13,8 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
 }
+
+val jdkVersion = "22"
 
 // JDK22: Foreign Function Interface (FFI)
 // Support building native Rust library using Cargo:
@@ -119,7 +122,7 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(jdkVersion)
     }
 }
 
@@ -138,7 +141,7 @@ graalvmNative {
             javaLauncher = javaToolchains.launcherFor {
                 // NB: On MacOS ARM ARCH the native-image implementation is not available
                 // for the versions of GRAAL_VM Community edition - selecting Oracle
-                languageVersion = JavaLanguageVersion.of(23)
+                languageVersion = JavaLanguageVersion.of(jdkVersion)
                 vendor = JvmVendorSpec.matching("Oracle")
                 // languageVersion = JavaLanguageVersion.of(17)
                 // vendor = JvmVendorSpec.GRAAL_VM
@@ -162,6 +165,53 @@ application {
 tasks.run.configure {
     // Override the empty stream to allow for interactive runs with gradlew run
     standardInput = System.`in`
+}
+
+// https://docs.gradle.org/current/userguide/publishing_maven.html
+publishing {
+    repositories {
+        // Publish to GitHub Packages
+        // https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-java-packages-with-gradle
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "org.xxdc.oss.example"
+            artifactId = "tictactoe"
+            version = "1.0.0-jdk$jdkVersion"
+            from(components["java"])
+            pom {
+                name.set("tictactoe")
+                description.set("An Over-Engineered Tic Tac Toe game")
+                url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                    developers {
+                        developer {
+                            id.set("briancorbinxyz")
+                            name.set("Brian Corbin")
+                            email.set("mail@briancorbin.xyz")
+                        }
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/briancorbinxyz/overengineering-tictactoe.git")
+                    developerConnection.set("scm:git:ssh://github.com/briancorbinxyz/overengineering-tictactoe.git")
+                    url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
+                }
+            }
+        }
+    }
 }
 
 tasks.withType<Test>().all {

@@ -4,13 +4,9 @@ import static org.testng.Assert.assertEquals;
 import static org.xxdc.oss.example.TestData.*;
 
 import java.util.List;
-
-import org.xxdc.oss.example.GameBoard;
-import org.xxdc.oss.example.GameState;
-import org.xxdc.oss.example.bot.Paranoid;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.xxdc.oss.example.bot.Paranoid;
 
 public class ParanoidTest {
 

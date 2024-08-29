@@ -1,17 +1,14 @@
 package org.xxdc.oss.example.bot;
 
 import java.lang.System.Logger;
-
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import org.xxdc.oss.example.GameState;
-
-import java.lang.System.Logger.Level;
 
 public final class MonteCarloTreeSearch implements BotStrategy {
 
@@ -42,9 +39,8 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     var startTime = System.currentTimeMillis();
 
     int iterations = 0;
-    while (
-      !config.exceedsMaxTimeMillis(System.currentTimeMillis() - startTime) &&
-      !config.exceedsMaxIterations(iterations++)) {
+    while (!config.exceedsMaxTimeMillis(System.currentTimeMillis() - startTime)
+        && !config.exceedsMaxIterations(iterations++)) {
       MCTSNode node = treePolicy(root);
       double[] reward = defaultPolicy(node.state);
       backpropagate(node, reward);
@@ -103,11 +99,15 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     public String toString(int depth) {
       var builder = new StringBuilder();
       builder.append(" ".repeat(depth * 2));
-      builder.append(parent == null ? "Root" : state.playerMarkers().get(state.lastPlayerIndex()) + " -> " + state.lastMove());
+      builder.append(
+          parent == null
+              ? "Root"
+              : state.playerMarkers().get(state.lastPlayerIndex()) + " -> " + state.lastMove());
       builder.append(" (");
       builder.append(visits);
       builder.append(") => ");
-      builder.append(parent != null && state.lastPlayerHasChain() ? "WINNER" : state.availableMoves());
+      builder.append(
+          parent != null && state.lastPlayerHasChain() ? "WINNER" : state.availableMoves());
       builder.append("\n");
       builder.append(" ".repeat(depth * 2));
       builder.append(" (");
@@ -140,9 +140,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
   private MCTSNode expand(MCTSNode node) {
     var untriedMoves = new ArrayList<>(node.state.board().availableMoves());
     untriedMoves.removeAll(
-        node.children.stream()
-          .map(child -> child.state.lastMove())
-          .collect(Collectors.toList()));
+        node.children.stream().map(child -> child.state.lastMove()).collect(Collectors.toList()));
 
     int move = untriedMoves.get(new Random().nextInt(untriedMoves.size()));
     var newState = node.state.afterPlayerMoves(move);

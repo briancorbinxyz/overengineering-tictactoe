@@ -2,7 +2,6 @@ package org.xxdc.oss.example.bot;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-
 import org.xxdc.oss.example.GameState;
 
 public final class Paranoid implements BotStrategy {

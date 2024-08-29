@@ -13,7 +13,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.ref.Cleaner;
-
 import org.xxdc.oss.example.GameBoard;
 
 public final class TicTacToeLibrary {

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.xxdc.oss.example.GameBoard;
 import org.xxdc.oss.example.GameState;
 

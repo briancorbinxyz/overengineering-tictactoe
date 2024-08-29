@@ -1,15 +1,13 @@
 package org.xxdc.oss.example.transport.tcp;
 
 import java.io.IOException;
-
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.lang.invoke.MethodHandles;
 import org.xxdc.oss.example.GameState;
 import org.xxdc.oss.example.MessageHandler;
 import org.xxdc.oss.example.Player;
 import org.xxdc.oss.example.transport.TransportException;
-
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-import java.lang.invoke.MethodHandles;
 
 public record TcpTransportClient<T extends Player>(MessageHandler connection, T player)
     implements AutoCloseable {

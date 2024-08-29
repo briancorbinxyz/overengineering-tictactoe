@@ -5,15 +5,11 @@ import static org.testng.Assert.assertTrue;
 import static org.xxdc.oss.example.TestData.*;
 
 import java.util.List;
-
-import org.xxdc.oss.example.GameBoard;
-import org.xxdc.oss.example.GameState;
-import org.xxdc.oss.example.bot.AlphaBeta;
-import org.xxdc.oss.example.bot.BotStrategyConfig;
-
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
+import org.xxdc.oss.example.bot.AlphaBeta;
+import org.xxdc.oss.example.bot.BotStrategyConfig;
 
 public class AlphaBetaTest {
 

@@ -2,7 +2,6 @@ package org.xxdc.oss.example;
 
 import java.lang.System.Logger;
 import java.lang.invoke.MethodHandles;
-
 import org.xxdc.oss.example.interop.TicTacToeLibrary;
 
 /**

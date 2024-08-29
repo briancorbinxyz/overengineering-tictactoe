@@ -65,3 +65,10 @@ The following algorithms are used by the AI BOT in this project (For a detailed 
 - [MaxN](https://en.wikipedia.org/wiki/Maxn_algorithm) See: [MaxN.java](app/src/main/java/org/example/bot/MaxN.java)
 - [Paranoid](https://en.wikipedia.org/wiki/Paranoid_AI) See: [Paranoid.java](app/src/main/java/org/example/bot/Paranoid.java)
 - [Monte Carlo Tree Search](https://en.wikipedia.org/wiki/Monte_Carlo_method) See [MonteCarloTreeSearch.java](app/src/main/java/org/example/bot/MonteCarloTreeSearch.java)
+
+
+---
+
+### Quick Start
+
+- To run the single game application, use the following command: `./gradlew run`
