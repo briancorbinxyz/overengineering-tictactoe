@@ -124,6 +124,8 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
     }
+    withJavadocJar()
+    withSourcesJar()
 }
 
 // Code formatting (./gradlew spotlessApply)

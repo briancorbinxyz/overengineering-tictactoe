@@ -10,6 +10,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.xxdc.oss.example.GameState;
 
+/**
+ * Implements the Monte Carlo Tree Search (MCTS) algorithm for a game bot strategy. The MCTS
+ * algorithm is used to select the best move for the current game state by simulating random game
+ * play and backpropagating the results to update the search tree. The algorithm can be configured
+ * with a maximum time limit and maximum number of iterations.
+ */
 public final class MonteCarloTreeSearch implements BotStrategy {
 
   private static final Logger log = System.getLogger(MonteCarloTreeSearch.class.getName());
@@ -21,10 +27,23 @@ public final class MonteCarloTreeSearch implements BotStrategy {
   private static final double MAX_SCORE = 1.0;
   private static final double DRAW_SCORE = 0.0;
 
+  /**
+   * Constructs a new instance of the {@link MonteCarloTreeSearch} class with the given initial game
+   * state and a default configuration (max time limit of 1 second).
+   *
+   * @param state the initial game state to use for the Monte Carlo tree search
+   */
   public MonteCarloTreeSearch(GameState state) {
     this(state, BotStrategyConfig.newBuilder().maxTimeMillis(TimeUnit.SECONDS, 1).build());
   }
 
+  /**
+   * Constructs a new instance of the {@link MonteCarloTreeSearch} class with the given initial game
+   * state and configuration.
+   *
+   * @param state the initial game state to use for the Monte Carlo tree search
+   * @param config the configuration settings for the Monte Carlo tree search
+   */
   public MonteCarloTreeSearch(GameState state, BotStrategyConfig config) {
     this.initialState = state;
     this.config = config;

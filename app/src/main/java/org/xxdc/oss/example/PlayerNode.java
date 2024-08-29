@@ -20,7 +20,7 @@ public sealed interface PlayerNode extends ToIntFunction<GameState> {
   /**
    * Gets the player's next move to apply to the game board with the current game state.
    *
-   * @param board to apply the move to
+   * @param state the current state of the game
    * @return the location on the game board where the move was made
    */
   public int applyAsInt(GameState state);
@@ -41,7 +41,7 @@ public sealed interface PlayerNode extends ToIntFunction<GameState> {
     /**
      * Gets the player's next move to apply to the given game board.
      *
-     * @param board the game board to apply the move to
+     * @param state the current state of the game
      * @return the location on the game board where the move was made
      */
     @Override
@@ -84,7 +84,7 @@ public sealed interface PlayerNode extends ToIntFunction<GameState> {
     /**
      * Gets the player's next move to apply to the given game board.
      *
-     * @param board the game board to apply the move to
+     * @param state the current state of the game
      * @return the location on the game board where the move was made
      */
     @Override
