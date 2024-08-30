@@ -1,13 +1,21 @@
 package org.xxdc.oss.example;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a game board for a game. The game board has a square dimension and contains a grid of
  * game pieces. This interface defines the operations that can be performed on the game board.
  */
 public interface GameBoard extends JsonSerializable {
+
+  static final Logger log = System.getLogger(GameBoard.class.getName());
+
+  static final AtomicBoolean useNative = new AtomicBoolean(true);
 
   /**
    * Checks if the given location on the game board is a valid move (i.e. an available location).
@@ -103,6 +111,19 @@ public interface GameBoard extends JsonSerializable {
    */
   static GameBoard with(int dimension) {
     // Prefer the native implementation of the game board for performance.
-    return new GameBoardNativeImpl(dimension);
+    GameBoard gameBoard;
+    try {
+      if (useNative.get()) {
+        gameBoard = new GameBoardNativeImpl(dimension);
+      } else {
+        gameBoard = new GameBoardDefaultImpl(dimension);
+      }
+    } catch (Exception e) {
+      // Fallback to the Java implementation.
+      log.log(Level.WARNING, "Unable to use native logger, falling back to default logger: {0}", e.getMessage());
+      useNative.set(false);
+      gameBoard = new GameBoardDefaultImpl(dimension);
+    }
+    return gameBoard;
   }
 }
