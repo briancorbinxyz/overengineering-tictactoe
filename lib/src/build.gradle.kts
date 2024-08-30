@@ -1,8 +1,7 @@
 import java.io.File
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
-    application
+    `java-library`
     id("org.graalvm.buildtools.native") version "0.10.2"
     id("com.diffplug.spotless") version "7.0.0.BETA1"
     `maven-publish`
@@ -26,19 +25,26 @@ dependencies {
     // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
     // -> JDK API -> Bouncycastle
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-    implementation(project(":lib"))
 
     // JDK9: Platform Logging (Third-Party)
     // -> JDK API -> SLF4J -> Logback
-    runtimeOnly("ch.qos.logback:logback-classic:1.5.6")
-    runtimeOnly("org.slf4j:slf4j-api:2.0.13")
-    runtimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
+    testRuntimeOnly("ch.qos.logback:logback-classic:1.5.6")
+    testRuntimeOnly("org.slf4j:slf4j-api:2.0.13")
+    testRuntimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
 
 
     // JDK23: JMH (Third-Party) Not required, added for benchmarking
     // https://github.com/openjdk/jmh
-    implementation("org.openjdk.jmh:jmh-core:1.37")
+    testImplementation("org.openjdk.jmh:jmh-core:1.37")
     annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+}
+
+// Run JMH benchmark
+// ./gradlew jmh
+tasks.register<JavaExec>("jmh") {
+    mainClass.set("org.openjdk.jmh.Main")
+    classpath = sourceSets["test"].runtimeClasspath
+    args = listOf("org.xxdc.oss.example.interop.benchmark.PlayerIdsBenchmark")
 }
 
 testing {
@@ -118,7 +124,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
-            artifactId = "tictactoe-app"
+            artifactId = "tictactoe"
             version = "1.0.0-jdk$jdkVersion"
             from(components["java"])
             pom {
@@ -146,4 +152,38 @@ publishing {
             }
         }
     }
+}
+
+tasks.withType<Test>().all {
+    systemProperty(
+        "java.library.path", libPath 
+    )
+
+    // JDK22: Foreign Function Interface (FFI)
+    // Resolves Warning:
+    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
+    environment("PATH", libPath) // For Windows
+    environment("LD_LIBRARY_PATH", libPath) // For Linux
+    environment("DYLD_LIBRARY_PATH", libPath) // For macOS
+}
+
+tasks.named<JavaExec>("run") {
+    systemProperty(
+        "java.library.path", libPath 
+    )
+
+    // JDK22: Foreign Function Interface (FFI)
+    // Resolves Warning:
+    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
+    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
+    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
+    environment("PATH", libPath) // For Windows
+    environment("LD_LIBRARY_PATH", libPath) // For Linux
+    environment("DYLD_LIBRARY_PATH", libPath) // For macOS
 }

@@ -12,4 +12,6 @@ plugins {
 }
 
 rootProject.name = "overengineering-tictactoe"
+include("lib")
 include("app")
+include("native")
