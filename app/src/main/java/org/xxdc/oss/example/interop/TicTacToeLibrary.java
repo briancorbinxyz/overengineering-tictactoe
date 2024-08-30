@@ -20,7 +20,7 @@ public final class TicTacToeLibrary {
   private static final Logger log =
       System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
-  static final String LIBRARY_NAME = "tictactoe";
+  static final String LIBRARY_NAME = "xxdc_oss_tictactoe";
 
   private final Arena arena = Arena.ofAuto();
 

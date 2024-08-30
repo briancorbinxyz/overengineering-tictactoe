@@ -24,7 +24,7 @@ public class TcpTransportTest {
 
   private static final int SERVER_PORT = getAvailablePort();
 
-  @Test
+  @Test(timeOut = 30000)
   public void testCanCreateClientServerBotGame() throws Exception {
     createClientServerGame(BotPlayer::new, BotPlayer::new);
   }
