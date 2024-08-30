@@ -2,7 +2,6 @@ package org.xxdc.oss.example;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -120,7 +119,10 @@ public interface GameBoard extends JsonSerializable {
       }
     } catch (Exception e) {
       // Fallback to the Java implementation.
-      log.log(Level.WARNING, "Unable to use native logger, falling back to default logger: {0}", e.getMessage());
+      log.log(
+          Level.WARNING,
+          "Unable to use native logger, falling back to default logger: {0}",
+          e.getMessage());
       useNative.set(false);
       gameBoard = new GameBoardDefaultImpl(dimension);
     }
