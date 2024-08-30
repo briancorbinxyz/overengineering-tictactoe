@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.xxdc.oss.example.GameBoard;
+import org.xxdc.oss.example.PlayerIds;
 
 class TicTacToeGameBoard implements GameBoard {
 

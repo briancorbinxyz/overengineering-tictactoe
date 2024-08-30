@@ -12,6 +12,14 @@ repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
     gradlePluginPortal()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 val jdkVersion = "22"
@@ -26,6 +34,10 @@ dependencies {
     // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
     // -> JDK API -> Bouncycastle
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+
+    // Native Library (Rust)
+    runtimeOnly(project(":native"))
+    runtimeOnly("org.xxdc.oss.example:tictactoe-native-macos-aarch64:1.0.0")
 
     // JDK9: Platform Logging (Third-Party)
     // -> JDK API -> SLF4J -> Logback
@@ -92,12 +104,12 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
-            artifactId = "tictactoe"
+            artifactId = "tictactoe-api"
             version = "1.0.0-jdk$jdkVersion"
             from(components["java"])
             pom {
                 name.set("tictactoe")
-                description.set("An Over-Engineered Tic Tac Toe game")
+                description.set("An Over-Engineered Tic Tac Toe Game API")
                 url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
                 licenses {
                     license {
@@ -123,10 +135,6 @@ publishing {
 }
 
 tasks.withType<Test>().all {
-    systemProperty(
-        "java.library.path", libPath 
-    )
-
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
@@ -134,7 +142,4 @@ tasks.withType<Test>().all {
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
-    environment("PATH", libPath) // For Windows
-    environment("LD_LIBRARY_PATH", libPath) // For Linux
-    environment("DYLD_LIBRARY_PATH", libPath) // For macOS
 }

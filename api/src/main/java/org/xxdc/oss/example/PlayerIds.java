@@ -1,4 +1,4 @@
-package org.xxdc.oss.example.interop;
+package org.xxdc.oss.example;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;

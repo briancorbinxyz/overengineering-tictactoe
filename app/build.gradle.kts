@@ -117,7 +117,7 @@ publishing {
             from(components["java"])
             pom {
                 name.set("tictactoe")
-                description.set("An Over-Engineered Tic Tac Toe game")
+                description.set("An Over-Engineered Tic Tac Toe Game and Game Server")
                 url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
                 licenses {
                     license {
@@ -140,4 +140,27 @@ publishing {
             }
         }
     }
+}
+// Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
+tasks.register("installGitHook") {
+    doLast {
+        val hooksDir = file("${rootDir}/.git/hooks")
+        val preCommitFile = File(hooksDir, "pre-commit")
+
+        if (!preCommitFile.exists()) {
+            preCommitFile.writeText(
+                """
+                #!/bin/sh
+                ./gradlew spotlessApply
+                """.trimIndent()
+            )
+            preCommitFile.setExecutable(true)
+            println("Pre-commit hook installed.")
+        } else {
+            println("Pre-commit hook already exists.")
+        }
+    }
+}
+tasks.named("build") {
+    dependsOn("installGitHook")
 }

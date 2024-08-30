@@ -3,6 +3,7 @@ import java.io.File
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id("buildlogic.java-library-conventions")
+    id("maven-publish")
 }
 
 repositories {
@@ -11,12 +12,23 @@ repositories {
     gradlePluginPortal()
 }
 
+testing {
+    suites {
+        // Configure the built-in test suite
+        val test by getting(JvmTestSuite::class) {
+            // Use TestNG test framework
+            useTestNG("7.5.1")
+        }
+    }
+}
+
 val jdkVersion = "22"
 
 // JDK22: Foreign Function Interface (FFI)
 // Support building native Rust library using Cargo:
 // https://doc.rust-lang.org/cargo/getting-started/installation.html
 val osName = System.getProperty("os.name").lowercase()
+val osArch = System.getProperty("os.arch").lowercase()
 
 val cargoBuildDir = file("${layout.buildDirectory.get()}/cargo")
 
@@ -26,7 +38,13 @@ val libPath = when {
     osName.contains("nux") -> "${cargoBuildDir}/debug"
     else -> throw GradleException("Unsupported OS")
 }
-val libName = System.mapLibraryName("tictactoe")
+val libSuffix = when {
+    osName.contains("win") -> "windows-$osArch"
+    osName.contains("mac") -> "macos-$osArch"
+    osName.contains("nux") -> "linux-$osArch"
+    else -> throw GradleException("Unsupported OS")
+}
+val libName = System.mapLibraryName("xxdc_oss_tictactoe")
 
 //
 // Rust Build Start
@@ -78,8 +96,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
     }
-    withJavadocJar()
-    withSourcesJar()
 }
 
 // https://docs.gradle.org/current/userguide/publishing_maven.html
@@ -99,12 +115,12 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
-            artifactId = "native-tictactoe"
-            version = "1.0.0-jdk$jdkVersion"
+            artifactId = "tictactoe-native-$libSuffix"
+            version = "1.0.0"
             from(components["java"])
             pom {
                 name.set("tictactoe")
-                description.set("An Over-Engineered Tic Tac Toe game")
+                description.set("An Over-Engineered Tic Tac Toe Native Library")
                 url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
                 licenses {
                     license {
@@ -127,28 +143,4 @@ publishing {
             }
         }
     }
-}
-
-/// Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
-tasks.register("installGitHook") {
-    doLast {
-        val hooksDir = file("${rootDir}/.git/hooks")
-        val preCommitFile = File(hooksDir, "pre-commit")
-
-        if (!preCommitFile.exists()) {
-            preCommitFile.writeText(
-                """
-                #!/bin/sh
-                ./gradlew spotlessApply
-                """.trimIndent()
-            )
-            preCommitFile.setExecutable(true)
-            println("Pre-commit hook installed.")
-        } else {
-            println("Pre-commit hook already exists.")
-        }
-    }
-}
-tasks.named("build") {
-    dependsOn("installGitHook")
 }

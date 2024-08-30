@@ -41,14 +41,10 @@ public final class TicTacToeLibrary {
     return new TicTacToeGameBoard(dimension, libTicTacToe, cleaner);
   }
 
-  private String platformLibraryName() {
-    return System.mapLibraryName(LIBRARY_NAME);
-  }
-
   private void initLibrary() {
-    libTicTacToe = SymbolLookup.libraryLookup(platformLibraryName(), arena);
-    initLibraryMethods();
     try {
+      libTicTacToe = NativeLoader.loadLibrary(LIBRARY_NAME, arena);
+      initLibraryMethods();
       logVersion(version);
       logVersionString(versionString);
     } catch (Throwable e) {
