@@ -37,7 +37,7 @@ dependencies {
     // JDK23: JMH (Third-Party) Not required, added for benchmarking
     // https://github.com/openjdk/jmh
     testImplementation("org.openjdk.jmh:jmh-core:1.37")
-    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+    testAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
 }
 
 // Run JMH benchmark

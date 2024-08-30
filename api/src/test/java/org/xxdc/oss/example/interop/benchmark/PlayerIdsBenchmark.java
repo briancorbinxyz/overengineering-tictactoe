@@ -17,7 +17,7 @@ public class PlayerIdsBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void testPlayerIdsGetId() {
     PlayerIds ids = new PlayerIds(1);
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10; i++) {
       var id = ids.getNextId();
     }
   }
@@ -27,7 +27,7 @@ public class PlayerIdsBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void testPlayerIdsGetAndIncrementId() {
     PlayerIds ids = new PlayerIds(1);
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10; i++) {
       var id = ids.getNextIdAndIncrement();
     }
   }
@@ -37,7 +37,7 @@ public class PlayerIdsBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void testAtomicIntegerGetId() {
     AtomicInteger ids = new AtomicInteger(1);
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10; i++) {
       var id = ids.get();
     }
   }
@@ -47,7 +47,7 @@ public class PlayerIdsBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void testAtomicIntegerGetAndIncrement() {
     AtomicInteger ids = new AtomicInteger(1);
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10; i++) {
       var id = ids.getAndIncrement();
     }
   }
@@ -57,7 +57,7 @@ public class PlayerIdsBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void testLockGetId() {
     Control ids = new Control(1);
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10; i++) {
       var id = ids.getId();
     }
   }
@@ -67,7 +67,7 @@ public class PlayerIdsBenchmark {
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public void testLockGetAndIncrement() {
     Control ids = new Control(1);
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10; i++) {
       var id = ids.getAndIncrement();
     }
   }

@@ -1,12 +1,11 @@
+package org.xxdc.oss.example;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.xxdc.oss.example.TestData.*;
 
 import org.testng.annotations.Test;
-import org.xxdc.oss.example.GameBoard;
-import org.xxdc.oss.example.GameBoardDefaultImpl;
-import org.xxdc.oss.example.GameBoardNativeImpl;
 
 public class GameBoardTest {
 
