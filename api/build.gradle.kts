@@ -1,11 +1,12 @@
 import java.io.File
 
 plugins {
-    `java-library`
-    id("org.graalvm.buildtools.native") version "0.10.2"
+    id("buildlogic.java-library-conventions")
     id("com.diffplug.spotless") version "7.0.0.BETA1"
     `maven-publish`
 }
+
+val libPath = "native/src/main/rust/target/debug"
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -74,39 +75,6 @@ spotless {
     }
 }
 
-// Allow GraalVM native AOT compilation
-graalvmNative {
-    binaries {
-        all {
-            javaLauncher = javaToolchains.launcherFor {
-                // NB: On MacOS ARM ARCH the native-image implementation is not available
-                // for the versions of GRAAL_VM Community edition - selecting Oracle
-                languageVersion = JavaLanguageVersion.of(jdkVersion)
-                vendor = JvmVendorSpec.matching("Oracle")
-                // languageVersion = JavaLanguageVersion.of(17)
-                // vendor = JvmVendorSpec.GRAAL_VM
-            }
-        }
-    }
-}
-
-application {
-    // Define the main class for the application.
-    mainClass = "org.xxdc.oss.example.App"
-    // JDK22: Foreign Function Interface (FFI)
-    // Resolves Warning:
-    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
-    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
-    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
-}
-
-tasks.run.configure {
-    // Override the empty stream to allow for interactive runs with gradlew run
-    standardInput = System.`in`
-}
-
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 publishing {
     repositories {
@@ -155,23 +123,6 @@ publishing {
 }
 
 tasks.withType<Test>().all {
-    systemProperty(
-        "java.library.path", libPath 
-    )
-
-    // JDK22: Foreign Function Interface (FFI)
-    // Resolves Warning:
-    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
-    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
-    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
-    environment("PATH", libPath) // For Windows
-    environment("LD_LIBRARY_PATH", libPath) // For Linux
-    environment("DYLD_LIBRARY_PATH", libPath) // For macOS
-}
-
-tasks.named<JavaExec>("run") {
     systemProperty(
         "java.library.path", libPath 
     )

@@ -2,7 +2,7 @@ import java.io.File
 
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
-    application
+    id("buildlogic.java-application-conventions")
     id("org.graalvm.buildtools.native") version "0.10.2"
     id("com.diffplug.spotless") version "7.0.0.BETA1"
     `maven-publish`
@@ -26,19 +26,13 @@ dependencies {
     // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
     // -> JDK API -> Bouncycastle
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-    implementation(project(":lib"))
+    implementation(project(":api"))
 
     // JDK9: Platform Logging (Third-Party)
     // -> JDK API -> SLF4J -> Logback
     runtimeOnly("ch.qos.logback:logback-classic:1.5.6")
     runtimeOnly("org.slf4j:slf4j-api:2.0.13")
     runtimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
-
-
-    // JDK23: JMH (Third-Party) Not required, added for benchmarking
-    // https://github.com/openjdk/jmh
-    implementation("org.openjdk.jmh:jmh-core:1.37")
-    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
 }
 
 testing {
@@ -53,6 +47,8 @@ testing {
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
+    sourceCompatibility = JavaVersion.VERSION_22
+    targetCompatibility = JavaVersion.VERSION_22
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
     }
@@ -77,8 +73,6 @@ graalvmNative {
                 // for the versions of GRAAL_VM Community edition - selecting Oracle
                 languageVersion = JavaLanguageVersion.of(jdkVersion)
                 vendor = JvmVendorSpec.matching("Oracle")
-                // languageVersion = JavaLanguageVersion.of(17)
-                // vendor = JvmVendorSpec.GRAAL_VM
             }
         }
     }
