@@ -21,7 +21,6 @@ testing {
         }
     }
 }
-
 val jdkVersion = "22"
 
 // JDK22: Foreign Function Interface (FFI)

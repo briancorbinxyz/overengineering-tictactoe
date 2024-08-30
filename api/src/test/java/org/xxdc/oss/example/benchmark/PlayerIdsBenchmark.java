@@ -1,4 +1,4 @@
-package org.xxdc.oss.example.interop.benchmark;
+package org.xxdc.oss.example.benchmark;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;

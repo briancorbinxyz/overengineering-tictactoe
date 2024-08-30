@@ -7,6 +7,15 @@ plugins {
 }
 
 val libPath = "native/src/main/rust/target/debug"
+val osName = System.getProperty("os.name").lowercase()
+val osArch = System.getProperty("os.arch").lowercase()
+
+val libSuffix = when {
+    osName.contains("win") -> "windows-$osArch"
+    osName.contains("mac") -> "macos-$osArch"
+    osName.contains("nux") -> "linux-$osArch"
+    else -> throw GradleException("Unsupported OS")
+}
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -37,7 +46,7 @@ dependencies {
 
     // Native Library (Rust)
     runtimeOnly(project(":native"))
-    runtimeOnly("org.xxdc.oss.example:tictactoe-native-macos-aarch64:1.0.0")
+    runtimeOnly("org.xxdc.oss.example:tictactoe-native-$libSuffix:1.0.0")
 
     // JDK9: Platform Logging (Third-Party)
     // -> JDK API -> SLF4J -> Logback
