@@ -33,6 +33,7 @@ import javax.crypto.spec.IvParameterSpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xxdc.oss.example.security.KyberKEMProvider;
 
@@ -96,11 +97,9 @@ public class SecureConnectionTest {
               log.log(Level.INFO, "Client accepting connections on {0}...", clientSocket);
               var clientSession = service.submit(new Client(clientSocket));
               clientSession.get();
-            } catch (IOException e) {
+            } catch (Exception e) {
+              Assert.fail("Exception during secure connection check.", e);
               log.log(Level.ERROR, e.getMessage(), e);
-            } catch (InterruptedException e) {
-              log.log(Level.ERROR, e.getMessage(), e);
-            } catch (ExecutionException e) {
               throw new RuntimeException(e);
             }
           }
@@ -115,7 +114,7 @@ public class SecureConnectionTest {
       service.shutdown();
       service.awaitTermination(10, TimeUnit.MINUTES);
     } catch (Exception e) {
-      e.printStackTrace();
+      Assert.fail("Exception during secure connection check.", e);
     }
   }
 
