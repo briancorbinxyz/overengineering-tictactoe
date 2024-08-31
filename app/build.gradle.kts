@@ -10,11 +10,10 @@ plugins {
 
 repositories {
     // Use Maven Central for resolving dependencies.
+    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
 }
-
-val jdkVersion = "22"
 
 // Automatic code formatting before compile
 tasks.named("compileJava") {
@@ -47,11 +46,6 @@ testing {
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
-    sourceCompatibility = JavaVersion.VERSION_22
-    targetCompatibility = JavaVersion.VERSION_22
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(jdkVersion)
-    }
     withJavadocJar()
     withSourcesJar()
 }
@@ -71,7 +65,7 @@ graalvmNative {
             javaLauncher = javaToolchains.launcherFor {
                 // NB: On MacOS ARM ARCH the native-image implementation is not available
                 // for the versions of GRAAL_VM Community edition - selecting Oracle
-                languageVersion = JavaLanguageVersion.of(jdkVersion)
+                languageVersion = java.toolchain.languageVersion
                 vendor = JvmVendorSpec.matching("Oracle")
             }
         }
@@ -113,7 +107,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
             artifactId = "tictactoe-app"
-            version = "1.0.0-jdk$jdkVersion"
+            version = "1.1.0-jdk${java.toolchain.languageVersion}"
             from(components["java"])
             pom {
                 name.set("tictactoe")

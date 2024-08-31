@@ -40,7 +40,7 @@ public class TcpProtocol {
       String[] playerMarkers = matcher.group(3).replaceAll("\"", "").split(",");
       int currentPlayerIndex = Integer.valueOf(matcher.group(4));
       int dimension = Integer.valueOf(matcher.group(5));
-      var board = GameBoard.with(dimension);
+      var board = GameBoard.withDimension(dimension);
       String[] rawContent = matcher.group(6).split(",");
       for (int i = 0; i < rawContent.length; i++) {
         if (rawContent[i] != null && !rawContent[i].equals("null")) {

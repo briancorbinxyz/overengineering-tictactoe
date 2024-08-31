@@ -45,7 +45,8 @@ public class Game implements Serializable, AutoCloseable {
     this.gameId = UUID.randomUUID();
     this.moveNumber = 0;
     this.gameState = new ArrayDeque<>();
-    this.gameState.add(new GameState(GameBoard.with(size), this.playerNodes.playerMarkerList(), 0));
+    this.gameState.add(
+        new GameState(GameBoard.withDimension(size), this.playerNodes.playerMarkerList(), 0));
     this.persistenceEnabled = persistenceEnabled;
   }
 

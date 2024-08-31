@@ -16,6 +16,18 @@ public class GameBoardNativeImplTest {
       System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
   @Test
+  public void test_default_game_board_size_is_3x3() {
+    GameBoard gameBoard = new GameBoardNativeImpl();
+    Assert.assertEquals(gameBoard.dimension(), 3);
+  }
+
+  @Test
+  public void test_empty_default_game_board_has_all_moves_available() {
+    GameBoard gameBoard = new GameBoardNativeImpl(3);
+    Assert.assertEquals(gameBoard.availableMoves().size(), 9);
+  }
+
+  @Test
   public void should_load_library() {
     printEnvironmentVariables();
     printSystemProperties();

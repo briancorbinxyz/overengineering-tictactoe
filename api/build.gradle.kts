@@ -19,6 +19,7 @@ val libSuffix = when {
 
 repositories {
     // Use Maven Central for resolving dependencies.
+    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
     maven {
@@ -30,8 +31,6 @@ repositories {
         }
     }
 }
-
-val jdkVersion = "22"
 
 // Automatic code formatting before compile
 tasks.named("compileJava") {
@@ -45,8 +44,9 @@ dependencies {
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
 
     // Native Library (Rust)
-    runtimeOnly(project(":native"))
-    runtimeOnly("org.xxdc.oss.example:tictactoe-native-$libSuffix:1.0.0")
+    implementation(project(":native"))
+    testRuntimeOnly("org.xxdc.oss.example:tictactoe-native-$libSuffix:1.0.0")
+
 
     // JDK9: Platform Logging (Third-Party)
     // -> JDK API -> SLF4J -> Logback
@@ -81,9 +81,6 @@ testing {
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(jdkVersion)
-    }
     withJavadocJar()
     withSourcesJar()
 }
@@ -114,7 +111,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
             artifactId = "tictactoe-api"
-            version = "1.0.0-jdk$jdkVersion"
+            version = "1.1.0-jdk${java.toolchain.languageVersion}"
             from(components["java"])
             pom {
                 name.set("tictactoe")

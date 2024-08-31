@@ -108,23 +108,23 @@ public interface GameBoard extends JsonSerializable {
    * @param dimension the dimension of the game board, which is the number of rows or columns
    * @return a new {@link GameBoard} instance with the specified dimension
    */
-  static GameBoard with(int dimension) {
+  static GameBoard withDimension(int dimension) {
     // Prefer the native implementation of the game board for performance.
     GameBoard gameBoard;
     try {
       if (useNative.get()) {
         gameBoard = new GameBoardNativeImpl(dimension);
       } else {
-        gameBoard = new GameBoardDefaultImpl(dimension);
+        gameBoard = new GameBoardLocalImpl(dimension);
       }
-    } catch (Exception e) {
+    } catch (ExceptionInInitializerError e) {
       // Fallback to the Java implementation.
       log.log(
           Level.WARNING,
-          "Unable to use native logger, falling back to default logger: {0}",
+          "Unable to use native logger, falling back to local logger: {0}",
           e.getMessage());
       useNative.set(false);
-      gameBoard = new GameBoardDefaultImpl(dimension);
+      gameBoard = new GameBoardLocalImpl(dimension);
     }
     return gameBoard;
   }

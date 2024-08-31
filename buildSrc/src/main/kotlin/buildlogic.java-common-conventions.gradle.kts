@@ -17,21 +17,12 @@ dependencies {
         // Define dependency versions as constraints
         implementation("org.apache.commons:commons-text:1.11.0")
     }
-
-    // Use JUnit Jupiter for testing.
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+public val jdkVersion = 22
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
+        languageVersion = JavaLanguageVersion.of(jdkVersion)
     }
-}
-
-tasks.named<Test>("test") {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
 }

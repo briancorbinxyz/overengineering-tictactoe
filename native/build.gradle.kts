@@ -8,6 +8,7 @@ plugins {
 
 repositories {
     // Use Maven Central for resolving dependencies.
+    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
 }
@@ -21,7 +22,6 @@ testing {
         }
     }
 }
-val jdkVersion = "22"
 
 // JDK22: Foreign Function Interface (FFI)
 // Support building native Rust library using Cargo:
@@ -90,11 +90,7 @@ tasks.named<Jar>("jar") {
 //
 // Rust Build End
 //
-// Apply a specific Java toolchain to ease working on different environments.
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(jdkVersion)
-    }
 }
 
 // https://docs.gradle.org/current/userguide/publishing_maven.html

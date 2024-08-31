@@ -9,16 +9,16 @@ import java.util.stream.Collectors;
  * stores the current state of the game in a 1D array. Provides methods to check the validity of
  * moves, place player markers, check for a winner, and get a string representation of the board.
  */
-public record GameBoardDefaultImpl(int dimension, String[] content)
+public record GameBoardLocalImpl(int dimension, String[] content)
     implements Serializable, GameBoard {
 
   private static final long serialVersionUID = 1L;
 
-  public GameBoardDefaultImpl(int dimension) {
+  public GameBoardLocalImpl(int dimension) {
     this(dimension, new String[dimension * dimension]);
   }
 
-  public GameBoardDefaultImpl {
+  public GameBoardLocalImpl {
     if (content.length != dimension * dimension) {
       throw new IllegalArgumentException("Content must be of length " + dimension * dimension);
     }
@@ -108,13 +108,13 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
   }
 
   @Override
-  public GameBoardDefaultImpl withMove(String playerMarker, int location) {
+  public GameBoardLocalImpl withMove(String playerMarker, int location) {
     if (!isValidMove(location)) {
       throw new InvalidMoveException("Invalid move: " + playerMarker + "@" + location);
     }
     String[] boardCopy = getBoardCopy();
     boardCopy[location] = playerMarker;
-    return new GameBoardDefaultImpl(dimension, boardCopy);
+    return new GameBoardLocalImpl(dimension, boardCopy);
   }
 
   @Override
@@ -132,7 +132,7 @@ public record GameBoardDefaultImpl(int dimension, String[] content)
   }
 
   public GameBoard clone() {
-    return new GameBoardDefaultImpl(dimension, getBoardCopy());
+    return new GameBoardLocalImpl(dimension, getBoardCopy());
   }
 
   private String[] getBoardCopy() {

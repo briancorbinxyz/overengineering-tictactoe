@@ -11,25 +11,13 @@ public class GameBoardTest {
 
   @Test
   public void testDefaultGameBoardSizeIs3x3() {
-    GameBoard gameBoard = new GameBoardDefaultImpl(3);
+    var gameBoard = GameBoard.withDimension(3);
     assertEquals(gameBoard.dimension(), 3);
   }
 
   @Test
   public void testNewGameBoardHasAllMovesAvailable() {
-    GameBoard gameBoard = new GameBoardDefaultImpl(3);
-    assertEquals(gameBoard.availableMoves().size(), 9);
-  }
-
-  @Test
-  public void testDefaultGameBoardSizeIs3x3WithNative() {
-    GameBoard gameBoard = new GameBoardNativeImpl(3);
-    assertEquals(gameBoard.dimension(), 3);
-  }
-
-  @Test
-  public void testNewGameBoardHasAllMovesAvailableWithNative() {
-    GameBoard gameBoard = new GameBoardNativeImpl(3);
+    GameBoard gameBoard = GameBoard.withDimension(3);
     assertEquals(gameBoard.availableMoves().size(), 9);
   }
 
@@ -47,7 +35,7 @@ public class GameBoardTest {
   }
 
   @Test
-  public void testFullGameeBoardHasNoAvailableMoves() {
+  public void testFullGameBoardHasNoAvailableMoves() {
     var gameBoard =
         createBoardWith(
             new String[][] {
