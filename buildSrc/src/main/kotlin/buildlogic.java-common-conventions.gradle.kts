@@ -26,6 +26,7 @@ public val jdkVersion = 22
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
+        vendor = JvmVendorSpec.ADOPTIUM
     }
 }
 version = "$projectVersion-jdk${jdkVersion}"
