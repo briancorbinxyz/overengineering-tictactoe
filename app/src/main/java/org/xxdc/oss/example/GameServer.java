@@ -14,6 +14,11 @@ import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Supplier;
 import org.xxdc.oss.example.transport.tcp.TcpTransportServer;
 
+/**
+ * The `GameServer` class is responsible for managing the game server that hosts the tic-tac-toe
+ * game. It listens for incoming connections, creates game sessions, and tracks various game
+ * statistics.
+ */
 public class GameServer {
 
   private static final Logger log = System.getLogger(GameServer.class.getName());
@@ -26,6 +31,25 @@ public class GameServer {
 
   private final LongAccumulator totalGames = new LongAccumulator(Long::sum, 0);
 
+  /**
+   * The `main` method is the entry point for the GameServer application. It creates a new
+   * `GameServer` instance, sets up a `ServerSocket` to listen for incoming connections, and starts
+   * the `listenForPlayers` method to handle incoming players and start new games.
+   *
+   * <p>The method first creates a `ServerSocket` on the specified port (or 9090 if no port is
+   * provided) with a backlog of 10,000 connections. It then creates a new `ExecutorService` using
+   * the `newVirtualThreadExecutor` method to handle the asynchronous game sessions.
+   *
+   * <p>The `listenForPlayers` method is called to start the server and listen for incoming player
+   * connections. If any exceptions occur during the server's operation, the `handleException`
+   * method is called to log the error.
+   *
+   * <p>Finally, the method logs the total number of games played and the maximum number of
+   * concurrent games before the server shuts down.
+   *
+   * @param args the command-line arguments passed to the application
+   * @throws Exception if there is an error starting the server
+   */
   public static void main(String[] args) throws Exception {
     GameServer server = new GameServer();
     try (ServerSocket serverSocket =

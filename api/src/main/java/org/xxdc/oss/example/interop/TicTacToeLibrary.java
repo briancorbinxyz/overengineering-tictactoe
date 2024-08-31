@@ -16,6 +16,11 @@ import java.lang.ref.Cleaner;
 import org.xxdc.oss.example.GameBoard;
 import org.xxdc.oss.example.interop.loader.NativeLoader;
 
+/**
+ * Provides a Java wrapper around a native TicTacToe library. This class handles loading the native
+ * library, initializing the required methods, and creating instances of {@link GameBoard} that
+ * represent the game state.
+ */
 public final class TicTacToeLibrary {
 
   private static final Logger log =
@@ -34,10 +39,17 @@ public final class TicTacToeLibrary {
   private MethodHandle version;
   private MethodHandle versionString;
 
+  /** Initializes the native TicTacToe library and prepares it for use. */
   public TicTacToeLibrary() {
     initLibrary();
   }
 
+  /**
+   * Creates a new {@link GameBoard} instance with the specified dimension.
+   *
+   * @param dimension the dimension of the game board (e.g. 3 for a 3x3 board)
+   * @return a new {@link GameBoard} instance representing the game board
+   */
   public GameBoard newGameBoard(int dimension) {
     return new TicTacToeGameBoard(dimension, libTicTacToe, cleaner);
   }

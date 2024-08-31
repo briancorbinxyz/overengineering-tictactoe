@@ -39,10 +39,20 @@ public record HumanPlayer() implements Player, Serializable {
     return move;
   }
 
-  static sealed interface Input {
+  /** Represents an input source that can be used to read a line of text. */
+  public static sealed interface Input {
+    /**
+     * Reads a line of text from the input source.
+     *
+     * @return the line of text read from the input source.
+     */
     String readLine();
   }
 
+  /**
+   * An implementation of the {@link Input} interface that reads a line of text from the system
+   * console.
+   */
   static final class ConsoleInput implements Input {
     @Override
     public String readLine() {
@@ -50,6 +60,12 @@ public record HumanPlayer() implements Player, Serializable {
     }
   }
 
+  /**
+   * An implementation of the {@link Input} interface that reads a line of text from the system
+   * input stream, using a {@link Scanner} that closes the underlying input stream when the JVM
+   * thread exits. This is useful for ensuring that the input stream is properly closed, even if an
+   * exception is thrown or the method is interrupted.
+   */
   static final class ScannerInput implements Input {
     @Override
     public String readLine() {
@@ -59,10 +75,20 @@ public record HumanPlayer() implements Player, Serializable {
     }
   }
 
+  /**
+   * An {@link InputStream} implementation that closes the underlying input stream when the JVM
+   * thread exits. This is useful for ensuring that the input stream is properly closed, even if an
+   * exception is thrown or the method is interrupted.
+   */
   static class CloseOnExitInputStream extends InputStream {
 
     private final InputStream in;
 
+    /**
+     * An {@link InputStream} implementation that closes the underlying input stream when the JVM
+     * thread exits. This is useful for ensuring that the input stream is properly closed, even if
+     * an exception is thrown or the method is interrupted.
+     */
     public CloseOnExitInputStream(InputStream in) {
       this.in = in;
     }

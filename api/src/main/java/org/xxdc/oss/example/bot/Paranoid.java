@@ -4,6 +4,13 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.xxdc.oss.example.GameState;
 
+/**
+ * Implements a "paranoid" bot strategy for a game. The bot tries to maximize its own score while
+ * minimizing the opponent's score. The strategy uses a recursive minimax algorithm to evaluate the
+ * best move for the current game state. The bot will choose the move that results in the highest
+ * score for itself, assuming the opponent will make the move that results in the lowest score for
+ * the bot.
+ */
 public final class Paranoid implements BotStrategy {
 
   private static final Logger log = System.getLogger(Paranoid.class.getName());
@@ -14,16 +21,28 @@ public final class Paranoid implements BotStrategy {
   private final GameState initialState;
   private final BotStrategyConfig config;
 
+  /**
+   * Constructs a new Paranoid bot strategy with the given initial game state.
+   *
+   * @param initialState the initial game state for the bot to analyze
+   */
   public Paranoid(GameState initialState) {
     this.initialState = initialState;
     this.config = BotStrategyConfig.empty();
   }
 
-  public Paranoid(GameState state, BotStrategyConfig config) {
-    this.initialState = state;
+  /**
+   * Constructs a new Paranoid bot strategy with the given initial game state and configuration.
+   *
+   * @param initialState the initial game state for the bot to analyze
+   * @param config the configuration settings for the bot strategy
+   */
+  public Paranoid(GameState initialState, BotStrategyConfig config) {
+    this.initialState = initialState;
     this.config = config;
   }
 
+  @Override
   public int bestMove() {
     int bestMove = -1;
     int maxScore = Integer.MIN_VALUE;

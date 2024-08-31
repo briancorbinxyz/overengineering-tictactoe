@@ -17,6 +17,12 @@ import java.util.stream.IntStream;
 import org.xxdc.oss.example.GameBoard;
 import org.xxdc.oss.example.PlayerIds;
 
+/**
+ * Implements the GameBoard interface for a Tic-Tac-Toe game board. This class manages the state of
+ * the game board, including tracking player moves, checking for winning conditions, and providing
+ * methods to interact with the game board. The implementation uses native functions to manage the
+ * game board state.
+ */
 class TicTacToeGameBoard implements GameBoard {
 
   private static final Logger log =
@@ -62,6 +68,14 @@ class TicTacToeGameBoard implements GameBoard {
   private MethodHandle getGameBoardIsFull;
   private MethodHandle getGameBoardHasChain;
 
+  /**
+   * Constructs a new TicTacToeGameBoard instance with the specified dimension, SymbolLookup, and
+   * Cleaner.
+   *
+   * @param dimension the dimension of the game board (e.g. 3 for a 3x3 board)
+   * @param libTicTacToe the SymbolLookup instance for looking up native functions
+   * @param cleaner the Cleaner instance for managing native resources
+   */
   public TicTacToeGameBoard(int dimension, SymbolLookup libTicTacToe, Cleaner cleaner) {
     this.libTicTacToe = libTicTacToe;
     this.playerMarkerToId = new HashMap<>();
@@ -73,6 +87,17 @@ class TicTacToeGameBoard implements GameBoard {
     cleaner.register(this, new CleanupTask(board, freeGameBoard));
   }
 
+  /**
+   * Constructs a new TicTacToeGameBoard instance with the specified board, player marker to ID
+   * mapping, ID to player marker mapping, initial player ID value, SymbolLookup, and Cleaner.
+   *
+   * @param board the MemorySegment representing the game board
+   * @param playerMarkerToId a map of player markers to their unique IDs
+   * @param idToPlayerMarker a map of player IDs to their markers
+   * @param initialValue the initial value for the next player ID
+   * @param libTicTacToe the SymbolLookup instance for looking up native functions
+   * @param cleaner the Cleaner instance for managing native resources
+   */
   TicTacToeGameBoard(
       MemorySegment board,
       Map<String, Integer> playerMarkerToId,

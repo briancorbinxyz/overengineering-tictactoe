@@ -5,6 +5,11 @@ import java.lang.System.Logger.Level;
 import java.util.Arrays;
 import org.xxdc.oss.example.GameState;
 
+/**
+ * Implements the MaxN bot strategy for a game. The MaxN strategy tries to maximize the score for
+ * the current player, while considering the scores of all other players. It uses a recursive
+ * algorithm to explore the game tree and find the best move.
+ */
 public final class MaxN implements BotStrategy {
 
   private static final Logger log = System.getLogger(MaxN.class.getName());
@@ -15,15 +20,27 @@ public final class MaxN implements BotStrategy {
   private final GameState initialState;
   private final BotStrategyConfig config;
 
-  public MaxN(GameState state) {
-    this(state, BotStrategyConfig.empty());
+  /**
+   * Constructs a new MaxN bot strategy with the given initial game state and default configuration.
+   *
+   * @param initialState the initial game state to use for the bot strategy
+   */
+  public MaxN(GameState initialState) {
+    this(initialState, BotStrategyConfig.empty());
   }
 
+  /**
+   * Constructs a new MaxN bot strategy with the given initial game state and configuration.
+   *
+   * @param initialState the initial game state to use for the bot strategy
+   * @param config the configuration settings for the bot strategy
+   */
   public MaxN(GameState initialState, BotStrategyConfig config) {
     this.initialState = initialState;
     this.config = config;
   }
 
+  @Override
   public int bestMove() {
     int bestMove = -1;
     int[] maxScores = new int[numberOfPlayers()];

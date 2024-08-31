@@ -4,18 +4,30 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import org.xxdc.oss.example.DuplexMessageHandler;
 import org.xxdc.oss.example.Player;
-import org.xxdc.oss.example.RemoteMessageHandler;
-import org.xxdc.oss.example.SecureMessageHandler;
+import org.xxdc.oss.example.SecureDuplexMessageHandler;
 import org.xxdc.oss.example.transport.tcp.TcpTransportClient;
 
+/** A utility class for creating transport clients and servers. */
 public class Transports {
 
+  private Transports() {}
+
+  /**
+   * Creates a new TCP transport client for the given player and socket.
+   *
+   * @param <P> the type of player
+   * @param player the player instance
+   * @param socket the socket to use for the transport
+   * @return a new TCP transport client
+   * @throws IOException if an I/O error occurs
+   */
   public static <P extends Player> TcpTransportClient<P> newTcpTransportClient(
       P player, Socket socket) throws IOException {
     return new TcpTransportClient<P>(
-        new SecureMessageHandler.Client(
-            new RemoteMessageHandler(
+        new SecureDuplexMessageHandler.Client(
+            new DuplexMessageHandler(
                 new ObjectOutputStream(socket.getOutputStream()),
                 new ObjectInputStream(socket.getInputStream()))),
         player);

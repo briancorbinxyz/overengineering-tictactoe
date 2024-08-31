@@ -111,7 +111,6 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
             artifactId = "tictactoe-api"
-            version = "1.1.0-jdk${java.toolchain.languageVersion}"
             from(components["java"])
             pom {
                 name.set("tictactoe")

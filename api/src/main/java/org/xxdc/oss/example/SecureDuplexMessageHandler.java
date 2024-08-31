@@ -27,17 +27,17 @@ import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 import org.xxdc.oss.example.security.KyberKEMProvider;
 
-public abstract sealed class SecureMessageHandler implements MessageHandler {
+public abstract sealed class SecureDuplexMessageHandler implements MessageHandler {
 
-  private static final Logger log = System.getLogger(SecureMessageHandler.class.getName());
+  private static final Logger log = System.getLogger(SecureDuplexMessageHandler.class.getName());
 
-  protected final RemoteMessageHandler handler;
+  protected final DuplexMessageHandler handler;
 
   protected SecretKey sharedKey;
 
   protected boolean initialized = false;
 
-  public SecureMessageHandler(RemoteMessageHandler handler) {
+  public SecureDuplexMessageHandler(DuplexMessageHandler handler) {
     this.handler = handler;
     registerSecurityProviders();
   }
@@ -181,14 +181,14 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
    * channel, exchanging the shared secret key with the client, and providing methods for sending
    * and receiving encrypted messages.
    */
-  public static final class Server extends SecureMessageHandler {
+  public static final class Server extends SecureDuplexMessageHandler {
     /**
      * Constructs a new `SecureServerMessageHandler` instance with the given `RemoteMessageHandler`.
      *
      * @param remoteMessageHandler the `RemoteMessageHandler` to use for sending and receiving
      *     messages
      */
-    public Server(RemoteMessageHandler remoteMessageHandler) {
+    public Server(DuplexMessageHandler remoteMessageHandler) {
       super(remoteMessageHandler);
     }
 
@@ -204,7 +204,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
         handler.init();
         log.log(
             Level.DEBUG,
-            "Initializing secure channel for {0}. Exchanging shared key.",
+            "Initializing secure channel for {0}. Exchanging shared key...",
             getClass().getSimpleName());
         sharedKey = exchangeSharedKey();
         initialized = true;
@@ -288,14 +288,14 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
    * channel, exchanging the shared secret key with the server, and providing methods for sending
    * and receiving encrypted messages.
    */
-  public static final class Client extends SecureMessageHandler {
+  public static final class Client extends SecureDuplexMessageHandler {
 
     /**
      * Constructs a new `SecureClientMessageHandler` instance with the given `RemoteMessageHandler`.
      *
      * @param handler the `RemoteMessageHandler` to use for the secure communication channel
      */
-    public Client(RemoteMessageHandler handler) {
+    public Client(DuplexMessageHandler handler) {
       super(handler);
     }
 
@@ -312,7 +312,7 @@ public abstract sealed class SecureMessageHandler implements MessageHandler {
         handler.init();
         log.log(
             Level.DEBUG,
-            "Initializing secure channel for {0}. Exchanging shared key.",
+            "Initializing secure channel for {0}. Exchanging shared key...",
             getClass().getSimpleName());
         sharedKey = exchangeSharedKey();
         initialized = true;

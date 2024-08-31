@@ -32,6 +32,10 @@ public class Game implements Serializable, AutoCloseable {
 
   private int moveNumber;
 
+  /**
+   * Constructs a new {@link Game} instance with a 3x3 game board, persistence enabled, and a human
+   * player as player 'X' and a bot player as player 'O'.
+   */
   public Game() {
     this(
         3,
@@ -40,6 +44,15 @@ public class Game implements Serializable, AutoCloseable {
         new PlayerNode.Local<>("O", new BotPlayer()));
   }
 
+  /**
+   * Constructs a new {@link Game} instance with the specified game board size, persistence enabled
+   * state, and player nodes.
+   *
+   * @param size The size of the game board, e.g. 3 for a 3x3 board.
+   * @param persistenceEnabled Whether game state should be persisted to a file.
+   * @param players The player nodes for the game, which include the player marker and player
+   *     implementation.
+   */
   public Game(int size, boolean persistenceEnabled, PlayerNode... players) {
     this.playerNodes = PlayerNodes.of(players);
     this.gameId = UUID.randomUUID();
@@ -50,11 +63,24 @@ public class Game implements Serializable, AutoCloseable {
     this.persistenceEnabled = persistenceEnabled;
   }
 
+  /**
+   * Loads a {@link Game} instance from the specified file.
+   *
+   * @param gameFile The file containing the serialized {@link Game} instance.
+   * @return The loaded {@link Game} instance.
+   * @throws IOException If an I/O error occurs while reading the file.
+   * @throws ClassNotFoundException If the serialized class cannot be found.
+   */
   public static Game from(File gameFile) throws IOException, ClassNotFoundException {
     GamePersistence persistence = new GamePersistence();
     return persistence.loadFrom(gameFile);
   }
 
+  /**
+   * Plays the game, rendering the board, applying player moves, and persisting the game state if
+   * enabled. The game continues until a winning player is found or there are no more moves
+   * available, at which point the winner or tie is logged.
+   */
   public void play() {
     try {
       GamePersistence persistence = new GamePersistence();
@@ -109,8 +135,18 @@ public class Game implements Serializable, AutoCloseable {
     return state;
   }
 
+  /**
+   * Returns the unique identifier for this game instance.
+   *
+   * @return the game ID
+   */
   public UUID getGameId() {
     return gameId;
+  }
+
+  @Override
+  public void close() throws Exception {
+    playerNodes.close();
   }
 
   private void renderBoard() {
@@ -119,10 +155,5 @@ public class Game implements Serializable, AutoCloseable {
 
   private GameState currentGameState() {
     return gameState.peekLast();
-  }
-
-  @Override
-  public void close() throws Exception {
-    playerNodes.close();
   }
 }

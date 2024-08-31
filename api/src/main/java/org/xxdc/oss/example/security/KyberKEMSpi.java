@@ -31,6 +31,9 @@ import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
  */
 public class KyberKEMSpi implements KEMSpi {
 
+  /** Constructs a new KyberKEMSpi instance. */
+  public KyberKEMSpi() {}
+
   @Override
   public EncapsulatorSpi engineNewEncapsulator(
       PublicKey publicKey, AlgorithmParameterSpec spec, SecureRandom secureRandom)
@@ -72,6 +75,14 @@ public class KyberKEMSpi implements KEMSpi {
 
     private SecureRandom random;
 
+    /**
+     * Constructs a new `KyberEncapsulatorDecapsulatorSpi` instance with the given public key, Kyber
+     * parameter specification, and secure random number generator.
+     *
+     * @param publicKey the public key to use for encapsulation
+     * @param parameterSpec the Kyber parameter specification to use
+     * @param random the secure random number generator to use
+     */
     public KyberEncapsulatorDecapsulatorSpi(
         PublicKey publicKey, KyberParameterSpec parameterSpec, SecureRandom random) {
       this.publicKey = publicKey;
@@ -79,6 +90,13 @@ public class KyberKEMSpi implements KEMSpi {
       this.random = random;
     }
 
+    /**
+     * Constructs a new `KyberEncapsulatorDecapsulatorSpi` instance with the given private key and
+     * Kyber parameter specification.
+     *
+     * @param privateKey the private key to use for decapsulation
+     * @param parameterSpec the Kyber parameter specification to use
+     */
     public KyberEncapsulatorDecapsulatorSpi(
         PrivateKey privateKey, KyberParameterSpec parameterSpec) {
       this.privateKey = privateKey;

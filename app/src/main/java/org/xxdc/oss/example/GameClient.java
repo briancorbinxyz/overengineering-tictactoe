@@ -12,6 +12,16 @@ import java.util.concurrent.atomic.LongAdder;
 import org.xxdc.oss.example.bot.BotStrategy;
 import org.xxdc.oss.example.transport.Transports;
 
+/**
+ * The `GameClient` class is responsible for connecting to a game server and managing the execution
+ * of game clients. It submits game clients to an executor service, tracks the status of the
+ * clients, and logs relevant information.
+ *
+ * <p>The `main` method is the entry point of the application, which creates a `GameClient` instance
+ * and connects it to the server. The `connectToServer` method is responsible for submitting game
+ * clients to the executor service and handling any exceptions that may occur during the connection
+ * process.
+ */
 public class GameClient {
 
   private static final Logger log = System.getLogger(GameClient.class.getName());
@@ -30,12 +40,32 @@ public class GameClient {
 
   private final LongAdder startedClients = new LongAdder();
 
+  /**
+   * Constructs a new `GameClient` instance with the specified maximum number of games, server host,
+   * and server port.
+   *
+   * @param maxGames The maximum number of games to be played.
+   * @param serverHost The hostname or IP address of the game server.
+   * @param serverPort The port number of the game server.
+   */
   public GameClient(int maxGames, String serverHost, int serverPort) {
     this.maxGames = maxGames;
     this.serverHost = serverHost;
     this.serverSocket = serverPort;
   }
 
+  /**
+   * The `main` method is the entry point of the application, which creates a `GameClient` instance
+   * and connects it to the server. It sets up an `ExecutorService` to manage the execution of game
+   * clients, logs the start of the client connection, and then calls the `connectToServer` method
+   * to submit the game clients. After the game clients have completed, it logs the final statistics
+   * of the client execution, including the number of submitted, started, failed, and completed
+   * clients.
+   *
+   * @param args Command-line arguments, where the first argument is the server host (default is
+   *     "localhost") and the second argument is the server port (default is 9090).
+   * @throws Exception If any unexpected exceptions occur during the execution of the game clients.
+   */
   public static void main(String[] args) throws Exception {
     ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     log.log(Level.INFO, "Client connecting for Tic-Tac-Toe.");

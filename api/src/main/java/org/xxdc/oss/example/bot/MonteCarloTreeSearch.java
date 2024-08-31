@@ -49,6 +49,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     this.config = config;
   }
 
+  @Override
   public int bestMove() {
     return monteCarloTreeSearch(initialState);
   }
@@ -72,6 +73,9 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     return bestChild(root).state.lastMove();
   }
 
+  /**
+   * Selects the best child node of the given node using the UCT (Upper Confidence Bound applied to
+   */
   static class MCTSNode {
     GameState state;
     MCTSNode parent;
@@ -79,10 +83,21 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     int visits;
     double[] scores;
 
+    /**
+     * Constructs a new MCTSNode with the given state and no parent.
+     *
+     * @param state the state of the game represented by this node
+     */
     public MCTSNode(GameState state) {
       this(state, null);
     }
 
+    /**
+     * Constructs a new MCTSNode with the given state and parent node.
+     *
+     * @param state the state of the game represented by this node
+     * @param parent the parent node of this node
+     */
     public MCTSNode(GameState state, MCTSNode parent) {
       this.state = state;
       this.parent = parent;
@@ -91,6 +106,11 @@ public final class MonteCarloTreeSearch implements BotStrategy {
       this.scores = new double[state.playerMarkers().size()];
     }
 
+    /**
+     * Returns the child node with the highest UCT value.
+     *
+     * @return the child node with the highest UCT value
+     */
     public MCTSNode select() {
       MCTSNode selected = null;
       double bestValue = Double.NEGATIVE_INFINITY;
@@ -107,15 +127,21 @@ public final class MonteCarloTreeSearch implements BotStrategy {
       return selected;
     }
 
+    /**
+     * Expands the node by creating a new child node for each available move.
+     *
+     * @return
+     */
     public boolean isFullyExpanded() {
       return children.size() == state.board().availableMoves().size();
     }
 
+    @Override
     public String toString() {
       return toString(0);
     }
 
-    public String toString(int depth) {
+    String toString(int depth) {
       var builder = new StringBuilder();
       builder.append(" ".repeat(depth * 2));
       builder.append(
@@ -178,7 +204,7 @@ public final class MonteCarloTreeSearch implements BotStrategy {
     return defaultReward(tempState);
   }
 
-  public double[] defaultReward(GameState state) {
+  private double[] defaultReward(GameState state) {
     var reward = new double[state.playerMarkers().size()];
     int winningPlayerIndex = -1;
     for (int i = 0; i < state.playerMarkers().size(); i++) {

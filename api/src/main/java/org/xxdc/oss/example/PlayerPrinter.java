@@ -3,8 +3,17 @@ package org.xxdc.oss.example;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/** Provides a utility to generate a player identifier string for a given `PlayerNode`. */
 public class PlayerPrinter {
 
+  /**
+   * Generates a player identifier string for the given `PlayerNode` instance. The identifier
+   * includes information about the player type (local or remote), the player marker, the Java
+   * version, the operating system, and the host IP address and name.
+   *
+   * @param player the `PlayerNode` instance to generate the identifier for
+   * @return a string representing the player identifier
+   */
   public String getPlayerIdentifier(PlayerNode player) {
     String javaVersion = System.getProperty("java.version");
     String osName = System.getProperty("os.name");

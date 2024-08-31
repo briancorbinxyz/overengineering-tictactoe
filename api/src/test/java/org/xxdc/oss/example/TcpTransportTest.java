@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
@@ -35,6 +36,14 @@ public class TcpTransportTest {
   }
 
   private void createClientServerGame(Supplier<Player> p1Supplier, Supplier<Player> p2Supplier) {
+    createClientServerGame(
+        p1Supplier, p2Supplier, (p1Socket, p2Socket) -> createSecureGame(p1Socket, p2Socket));
+  }
+
+  private void createClientServerGame(
+      Supplier<Player> p1Supplier,
+      Supplier<Player> p2Supplier,
+      BiFunction<Socket, Socket, Game> gameSupplier) {
     var executor = Executors.newVirtualThreadPerTaskExecutor();
     var serverSocketFuture = startServerAsync(SERVER_PORT, executor);
     try {
@@ -57,13 +66,11 @@ public class TcpTransportTest {
       // Wait for both clients to connect
       var client1SocketFuture = serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
       var client2SocketFuture = serverSocketFuture.thenCompose(s -> acceptClientAsync(s, executor));
-      var connectedGame =
-          client1SocketFuture.thenCombine(
-              client2SocketFuture,
-              (client1Socket, client2Socket) -> createGame(client1Socket, client2Socket));
+      var connectedGame = client1SocketFuture.thenCombine(client2SocketFuture, gameSupplier);
 
       // Wait for both clients to finish connecting and start the game
       var game = connectedGame.get();
+      log.log(Level.INFO, "[Server] Game started.");
       game.play();
       log.log(Level.INFO, "[Server] Game complete.");
 
@@ -76,8 +83,12 @@ public class TcpTransportTest {
     }
   }
 
-  private Game createGame(Socket client1Socket, Socket client2Socket) {
-    log.log(Level.INFO, "[Server] Clients connected. Game ready to start.");
+  private Game createSecureGame(Socket client1Socket, Socket client2Socket) {
+    log.log(
+        Level.INFO,
+        "[Server] Clients [{0,number,#}, {1,number,#}] connected. Game ready to start.",
+        client1Socket.getLocalPort(),
+        client2Socket.getLocalPort());
     return new Game(
         3,
         false,
@@ -107,7 +118,12 @@ public class TcpTransportTest {
         () -> {
           try {
             var socket = new Socket(host, port);
-            log.log(Level.INFO, "[Client] Client connected to server on port {0,number,#}", port);
+            log.log(
+                Level.INFO,
+                "[Client] Client connected to server on port {0,number,#} using local port"
+                    + " {1,number,#}",
+                port,
+                socket.getLocalPort());
             var client = Transports.newTcpTransportClient(player.get(), socket);
             client.run();
           } catch (IOException e) {
@@ -123,7 +139,7 @@ public class TcpTransportTest {
         () -> {
           try {
             Socket clientSocket = serverSocket.accept();
-            log.log(Level.INFO, "[Server] Client connected to port " + serverSocket.getLocalPort());
+            log.log(Level.INFO, "[Server] Client connected to port " + clientSocket.getPort());
             return clientSocket;
           } catch (IOException e) {
             throw new RuntimeException(

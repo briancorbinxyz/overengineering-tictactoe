@@ -111,7 +111,6 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
             artifactId = "tictactoe-native-$libSuffix"
-            version = "1.0.0"
             from(components["java"])
             pom {
                 name.set("tictactoe")

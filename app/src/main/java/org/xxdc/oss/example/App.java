@@ -7,7 +7,6 @@ import java.io.File;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.xxdc.oss.example.bot.BotStrategy;
-import org.xxdc.oss.example.bot.BotStrategyConfig;
 
 /** A simple java tic-tac-toe game. */
 public class App {
@@ -20,91 +19,9 @@ public class App {
    * @throws Exception if there is an error whilst playing the game
    */
   public void run() throws Exception {
-    var game = newStandardGameMCTS();
+    var game = newStandardGame();
     game.play();
     game.close();
-  }
-
-  private Game newStandardGame() {
-    return new Game(
-        3,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.ALPHABETA)));
-  }
-
-  private Game newStandardGameMaxN() {
-    return new Game(
-        3,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MAXN)));
-  }
-
-  private Game newStandardGameParanoid() {
-    return new Game(
-        3,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.PARANOID)));
-  }
-
-  private Game newStandardGameMCTS() {
-    return new Game(
-        3,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MCTS)));
-  }
-
-  private Game newLargeStandardGame() {
-    return new Game(
-        4,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>(
-            "O",
-            new BotPlayer(
-                BotStrategy.alphabeta(BotStrategyConfig.newBuilder().maxDepth(4).build()))));
-  }
-
-  private Game newMultiplayerGameMCTS() {
-    return new Game(
-        10,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.MCTS)),
-        new PlayerNode.Local<>("Y", new BotPlayer(BotStrategy.MCTS)));
-  }
-
-  private Game newMultiplayerGameMaxN() {
-    // slow!
-    return new Game(
-        5,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>(
-            "O",
-            new BotPlayer(BotStrategy.maxn(BotStrategyConfig.newBuilder().maxDepth(3).build()))),
-        new PlayerNode.Local<>(
-            "Y",
-            new BotPlayer(BotStrategy.maxn(BotStrategyConfig.newBuilder().maxDepth(3).build()))));
-  }
-
-  private Game newMultiplayerGameParanoid() {
-    // slow!
-    return new Game(
-        10,
-        false,
-        new PlayerNode.Local<>("X", new HumanPlayer()),
-        new PlayerNode.Local<>(
-            "O",
-            new BotPlayer(
-                BotStrategy.paranoid(BotStrategyConfig.newBuilder().maxDepth(2).build()))),
-        new PlayerNode.Local<>(
-            "Y",
-            new BotPlayer(
-                BotStrategy.paranoid(BotStrategyConfig.newBuilder().maxDepth(2).build()))));
   }
 
   /**
@@ -133,6 +50,9 @@ public class App {
    *
    * <p>If command-line arguments are provided, it will load a saved game state from the specified
    * file. Otherwise, it will start a new game.
+   *
+   * @param args the command-line arguments
+   * @throws Exception if there is an error whilst playing the game or loading the game state
    */
   public static void main(String[] args) throws Exception {
     App app = new App();
@@ -142,5 +62,13 @@ public class App {
     } else {
       app.run();
     }
+  }
+
+  private Game newStandardGame() {
+    return new Game(
+        3,
+        false,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer(BotStrategy.ALPHABETA)));
   }
 }

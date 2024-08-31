@@ -19,6 +19,8 @@ dependencies {
     }
 }
 
+val projectVersion by extra("1.1.0")
+
 public val jdkVersion = 22
 // Apply a specific Java toolchain to ease working on different environments.
 java {
@@ -26,3 +28,4 @@ java {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
     }
 }
+version = "$projectVersion-jdk${jdkVersion}"

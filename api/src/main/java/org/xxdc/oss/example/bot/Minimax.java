@@ -4,6 +4,12 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.xxdc.oss.example.GameState;
 
+/**
+ * Implements a Minimax algorithm-based bot strategy for a game. The Minimax algorithm is a
+ * decision-making algorithm used in game theory and artificial intelligence to find the optimal
+ * move for a player, assuming the opponent plays optimally. This implementation of the Minimax
+ * algorithm is used to determine the best move for the current player in the game.
+ */
 public final class Minimax implements BotStrategy {
 
   private static final Logger log = System.getLogger(Minimax.class.getName());
@@ -16,10 +22,24 @@ public final class Minimax implements BotStrategy {
   private final BotStrategyConfig config;
   private final GameState initialState;
 
-  public Minimax(GameState state) {
-    this(state, BotStrategyConfig.empty());
+  /**
+   * Constructs a new Minimax instance with the given initial game state and default bot strategy
+   * configuration.
+   *
+   * @param initialState the initial game state to start the Minimax algorithm from
+   */
+  public Minimax(GameState initialState) {
+    this(initialState, BotStrategyConfig.empty());
   }
 
+  /**
+   * Constructs a new Minimax instance with the given initial game state and bot strategy
+   * configuration.
+   *
+   * @param initialState the initial game state to start the Minimax algorithm from
+   * @param config the bot strategy configuration to use for this Minimax instance
+   * @throws IllegalArgumentException if the initial game state does not have exactly two players
+   */
   public Minimax(GameState initialState, BotStrategyConfig config) {
     this.initialState = initialState;
     this.maximizer = initialState.currentPlayer();
@@ -29,6 +49,7 @@ public final class Minimax implements BotStrategy {
     this.config = config;
   }
 
+  @Override
   public int bestMove() {
     int bestMove = -1;
     int maxScore = -Integer.MAX_VALUE;

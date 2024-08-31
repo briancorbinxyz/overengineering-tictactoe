@@ -9,12 +9,29 @@ import org.xxdc.oss.example.MessageHandler;
 import org.xxdc.oss.example.Player;
 import org.xxdc.oss.example.transport.TransportException;
 
+/**
+ * Represents a TCP transport client that handles communication with a server. The client is
+ * responsible for initializing the connection, sending and receiving messages, and handling the
+ * game logic based on the received messages.
+ *
+ * @param <T> the type of player that the client represents
+ * @param connection the message handler used to communicate with the server
+ * @param player the player instance
+ */
 public record TcpTransportClient<T extends Player>(MessageHandler connection, T player)
     implements AutoCloseable {
 
   private static final Logger log =
       System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
+  /**
+   * Initializes a new instance of the {@link TcpTransportClient} class with the specified {@link
+   * MessageHandler} connection and {@link Player} instance.
+   *
+   * @param connection the message handler used to communicate with the server
+   * @param player the player instance
+   * @throws TransportException if an I/O exception occurs during initialization
+   */
   public TcpTransportClient(MessageHandler connection, T player) {
     try {
       this.connection = connection;
@@ -25,6 +42,11 @@ public record TcpTransportClient<T extends Player>(MessageHandler connection, T 
     }
   }
 
+  /**
+   * Runs the TCP transport client, initializing the player marker, receiving messages from the
+   * server, and handling the game logic based on the received messages. The client will continue to
+   * receive messages until an exit code is received from the server.
+   */
   public void run() {
     log.log(Level.DEBUG, "Started TCP transport client");
     try {

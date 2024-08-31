@@ -4,6 +4,13 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.xxdc.oss.example.GameState;
 
+/**
+ * Implements the Alpha-Beta pruning algorithm for a two-player game. The algorithm evaluates game
+ * states and selects the best move for the current player. It uses a depth-limited search to
+ * explore the game tree, and prunes branches that are guaranteed to be inferior. The algorithm aims
+ * to maximize the score for the current player (the "maximizer") and minimize the score for the
+ * opponent.
+ */
 public final class AlphaBeta implements BotStrategy {
 
   private static final Logger log = System.getLogger(AlphaBeta.class.getName());
@@ -16,10 +23,24 @@ public final class AlphaBeta implements BotStrategy {
   private final GameState initialState;
   private final BotStrategyConfig config;
 
-  public AlphaBeta(GameState state) {
-    this(state, BotStrategyConfig.newBuilder().build());
+  /**
+   * Constructs an instance of the AlphaBeta bot strategy with the given initial game state and
+   * default configuration.
+   *
+   * @param initialState the initial game state for the bot to analyze
+   */
+  public AlphaBeta(GameState initialState) {
+    this(initialState, BotStrategyConfig.newBuilder().build());
   }
 
+  /**
+   * Constructs an instance of the AlphaBeta bot strategy with the given initial game state and
+   * configuration.
+   *
+   * @param initialState the initial game state for the bot to analyze
+   * @param config the configuration settings for the bot strategy
+   * @throws IllegalArgumentException if the initial game state does not have exactly two players
+   */
   public AlphaBeta(GameState initialState, BotStrategyConfig config) {
     this.initialState = initialState;
     this.maximizer = initialState.currentPlayer();
@@ -29,6 +50,7 @@ public final class AlphaBeta implements BotStrategy {
     this.config = config;
   }
 
+  @Override
   public int bestMove() {
     int bestMove = -1;
     int maxScore = -Integer.MAX_VALUE;

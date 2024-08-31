@@ -19,10 +19,16 @@ public class GameBoardNativeImpl implements GameBoard {
 
   private final GameBoard board;
 
+  /** Constructs a new {@code GameBoardNativeImpl} instance with a default dimension of 3. */
   public GameBoardNativeImpl() {
     this(3);
   }
 
+  /**
+   * Constructs a new {@code GameBoardNativeImpl} instance with the specified dimension.
+   *
+   * @param dimension the dimension of the game board, must be a positive integer
+   */
   public GameBoardNativeImpl(int dimension) {
     this.library = LibraryHolder.TTT.instance();
     this.board = library.newGameBoard(dimension);

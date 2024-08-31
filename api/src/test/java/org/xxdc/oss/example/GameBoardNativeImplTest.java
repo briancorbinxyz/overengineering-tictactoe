@@ -29,8 +29,6 @@ public class GameBoardNativeImplTest {
 
   @Test
   public void should_load_library() {
-    printEnvironmentVariables();
-    printSystemProperties();
     GameBoard gameBoard = new GameBoardNativeImpl();
     assertNotNull(gameBoard);
   }
@@ -99,16 +97,10 @@ public class GameBoardNativeImplTest {
       gameBoard = null;
       if (idx++ % 100 == 0) {
         System.gc();
-        log.log(Level.INFO, "GC'd " + idx / 100 + " times at " + idx + " iterations");
+        log.log(
+            Level.INFO,
+            "GC'd " + idx / 100 + " times at " + idx + " iterations. GameBoard is " + gameBoard);
       }
     }
-  }
-
-  private void printSystemProperties() {
-    System.getProperties().forEach((k, v) -> log.log(Level.INFO, k + " = " + v));
-  }
-
-  private void printEnvironmentVariables() {
-    System.getenv().forEach((k, v) -> log.log(Level.INFO, k + " = " + v));
   }
 }

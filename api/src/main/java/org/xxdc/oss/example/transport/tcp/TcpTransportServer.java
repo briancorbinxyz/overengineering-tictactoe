@@ -6,15 +6,20 @@ import java.io.ObjectOutputStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.Socket;
+import org.xxdc.oss.example.DuplexMessageHandler;
 import org.xxdc.oss.example.GameState;
 import org.xxdc.oss.example.MessageHandler;
-import org.xxdc.oss.example.RemoteMessageHandler;
-import org.xxdc.oss.example.SecureMessageHandler;
+import org.xxdc.oss.example.SecureDuplexMessageHandler;
 import org.xxdc.oss.example.transport.TransportConfiguration;
 import org.xxdc.oss.example.transport.TransportException;
 import org.xxdc.oss.example.transport.TransportServer;
 
 /** A {@link TransportServer} implementation that uses TCP sockets. */
+/**
+ * A {@link TransportServer} implementation that uses TCP sockets to handle communication between a
+ * client and server. This class is responsible for initializing the socket connection, sending game
+ * state updates to the client, and receiving client input through the socket.
+ */
 public class TcpTransportServer implements TransportServer {
 
   private static final Logger log = System.getLogger(TcpTransportServer.class.getName());
@@ -23,17 +28,39 @@ public class TcpTransportServer implements TransportServer {
 
   private transient MessageHandler handler;
 
+  /**
+   * Constructs a new {@link TcpTransportServer} instance with the provided {@link Socket}. This
+   * constructor initializes the {@link SecureDuplexMessageHandler.Server} with a {@link
+   * DuplexMessageHandler} that uses the input and output streams of the provided socket.
+   *
+   * @param socket the {@link Socket} to use for the transport server
+   * @throws TransportException if an {@link IOException} occurs while initializing the message
+   *     handler
+   */
   public TcpTransportServer(Socket socket) {
     this.socket = socket;
     try {
       this.handler =
-          new SecureMessageHandler.Server(
-              new RemoteMessageHandler(
+          new SecureDuplexMessageHandler.Server(
+              new DuplexMessageHandler(
                   new ObjectOutputStream(socket.getOutputStream()),
                   new ObjectInputStream(socket.getInputStream())));
     } catch (IOException e) {
       throw new TransportException("IO exception: " + e.getMessage(), e);
     }
+  }
+
+  /**
+   * Constructs a new {@link TcpTransportServer} instance with the provided {@link Socket} and
+   * {@link MessageHandler}. This constructor initializes the {@link TcpTransportServer} with the
+   * given socket and message handler.
+   *
+   * @param socket the {@link Socket} to use for the transport server
+   * @param handler the {@link MessageHandler} to use for the transport server
+   */
+  public TcpTransportServer(Socket socket, MessageHandler handler) {
+    this.socket = socket;
+    this.handler = handler;
   }
 
   @Override

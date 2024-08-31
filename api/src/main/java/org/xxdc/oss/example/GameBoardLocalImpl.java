@@ -8,12 +8,21 @@ import java.util.stream.Collectors;
  * Represents a game board for a game, such as tic-tac-toe. The board has a specified dimension, and
  * stores the current state of the game in a 1D array. Provides methods to check the validity of
  * moves, place player markers, check for a winner, and get a string representation of the board.
+ *
+ * @param dimension the dimension of the board
+ * @param content the current state of the board, represented as a 1D array of player marker strings
  */
 public record GameBoardLocalImpl(int dimension, String[] content)
     implements Serializable, GameBoard {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Constructs a new {@code GameBoardLocalImpl} instance with the specified dimension and
+   * initializes the content array with null values.
+   *
+   * @param dimension the dimension of the game board
+   */
   public GameBoardLocalImpl(int dimension) {
     this(dimension, new String[dimension * dimension]);
   }
