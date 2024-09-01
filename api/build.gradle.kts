@@ -18,8 +18,7 @@ val libSuffix = when {
 dependencies {
     // Native Library (Rust)
     implementation(project(":native"))
-    testRuntimeOnly("org.xxdc.oss.example:tictactoe-native-$libSuffix:1.1.0")
-
+    //testRuntimeOnly("org.xxdc.oss.example:tictactoe-native-$libSuffix:1.1.0")
 
     // JDK9: Platform Logging (Third-Party)
     // -> JDK API -> SLF4J -> Logback
