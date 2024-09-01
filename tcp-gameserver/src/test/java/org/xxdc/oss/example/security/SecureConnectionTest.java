@@ -1,4 +1,4 @@
-package org.xxdc.oss.example;
+package org.xxdc.oss.example.security;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -35,7 +35,6 @@ import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xxdc.oss.example.security.KyberKEMProvider;
 
 /**
  * Secure KEM Connection using BouncyCastle Provider and Kyber for shared key generation and

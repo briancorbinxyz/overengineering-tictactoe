@@ -16,11 +16,6 @@ val libSuffix = when {
 }
 
 dependencies {
-    // JDK21: KEM SPI (Third-Party)
-    // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
-    // -> JDK API -> Bouncycastle
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-
     // Native Library (Rust)
     implementation(project(":native"))
     testRuntimeOnly("org.xxdc.oss.example:tictactoe-native-$libSuffix:1.0.0")
