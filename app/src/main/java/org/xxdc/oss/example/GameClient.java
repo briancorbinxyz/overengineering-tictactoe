@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 import org.xxdc.oss.example.bot.BotStrategy;
-import org.xxdc.oss.example.transport.Transports;
+import org.xxdc.oss.example.transport.tcp.TcpTransports;
 
 /**
  * The `GameClient` class is responsible for connecting to a game server and managing the execution
@@ -121,7 +121,7 @@ public class GameClient {
             // Contention will cause SocketException, down Server ConnectException
             var socket = new Socket(serverHost, serverSocket);
                 var client =
-                    Transports.newTcpTransportClient(
+                    TcpTransports.newTcpTransportClient(
                         new BotPlayer(BotStrategy.MINIMAX), socket); ) {
               startedClients.increment();
               socket.setKeepAlive(true);

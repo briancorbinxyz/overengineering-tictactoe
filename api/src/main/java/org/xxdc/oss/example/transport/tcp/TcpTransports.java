@@ -1,18 +1,18 @@
-package org.xxdc.oss.example.transport;
+package org.xxdc.oss.example.transport.tcp;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import org.xxdc.oss.example.DuplexMessageHandler;
+
 import org.xxdc.oss.example.Player;
-import org.xxdc.oss.example.SecureDuplexMessageHandler;
-import org.xxdc.oss.example.transport.tcp.TcpTransportClient;
+import org.xxdc.oss.example.transport.DuplexMessageHandler;
+import org.xxdc.oss.example.transport.SecureDuplexMessageHandler;
 
 /** A utility class for creating transport clients and servers. */
-public class Transports {
+public class TcpTransports {
 
-  private Transports() {}
+  private TcpTransports() {}
 
   /**
    * Creates a new TCP transport client for the given player and socket.

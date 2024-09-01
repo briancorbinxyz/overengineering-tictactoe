@@ -5,8 +5,8 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.invoke.MethodHandles;
 import org.xxdc.oss.example.GameState;
-import org.xxdc.oss.example.MessageHandler;
 import org.xxdc.oss.example.Player;
+import org.xxdc.oss.example.transport.MessageHandler;
 import org.xxdc.oss.example.transport.TransportException;
 
 /**

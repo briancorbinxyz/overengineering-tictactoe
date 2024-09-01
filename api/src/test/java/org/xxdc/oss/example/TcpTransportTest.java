@@ -14,8 +14,9 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
-import org.xxdc.oss.example.transport.Transports;
+
 import org.xxdc.oss.example.transport.tcp.TcpTransportServer;
+import org.xxdc.oss.example.transport.tcp.TcpTransports;
 
 public class TcpTransportTest {
 
@@ -124,7 +125,7 @@ public class TcpTransportTest {
                     + " {1,number,#}",
                 port,
                 socket.getLocalPort());
-            var client = Transports.newTcpTransportClient(player.get(), socket);
+            var client = TcpTransports.newTcpTransportClient(player.get(), socket);
             client.run();
           } catch (IOException e) {
             throw new RuntimeException("Error connecting to server on port " + port, e);

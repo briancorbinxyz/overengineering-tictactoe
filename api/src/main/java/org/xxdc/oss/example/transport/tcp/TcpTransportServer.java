@@ -6,10 +6,11 @@ import java.io.ObjectOutputStream;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.Socket;
-import org.xxdc.oss.example.DuplexMessageHandler;
+
 import org.xxdc.oss.example.GameState;
-import org.xxdc.oss.example.MessageHandler;
-import org.xxdc.oss.example.SecureDuplexMessageHandler;
+import org.xxdc.oss.example.transport.DuplexMessageHandler;
+import org.xxdc.oss.example.transport.MessageHandler;
+import org.xxdc.oss.example.transport.SecureDuplexMessageHandler;
 import org.xxdc.oss.example.transport.TransportConfiguration;
 import org.xxdc.oss.example.transport.TransportException;
 import org.xxdc.oss.example.transport.TransportServer;

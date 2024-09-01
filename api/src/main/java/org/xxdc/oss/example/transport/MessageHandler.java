@@ -1,4 +1,4 @@
-package org.xxdc.oss.example;
+package org.xxdc.oss.example.transport;
 
 import java.io.IOException;
 
