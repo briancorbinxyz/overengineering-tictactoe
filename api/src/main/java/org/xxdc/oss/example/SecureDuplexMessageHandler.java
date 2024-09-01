@@ -66,7 +66,7 @@ public abstract sealed class SecureDuplexMessageHandler implements MessageHandle
    * key to decapsulate the shared secret.
    *
    * @return the shared secret key
-   * @throws NoSuchAlgorithmException
+   * @throws NoSuchAlgorithmException if the "Kyber" algorithm is not available
    * @throws IllegalArgumentException NoSuchAlgorithmException if the "Kyber" algorithm is not
    *     available
    * @throws IOException if there is an error communicating with the remote handler
@@ -75,7 +75,7 @@ public abstract sealed class SecureDuplexMessageHandler implements MessageHandle
    * @throws InvalidAlgorithmParameterException if the Kyber parameters are invalid
    * @throws InvalidKeyException if the public/private key is invalid
    * @throws DecapsulateException if the decapsulation of the shared secret fails
-   * @throws ClassNotFoundException
+   * @throws ClassNotFoundException if the KyberKEMProvider class cannot be found
    */
   protected abstract SecretKey exchangeSharedKey()
       throws NoSuchAlgorithmException,

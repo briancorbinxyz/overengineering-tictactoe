@@ -14,6 +14,9 @@ import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
  */
 public class KyberParametersSpi extends AlgorithmParametersSpi {
 
+  /** Constructs a new instance of the {@link KyberParametersSpi} class. */
+  public KyberParametersSpi() {}
+
   private KyberParams params;
 
   @Override

@@ -27,6 +27,13 @@ public record GameBoardLocalImpl(int dimension, String[] content)
     this(dimension, new String[dimension * dimension]);
   }
 
+  /**
+   * Constructs a new {@code GameBoardLocalImpl} instance with the specified dimension and content
+   *
+   * @param dimension the dimension of the game board
+   * @param content the current state of the board, represented as a 1D array of player marker
+   *     strings
+   */
   public GameBoardLocalImpl {
     if (content.length != dimension * dimension) {
       throw new IllegalArgumentException("Content must be of length " + dimension * dimension);

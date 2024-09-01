@@ -14,6 +14,8 @@ import org.xxdc.oss.example.GameState;
  */
 public class TcpProtocol {
 
+  private TcpProtocol() {}
+
   /**
    * A constant representing an empty JSON object, which can be used to indicate an exit or
    * termination condition in the TCP protocol.

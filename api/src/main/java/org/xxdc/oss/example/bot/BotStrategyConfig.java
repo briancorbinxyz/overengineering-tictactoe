@@ -112,9 +112,12 @@ public class BotStrategyConfig {
    * execution time in milliseconds for a bot strategy configuration.
    */
   public static class Builder {
+
     private Integer maxIterations;
     private Integer maxDepth;
     private Long maxTimeMillis;
+
+    private Builder() {}
 
     /**
      * Sets the maximum number of iterations for the bot strategy.
