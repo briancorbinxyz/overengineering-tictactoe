@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
 import org.xxdc.oss.example.Player;
 import org.xxdc.oss.example.transport.DuplexMessageHandler;
 import org.xxdc.oss.example.transport.SecureDuplexMessageHandler;
