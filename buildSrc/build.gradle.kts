@@ -10,4 +10,10 @@ plugins {
 repositories {
     // Use the plugin portal to apply community plugins in convention plugins.
     gradlePluginPortal()
+    // Also use maven central for dependencies
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.23.3") // Use the latest version
 }

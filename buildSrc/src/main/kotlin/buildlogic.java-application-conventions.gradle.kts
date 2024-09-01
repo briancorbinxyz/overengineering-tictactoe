@@ -8,4 +8,6 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    // Apply the maven-publish plugin for publishing to repositories
+    `maven-publish`
 }

@@ -4,20 +4,6 @@ plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id("buildlogic.java-application-conventions")
     id("org.graalvm.buildtools.native") version "0.10.2"
-    id("com.diffplug.spotless") version "7.0.0.BETA1"
-    `maven-publish`
-}
-
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenLocal()
-    mavenCentral()
-    gradlePluginPortal()
-}
-
-// Automatic code formatting before compile
-tasks.named("compileJava") {
-    dependsOn("spotlessApply")
 }
 
 dependencies {
@@ -34,28 +20,10 @@ dependencies {
     runtimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
 }
 
-testing {
-    suites {
-        // Configure the built-in test suite
-        val test by getting(JvmTestSuite::class) {
-            // Use TestNG test framework
-            useTestNG("7.5.1")
-        }
-    }
-}
-
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     withJavadocJar()
     withSourcesJar()
-}
-
-// Code formatting (./gradlew spotlessApply)
-spotless {
-    java {
-        googleJavaFormat("1.23.0")
-            .reflowLongStrings()
-    }
 }
 
 // Allow GraalVM native AOT compilation

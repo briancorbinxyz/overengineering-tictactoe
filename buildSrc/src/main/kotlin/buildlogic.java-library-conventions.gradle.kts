@@ -8,4 +8,7 @@ plugins {
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
+
+    // Apply the maven-publish plugin for publishing to repositories 
+    `maven-publish`
 }

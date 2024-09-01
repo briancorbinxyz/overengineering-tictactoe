@@ -1,4 +1,4 @@
-package org.xxdc.oss.example;
+package org.xxdc.oss.example.transport.tcp;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -6,7 +6,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import java.util.regex.Matcher;
 import org.testng.annotations.Test;
-import org.xxdc.oss.example.transport.tcp.TcpProtocol;
 
 public class TcpProtocolTest {
 

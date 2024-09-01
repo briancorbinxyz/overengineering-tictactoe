@@ -1,4 +1,4 @@
-package org.xxdc.oss.example;
+package org.xxdc.oss.example.transport.tcp;
 
 import java.io.IOException;
 import java.lang.System.Logger;
@@ -14,8 +14,11 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
-import org.xxdc.oss.example.transport.tcp.TcpTransportServer;
-import org.xxdc.oss.example.transport.tcp.TcpTransports;
+import org.xxdc.oss.example.BotPlayer;
+import org.xxdc.oss.example.Game;
+import org.xxdc.oss.example.HumanPlayer;
+import org.xxdc.oss.example.Player;
+import org.xxdc.oss.example.PlayerNode;
 
 public class TcpTransportTest {
 

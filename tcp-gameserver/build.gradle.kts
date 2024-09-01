@@ -1,50 +1,9 @@
-import java.io.File
-
 plugins {
     id("buildlogic.java-library-conventions")
 }
 
-val libPath = "native/src/main/rust/target/debug"
-val osName = System.getProperty("os.name").lowercase()
-val osArch = System.getProperty("os.arch").lowercase()
-
-val libSuffix = when {
-    osName.contains("win") -> "windows-$osArch"
-    osName.contains("mac") -> "macos-$osArch"
-    osName.contains("nux") -> "linux-$osArch"
-    else -> throw GradleException("Unsupported OS")
-}
-
 dependencies {
-    // JDK21: KEM SPI (Third-Party)
-    // https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk18on
-    // -> JDK API -> Bouncycastle
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-
-    // Native Library (Rust)
-    implementation(project(":native"))
-    testRuntimeOnly("org.xxdc.oss.example:tictactoe-native-$libSuffix:1.0.0")
-
-
-    // JDK9: Platform Logging (Third-Party)
-    // -> JDK API -> SLF4J -> Logback
-    testRuntimeOnly("ch.qos.logback:logback-classic:1.5.6")
-    testRuntimeOnly("org.slf4j:slf4j-api:2.0.13")
-    testRuntimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
-
-
-    // JDK23: JMH (Third-Party) Not required, added for benchmarking
-    // https://github.com/openjdk/jmh
-    testImplementation("org.openjdk.jmh:jmh-core:1.37")
-    testAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
-}
-
-// Run JMH benchmark
-// ./gradlew jmh
-tasks.register<JavaExec>("jmh") {
-    mainClass.set("org.openjdk.jmh.Main")
-    classpath = sourceSets["test"].runtimeClasspath
-    args = listOf("org.xxdc.oss.example.interop.benchmark.PlayerIdsBenchmark")
+    implementation(project(":api"))
 }
 
 java {
@@ -69,7 +28,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "org.xxdc.oss.example"
-            artifactId = "tictactoe-api"
+            artifactId = "tictactoe-tcp-gameserver"
             from(components["java"])
             pom {
                 name.set("tictactoe")

@@ -25,8 +25,7 @@ public class NativeLoader {
       throws IOException {
     var resourceLookupString = "/" + platformLibraryName;
     var tempResourceFile = Files.createTempFile(platformLibraryName, ".tmp");
-    try (var inputStream =
-            NativeLoader.class.getResourceAsStream(resourceLookupString);
+    try (var inputStream = NativeLoader.class.getResourceAsStream(resourceLookupString);
         OutputStream outputStream = Files.newOutputStream(tempResourceFile)) {
       inputStream.transferTo(outputStream);
       return SymbolLookup.libraryLookup(tempResourceFile, arena);
