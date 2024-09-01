@@ -20,7 +20,7 @@
     <rollingPolicy class="TimeBasedRollingPolicy">
       <fileNamePattern>tic-tac-toe.log.json.%d{yyyy-MM-dd}.log</fileNamePattern>
       <maxHistory>30</maxHistory>
-      <totalSizeCap>1GB</totalSizeCap>
+      <totalSizeCap>100MB</totalSizeCap>
     </rollingPolicy>
     <encoder class="JsonEncoder">
       <withFormattedMessage>true</withFormattedMessage>

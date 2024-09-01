@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration>
+  <import class="ch.qos.logback.classic.encoder.JsonEncoder"/>
+  <import class="ch.qos.logback.core.ConsoleAppender"/>
+  <import class="ch.qos.logback.core.FileAppender"/>
+  <import class="ch.qos.logback.classic.filter.ThresholdFilter"/>
+
+  <appender name="CONSOLE" class="ConsoleAppender">
+    <encoder>
+      <pattern>%boldWhite(%date) %yellow([%thread]) %highlight(%-5level) %cyan(%-20logger{20}) - %msg %n</pattern>
+    </encoder>
+    <filter class="ThresholdFilter">
+      <level>${log.level:-INFO}</level>
+    </filter>
+  </appender>
+
+  <appender name="FILE" class="FileAppender">
+    <file>tic-tac-toe_tcp-gameserver.log.json</file>
+    <rollingPolicy class="TimeBasedRollingPolicy">
+      <fileNamePattern>tic-tac-toe.log.json.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>100MB</totalSizeCap>
+    </rollingPolicy>
+    <encoder class="JsonEncoder">
+      <withFormattedMessage>true</withFormattedMessage>
+      <withMessage>false</withMessage>
+      <withArguments>false</withArguments>
+      <withContext>false</withContext>
+      <withMDC>false</withMDC>
+    </encoder>
+    <filter class="ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>

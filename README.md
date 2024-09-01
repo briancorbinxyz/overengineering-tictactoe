@@ -57,7 +57,7 @@ https://openjdk.org/projects/jdk/17/
 
 ### Algorithms
 
-The following algorithms are used by the AI BOT in this project (For a detailed discussion see [Road to JDK 25 - An Algorithmic Interlude](https://briancorbinxyz.medium.com/over-engineering-tic-tac-toe-an-algorithmic-interlude-8af3aa13173a):
+The following algorithms are used by the AI BOT in this project - for a detailed discussion see [Road to JDK 25 - An Algorithmic Interlude](https://briancorbinxyz.medium.com/over-engineering-tic-tac-toe-an-algorithmic-interlude-8af3aa13173a):
 
 - [Random](https://en.wikipedia.org/wiki/Randomness) See: [Random.java](app/src/main/java/org/example/bot/Random.java)
 - [Minimax](https://en.wikipedia.org/wiki/Minimax) See: [Minimax.java](app/src/main/java/org/example/bot/Minimax.java)

@@ -1,0 +1,16 @@
+[package]
+name = "xxdc-oss-tictactoe"
+version = "1.0.0"
+authors = ["Brian Corbin <mail@briancorbin.xyz>"]
+edition = "2021"
+description = "A tic-tac-toe game library written in rust built for FFI."
+license = "MIT"
+
+[dependencies]
+
+[lib]
+path = "tictactoe/lib.rs"
+crate-type = ["cdylib"]
+
+[package.metadata]
+repository = "https://github.com/briancorbinxyz/overengineering-tictactoe"

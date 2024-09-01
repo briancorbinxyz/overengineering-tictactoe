@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GameClient",
+            "request": "launch",
+            "mainClass": "org.xxdc.oss.example.GameClient",
+            "projectName": "tcp-gameserver"
+        },
+        {
+            "type": "java",
+            "name": "GameServer",
+            "request": "launch",
+            "mainClass": "org.xxdc.oss.example.GameServer",
+            "projectName": "tcp-gameserver"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -86,10 +100,10 @@
             "projectName": "app",
             "env": {
                 "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
-            },
+                "PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
+            }
         },
         {
             "type": "java",
@@ -99,10 +113,10 @@
             "projectName": "app",
             "env": {
                 "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
-            },
+                "PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
+            }
         },
         {
             "type": "java",
@@ -113,10 +127,10 @@
             "projectName": "app",
             "env": {
                 "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
-            },
+                "PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
+            }
         },
         {
             "type": "java",
@@ -126,10 +140,10 @@
             "projectName": "app",
             "env": {
                 "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
-            },
+                "PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
+            }
         },
         {
             "type": "java",
@@ -140,10 +154,10 @@
             "projectName": "app",
             "env": {
                 "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug", // For Windows
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug", // For Linux
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug" // For macOS
-            },
+                "PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
+                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
+            }
         }
     ]
 }

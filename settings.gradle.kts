@@ -12,4 +12,7 @@ plugins {
 }
 
 rootProject.name = "overengineering-tictactoe"
+include("api")
 include("app")
+include("native")
+include("tcp-gameserver")
