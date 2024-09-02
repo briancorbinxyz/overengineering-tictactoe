@@ -13,6 +13,10 @@ repositories {
     gradlePluginPortal()
 }
 
+dependencies {
+    implementation(project(":api"))
+}
+
 testing {
     suites {
         // Configure the built-in test suite
@@ -78,20 +82,20 @@ tasks.register<Delete>("cleanRust") {
 tasks.named("clean") {
     dependsOn("cleanRust")
 }
-// Force a build before running the application
 tasks.named("build") {
     dependsOn("formatRust")
 }
-tasks.named<Jar>("jar") {
-    from("${cargoBuildDir}/debug") {
-        include(libName) 
-    }
+tasks.register<Copy>("copyLib") {
+    from(libPath)
+    into("src/main/resources/native")
+    include(libName)
+}
+tasks.named("processResources") {
+    dependsOn("copyLib")
 }
 //
 // Rust Build End
 //
-java {
-}
 
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 publishing {

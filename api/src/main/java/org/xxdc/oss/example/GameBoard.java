@@ -2,6 +2,7 @@ package org.xxdc.oss.example;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -113,15 +114,29 @@ public interface GameBoard extends JsonSerializable {
     GameBoard gameBoard;
     try {
       if (useNative.get()) {
-        gameBoard = new GameBoardNativeImpl(dimension);
+        // Use the native implementation of the game board if it is available
+        // using reflection.
+        Class<?> gameBoardNativeImplClass =
+            Class.forName("org.xxdc.oss.example.GameBoardNativeImpl");
+        gameBoard =
+            (GameBoard)
+                gameBoardNativeImplClass.getDeclaredConstructor(int.class).newInstance(dimension);
       } else {
         gameBoard = new GameBoardLocalImpl(dimension);
       }
-    } catch (ExceptionInInitializerError e) {
+    } catch (ExceptionInInitializerError
+        | InstantiationException
+        | IllegalAccessException
+        | IllegalArgumentException
+        | InvocationTargetException
+        | NoSuchMethodException
+        | SecurityException
+        | ClassNotFoundException e) {
       // Fallback to the Java implementation.
       log.log(
           Level.WARNING,
-          "Unable to use native logger, falling back to local logger: {0}",
+          "Unable to use native game board, falling back to local game board: {0}({1})",
+          e.getClass(),
           e.getMessage());
       useNative.set(false);
       gameBoard = new GameBoardLocalImpl(dimension);

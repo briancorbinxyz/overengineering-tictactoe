@@ -98,12 +98,6 @@
             "request": "launch",
             "mainClass": "org.xxdc.oss.example.App",
             "projectName": "app",
-            "env": {
-                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
-            }
         },
         {
             "type": "java",
@@ -111,12 +105,6 @@
             "request": "launch",
             "mainClass": "org.xxdc.oss.example.GameClient",
             "projectName": "app",
-            "env": {
-                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
-            }
         },
         {
             "type": "java",
@@ -125,12 +113,6 @@
             "vmArgs": "-XX:+UseZGC",
             "mainClass": "org.xxdc.oss.example.GameClient",
             "projectName": "app",
-            "env": {
-                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
-            }
         },
         {
             "type": "java",
@@ -138,12 +120,6 @@
             "request": "launch",
             "mainClass": "org.xxdc.oss.example.GameServer",
             "projectName": "app",
-            "env": {
-                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
-            }
         },
         {
             "type": "java",
@@ -152,12 +128,6 @@
             "vmArgs": "-XX:+UseZGC",
             "mainClass": "org.xxdc.oss.example.GameServer",
             "projectName": "app",
-            "env": {
-                "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "LD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug",
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/app/build/cargo/debug"
-            }
         }
     ]
 }

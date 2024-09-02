@@ -5,8 +5,11 @@ import java.io.OutputStream;
 import java.lang.foreign.Arena;
 import java.lang.foreign.SymbolLookup;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 public class NativeLoader {
+
+  public static String NATIVE_ROOT = "/native/";
 
   public static SymbolLookup loadLibrary(String libraryName, Arena arena) {
     try {
@@ -23,7 +26,8 @@ public class NativeLoader {
 
   private static SymbolLookup fromClassPathToTemp(String platformLibraryName, Arena arena)
       throws IOException {
-    var resourceLookupString = "/" + platformLibraryName;
+    System.out.println(Arrays.toString(System.getProperty("java.class.path").split(":")));
+    var resourceLookupString = NATIVE_ROOT + platformLibraryName;
     var tempResourceFile = Files.createTempFile(platformLibraryName, ".tmp");
     try (var inputStream = NativeLoader.class.getResourceAsStream(resourceLookupString);
         OutputStream outputStream = Files.newOutputStream(tempResourceFile)) {

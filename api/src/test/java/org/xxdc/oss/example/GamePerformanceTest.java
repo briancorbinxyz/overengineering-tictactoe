@@ -1,6 +1,5 @@
 package org.xxdc.oss.example;
 
-import java.lang.System.Logger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
@@ -9,8 +8,6 @@ import org.testng.annotations.Test;
 
 @Ignore
 public class GamePerformanceTest {
-
-  private static final Logger log = System.getLogger(GamePerformanceTest.class.getName());
 
   @Test
   public void testGameBotPerformanceInSerial() throws Exception {
