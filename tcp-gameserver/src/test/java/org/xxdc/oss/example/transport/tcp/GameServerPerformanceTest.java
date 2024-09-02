@@ -13,9 +13,9 @@ import org.xxdc.oss.example.Game;
 import org.xxdc.oss.example.PlayerNode;
 
 @Ignore
-public class GamePerformanceTest {
+public class GameServerPerformanceTest {
 
-  private static final Logger log = System.getLogger(GamePerformanceTest.class.getName());
+  private static final Logger log = System.getLogger(GameServerPerformanceTest.class.getName());
 
   @Test
   public void testGameClientServerBotPerformanceInParallelWithPlatformThreads() throws Exception {
