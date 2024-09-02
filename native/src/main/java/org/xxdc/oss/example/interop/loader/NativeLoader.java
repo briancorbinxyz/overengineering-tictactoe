@@ -8,6 +8,8 @@ import java.nio.file.Files;
 
 public class NativeLoader {
 
+  public static String NATIVE_ROOT = "/native/";
+
   public static SymbolLookup loadLibrary(String libraryName, Arena arena) {
     try {
       var platformLibraryName = platformLibraryName(libraryName);
@@ -23,7 +25,7 @@ public class NativeLoader {
 
   private static SymbolLookup fromClassPathToTemp(String platformLibraryName, Arena arena)
       throws IOException {
-    var resourceLookupString = "/" + platformLibraryName;
+    var resourceLookupString = NATIVE_ROOT + platformLibraryName;
     var tempResourceFile = Files.createTempFile(platformLibraryName, ".tmp");
     try (var inputStream = NativeLoader.class.getResourceAsStream(resourceLookupString);
         OutputStream outputStream = Files.newOutputStream(tempResourceFile)) {

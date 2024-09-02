@@ -1,7 +1,6 @@
 package org.xxdc.oss.example;
 
 import static org.testng.Assert.assertNotNull;
-import static org.xxdc.oss.example.TestData.*;
 
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
@@ -102,5 +101,17 @@ public class GameBoardNativeImplTest {
             "GC'd " + idx / 100 + " times at " + idx + " iterations. GameBoard is " + gameBoard);
       }
     }
+  }
+
+  public static GameBoard createBoardWith(String[][] content) {
+    GameBoard board = GameBoard.withDimension(content.length);
+    for (int row = 0; row < content.length; row++) {
+      for (int col = 0; col < content[row].length; col++) {
+        if (content[row][col] != null && !content[row][col].equals("_")) {
+          board = board.withMove(content[row][col], row * content.length + col);
+        }
+      }
+    }
+    return board;
   }
 }
