@@ -72,3 +72,9 @@ The following algorithms are used by the AI BOT in this project - for a detailed
 ### Quick Start
 
 - To run the single game application, use the following command: `./gradlew run`
+
+---
+
+### Related
+
+- [Over-Engineering Tic-Tac-Toe - CLI](https://github.com/briancorbinxyz/overengineering-tictactoe-cli) Run overengineered tic-tac-toe from the command line
