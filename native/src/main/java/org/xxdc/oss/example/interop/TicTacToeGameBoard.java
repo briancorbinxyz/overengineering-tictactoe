@@ -318,7 +318,7 @@ class TicTacToeGameBoard implements GameBoard {
 
   @Override
   public String[] content() {
-    String [] contents = new String[dimension() * dimension()];
+    String[] contents = new String[dimension() * dimension()];
     for (int i = 0; i < contents.length; i++) {
       contents[i] = getPlayerMarkerAtIndex(i);
     }
