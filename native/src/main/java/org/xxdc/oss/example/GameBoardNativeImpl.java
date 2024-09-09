@@ -81,4 +81,9 @@ public class GameBoardNativeImpl implements GameBoard {
       return instance;
     }
   }
+
+  @Override
+  public String[] content() {
+    return board.content();
+  }
 }

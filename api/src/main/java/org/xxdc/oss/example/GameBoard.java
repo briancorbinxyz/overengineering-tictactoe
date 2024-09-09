@@ -143,4 +143,6 @@ public interface GameBoard extends JsonSerializable {
     }
     return gameBoard;
   }
+
+  String[] content();
 }
