@@ -73,6 +73,16 @@ The following algorithms are used by the AI BOT in this project - for a detailed
 
 - To run the single game application, use the following command: `./gradlew run`
 
+- If you don't have Java 23 installed on your system you can install it first with [SDKMAN](https://sdkman.io/):
+
+```bash
+curl -s "https://get.sdkman.io" | bash
+
+sdk install java 23-tem
+
+./gradlew run
+```
+
 ---
 
 ### Related
