@@ -32,7 +32,7 @@ fun Project.configureSpotless() {
     
     extensions.configure<SpotlessExtension> {
         java {
-            googleJavaFormat("1.23.0")
+            googleJavaFormat("1.25.2")
                 .reflowLongStrings()
             removeUnusedImports()
         }
@@ -62,12 +62,12 @@ testing {
 
 val projectVersion by extra("1.4.0")
 
-public val jdkVersion = 23
+public val jdkVersion = 24
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
-        vendor = JvmVendorSpec.ADOPTIUM
+        // vendor = JvmVendorSpec.ADOPTIUM
     }
 }
 version = "$projectVersion-jdk${jdkVersion}"

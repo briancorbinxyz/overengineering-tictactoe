@@ -68,7 +68,7 @@ publishing {
     }
 }
 
-tasks.withType<Test>().all {
+tasks.named<Test>("test") {
     // JDK22: Foreign Function Interface (FFI)
     // Resolves Warning:
     // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called

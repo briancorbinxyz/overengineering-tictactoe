@@ -149,7 +149,7 @@ public record GameState(
    * @return the last player's marker
    * @throws GameServiceException if there is no last move or the board is empty
    */
-  private String lastPlayer() {
+  public String lastPlayer() {
     if (lastMove < 0 || board.isEmpty()) {
       throw new GameServiceException("null last player");
     }

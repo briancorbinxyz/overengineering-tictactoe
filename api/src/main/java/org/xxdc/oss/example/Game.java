@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
+import java.util.SequencedCollection;
 import java.util.UUID;
 
 /**
@@ -77,6 +78,18 @@ public class Game implements Serializable, AutoCloseable {
   }
 
   /**
+   * Constructs a new {@link Game} instance with a 3x3 game board, persistence disabled, and a bot
+   * player as player 'X' and a bot player as player 'O'.
+   */
+  public static Game ofBots() {
+    return new Game(
+        3,
+        false,
+        new PlayerNode.Local<>("X", new BotPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer()));
+  }
+
+  /**
    * Plays the game, rendering the board, applying player moves, and persisting the game state if
    * enabled. The game continues until a winning player is found or there are no more moves
    * available, at which point the winner or tie is logged.
@@ -116,6 +129,45 @@ public class Game implements Serializable, AutoCloseable {
     }
   }
 
+  /**
+   * Returns the unique identifier for this game instance (Deprecated).
+   *
+   * @return the game ID
+   * @deprecated use {@link #id()} instead
+   */
+  public UUID getGameId() {
+    return gameId;
+  }
+
+  /**
+   * Returns the unique identifier for this game instance.
+   *
+   * @return the game ID
+   */
+  public UUID id() {
+    return gameId;
+  }
+
+  @Override
+  public void close() throws Exception {
+    playerNodes.close();
+  }
+
+  /**
+   * Returns the number of players in the game.
+   * @return the number of players
+   */
+  public int numberOfPlayers() {
+    return playerNodes.playerMarkerList().size();
+  }
+
+  /**
+   * Returns the history of the game, including all moves made.
+   */
+  public SequencedCollection<GameState> history() {
+    return gameState;
+  }
+
   private Optional<String> checkWon(GameState state) {
     return state.lastMove() > -1 && state.lastPlayerHasChain()
         ? Optional.of(state.playerMarkers().get(state.lastPlayerIndex()))
@@ -133,20 +185,6 @@ public class Game implements Serializable, AutoCloseable {
   private GameState pushGameState(GameState state) {
     gameState.add(state);
     return state;
-  }
-
-  /**
-   * Returns the unique identifier for this game instance.
-   *
-   * @return the game ID
-   */
-  public UUID getGameId() {
-    return gameId;
-  }
-
-  @Override
-  public void close() throws Exception {
-    playerNodes.close();
   }
 
   private void renderBoard() {

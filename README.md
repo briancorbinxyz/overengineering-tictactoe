@@ -11,6 +11,9 @@ Developed to pair with the ongoing blog post: [Road to JDK 25 - Over-Engineering
 
 ### Features
 
+https://openjdk.org/projects/jdk/24/
+- **JEP485**:   Stream Gatherers
+
 https://openjdk.org/projects/jdk/23/
 
 - **JEP467**:   Markdown Documentation Comments	
@@ -73,12 +76,12 @@ The following algorithms are used by the AI BOT in this project - for a detailed
 
 - To run the single game application, use the following command: `./gradlew run`
 
-- If you don't have Java 23 installed on your system you can install it first with [SDKMAN](https://sdkman.io/):
+- If you don't have Java 24 installed on your system you can install it first with [SDKMAN](https://sdkman.io/):
 
 ```bash
 curl -s "https://get.sdkman.io" | bash
 
-sdk install java 23-tem
+sdk install java 24-tem
 
 ./gradlew run
 ```
