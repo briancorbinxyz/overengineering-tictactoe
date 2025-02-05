@@ -155,15 +155,14 @@ public class Game implements Serializable, AutoCloseable {
 
   /**
    * Returns the number of players in the game.
+   *
    * @return the number of players
    */
   public int numberOfPlayers() {
     return playerNodes.playerMarkerList().size();
   }
 
-  /**
-   * Returns the history of the game, including all moves made.
-   */
+  /** Returns the history of the game, including all moves made. */
   public SequencedCollection<GameState> history() {
     return gameState;
   }
