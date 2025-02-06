@@ -97,5 +97,18 @@ tasks.named<Test>("test") {
     // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
     // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
+    // jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
+    
+    // JDK23: Preview Features (for JDK 24) Remove after JDK 24 is released
+    jvmArgs = listOf("--enable-preview", "--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
+}
+
+// JDK23: Preview Features (for JDK 24) Remove after JDK 24 is released
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.addAll(listOf("--enable-preview"))
+}
+
+// JDK23: Preview Features (for JDK 24) Remove after JDK 24 is released
+tasks.withType<JavaExec>().configureEach {
+    jvmArgs("--enable-preview")
 }

@@ -9,6 +9,7 @@ public record GameMetricWinningPath(
     int moveNumber,
     Set<List<Integer>> potentialWinningPaths,
     List<Integer> completedPath) {
+
   @Override
   public String toString() {
     return "Move %d: Player '%s' at %d has %d winning paths %s"
