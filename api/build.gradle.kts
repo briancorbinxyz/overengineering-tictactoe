@@ -99,16 +99,21 @@ tasks.named<Test>("test") {
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     // jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
     
-    // JDK23: Preview Features (for JDK 24) Remove after JDK 24 is released
+    // JDK23: Preview Features (for JDK 24) Disable after JDK 24 is released
     jvmArgs = listOf("--enable-preview", "--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
 }
 
-// JDK23: Preview Features (for JDK 24) Remove after JDK 24 is released
+// JDK23: TODO: Preview Features (for JDK 24) Disable after JDK 24 is released [START]
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.addAll(listOf("--enable-preview"))
 }
-
-// JDK23: Preview Features (for JDK 24) Remove after JDK 24 is released
 tasks.withType<JavaExec>().configureEach {
     jvmArgs("--enable-preview")
 }
+tasks.withType<Javadoc>() {
+    (options as StandardJavadocDocletOptions).apply {
+        addBooleanOption("-enable-preview", true)    
+        source = "23"
+    }
+}
+// JDK23: Preview Features (for JDK 24) Disable after JDK 24 is released [END]

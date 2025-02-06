@@ -135,6 +135,7 @@ public class Game implements Serializable, AutoCloseable {
    * @return the game ID
    * @deprecated use {@link #id()} instead
    */
+  @Deprecated(since = "1.5.0", forRemoval = true)
   public UUID getGameId() {
     return gameId;
   }
