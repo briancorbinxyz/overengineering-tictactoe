@@ -7,6 +7,7 @@ public class EsportsPostAnalysisConmmentaryPersona implements CommentaryPersona 
   @Override
   public String comment(StrategicTurningPoint turningPoint) {
     return switch (turningPoint) {
+        case StrategicTurningPoint.GameWon _ -> "With a well-timed %s move, %s takes the game!".formatted(withOrdinal(turningPoint.moveNumber()), turningPoint.playerMarker());
       case StrategicTurningPoint.CenterSquareControl _ ->
           "After the %s move %s seized the high ground - in textbook tic-tac-toe strategy by taking control of the critical center square."
               .formatted(withOrdinal(turningPoint.moveNumber()), turningPoint.playerMarker());

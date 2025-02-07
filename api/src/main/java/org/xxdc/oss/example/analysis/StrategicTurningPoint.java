@@ -37,8 +37,23 @@ public sealed interface StrategicTurningPoint {
     }
   }
 
+  /// A strategic turning point where the player has prevented an immediate loss.
+  /// @param playerMarker the player marker for the player who made the strategic move
+  /// @param gameState the game state at the strategic turning point
+  /// @param moveNumber the move number at the strategic turning point
   public record ImmediateLossPrevention(String playerMarker, GameState gameState, int moveNumber)
       implements StrategicTurningPoint {
+    @Override
+    public PriorityLevel priorityLevel() {
+      return PriorityLevel.HIGH;
+    }
+  }
+
+  /// A strategic turning point where the player has won the game.
+  /// @param playerMarker the player marker for the player who made the strategic move
+  /// @param gameState the game state at the strategic turning point
+  /// @param moveNumber the move number at the strategic turning point
+  public record GameWon(String playerMarker, GameState gameState, int moveNumber) implements StrategicTurningPoint {
     @Override
     public PriorityLevel priorityLevel() {
       return PriorityLevel.HIGH;
@@ -49,7 +64,7 @@ public sealed interface StrategicTurningPoint {
   /// @param prevGameState the game state before the strategic move
   /// @param gameState the game state after the strategic move
   /// @param moveNumber the move number at the strategic turning point
-  /// @return an optional strategic turning point
+  /// @return true if the strategic turning point is a center square control
   static boolean moveTakesCenterSquareControl(GameState prevGameState, GameState gameState) {
     // Only boards with odd dimensions can have a center square
     if (gameState.board().dimension() % 2 == 0) {
@@ -65,7 +80,7 @@ public sealed interface StrategicTurningPoint {
   /// @param prevGameState the game state before the strategic move
   /// @param gameState the game state after the strategic move
   /// @param moveNumber the move number at the strategic turning point
-  /// @return an optional strategic turning point
+  /// @return true if the player is about to lose, false otherwise
   static boolean movePreventedImmediateLoss(GameState prevGameState, GameState gameState) {
     String lastPlayer = gameState.lastPlayer();
     int lastMove = gameState.lastMove();
@@ -80,12 +95,23 @@ public sealed interface StrategicTurningPoint {
                     .board()
                     .withMove(opponent, lastMove)
                     .hasChain(
-                        opponent)); // TODO: this is not quite right if there were not enough moves
-    // left until this player's turn
+                        opponent));
+    // TODO: this is not quite right if there were not enough moves
+    // left until the opponent player's turn
+  }
+
+  /// Check for a strategic turning point where the player has won the game.
+  /// @param gameState the game state after the strategic move
+  /// return true if the player has won the game, false otherwise
+  static boolean moveWinsGame(GameState gameState) {
+    return gameState.lastPlayerHasChain();
   }
 
   static Optional<StrategicTurningPoint> from(
       GameState prevGameState, GameState gameState, int moveNumber) {
+    if (moveWinsGame(gameState)) {
+      return Optional.of(new GameWon(gameState.lastPlayer(), gameState, moveNumber));
+    }
     if (moveTakesCenterSquareControl(prevGameState, gameState)) {
       return Optional.of(new CenterSquareControl(gameState.lastPlayer(), gameState, moveNumber));
     }
