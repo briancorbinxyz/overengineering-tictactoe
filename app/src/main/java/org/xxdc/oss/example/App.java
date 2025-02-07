@@ -32,10 +32,7 @@ public class App {
   private void logLiveCommentary(Game game) {
     var commentary = new EsportsLiveCommentaryPersona();
     game.history().stream()
-        .skip(game.moveNumber() > 1
-          ? game.moveNumber() - 1
-          : 0
-        ) // latest moves only
+        .skip(game.moveNumber() > 1 ? game.moveNumber() - 1 : 0) // latest moves only
         .gather(strategicTurningPoints())
         .map(commentary::comment)
         .forEach(l -> log.log(Level.INFO, "\"{0}\"", l));

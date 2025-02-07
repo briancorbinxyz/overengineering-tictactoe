@@ -15,7 +15,8 @@ public class Analyzers {
         prevGameState = gameState;
         currMoveNumber =
             gameState.board().dimension() * gameState.board().dimension()
-                - gameState.availableMoves().size() + 1;
+                - gameState.availableMoves().size()
+                + 1;
         return true;
       } else {
         prevGameState = gameState;
