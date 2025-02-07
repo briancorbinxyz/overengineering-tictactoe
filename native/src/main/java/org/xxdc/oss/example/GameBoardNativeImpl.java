@@ -86,4 +86,9 @@ public class GameBoardNativeImpl implements GameBoard {
   public String[] content() {
     return board.content();
   }
+
+  @Override
+  public boolean hasPlayer(String playerMarker, int location) {
+    return board.hasPlayer(playerMarker, location);
+  }
 }

@@ -90,30 +90,34 @@ publishing {
     }
 }
 
-tasks.named<Test>("test") {
-    // JDK22: Foreign Function Interface (FFI)
-    // Resolves Warning:
-    // WARNING: A restricted method in java.lang.foreign.SymbolLookup has been called
-    // WARNING: java.lang.foreign.SymbolLookup::libraryLookup has been called by org.xxdc.oss.example.GameBoardNativeImpl in an unnamed module
-    // WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
-    // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    // jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
-    
-    // JDK23: Preview Features (for JDK 24) Disable after JDK 24 is released
-    jvmArgs = listOf("--enable-preview", "--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
-}
+// TODO: Disable preview features on the branch when the next JDK is released
+val enablePreviewFeatures = true
+val standardArgs = listOf(
+    "--enable-native-access=ALL-UNNAMED",
+    "-XX:+UseZGC"
+)
 
-// JDK23: TODO: Preview Features (for JDK 24) Disable after JDK 24 is released [START]
-tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.addAll(listOf("--enable-preview"))
-}
-tasks.withType<JavaExec>().configureEach {
-    jvmArgs("--enable-preview")
-}
-tasks.withType<Javadoc>() {
-    (options as StandardJavadocDocletOptions).apply {
-        addBooleanOption("-enable-preview", true)    
-        source = "23"
+tasks.named<Test>("test") {
+    jvmArgs = if (enablePreviewFeatures) {
+        listOf("--enable-preview") + standardArgs
+    } else {
+        standardArgs
     }
 }
-// JDK23: Preview Features (for JDK 24) Disable after JDK 24 is released [END]
+
+if (enablePreviewFeatures) {
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.addAll(listOf("--enable-preview"))
+    }
+    
+    tasks.withType<JavaExec>().configureEach {
+        jvmArgs("--enable-preview")
+    }
+    
+    tasks.withType<Javadoc>() {
+        (options as StandardJavadocDocletOptions).apply {
+            addBooleanOption("-enable-preview", true)    
+            source = "23"
+        }
+    }
+}

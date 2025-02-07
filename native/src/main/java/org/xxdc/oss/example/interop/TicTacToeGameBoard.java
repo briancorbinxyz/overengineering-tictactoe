@@ -12,6 +12,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.ref.Cleaner;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.xxdc.oss.example.GameBoard;
@@ -323,5 +324,12 @@ class TicTacToeGameBoard implements GameBoard {
       contents[i] = getPlayerMarkerAtIndex(i);
     }
     return contents;
+  }
+
+  @Override
+  public boolean hasPlayer(String playerMarker, int location) {
+    return Optional.ofNullable(getPlayerMarkerAtIndex(location))
+      .filter(playerMarker::equals)
+      .isPresent();
   }
 }
