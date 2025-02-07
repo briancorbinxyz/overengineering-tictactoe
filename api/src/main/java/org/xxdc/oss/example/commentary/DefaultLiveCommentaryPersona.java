@@ -10,8 +10,8 @@ public class DefaultLiveCommentaryPersona implements CommentaryPersona {
       case StrategicTurningPoint.CenterSquareControl _ ->
           "Player %s has control of the center square.".formatted(turningPoint.playerMarker());
       case StrategicTurningPoint.ImmediateLossPrevention _ ->
-          "Player %s has a made move that prevented an potential loss.".formatted(
-              turningPoint.playerMarker());
+          "Player %s has a made move that prevented an potential loss."
+              .formatted(turningPoint.playerMarker());
     };
   }
 }

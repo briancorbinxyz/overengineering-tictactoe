@@ -1,7 +1,6 @@
 package org.xxdc.oss.example.analysis;
 
 import java.util.Optional;
-
 import org.xxdc.oss.example.GameState;
 
 /// A strategic turning point in a game of Tic-Tac-Toe.
@@ -38,7 +37,8 @@ public sealed interface StrategicTurningPoint {
     }
   }
 
-  public record ImmediateLossPrevention(String playerMarker, GameState gameState, int moveNumber) implements StrategicTurningPoint {
+  public record ImmediateLossPrevention(String playerMarker, GameState gameState, int moveNumber)
+      implements StrategicTurningPoint {
     @Override
     public PriorityLevel priorityLevel() {
       return PriorityLevel.HIGH;
@@ -73,8 +73,15 @@ public sealed interface StrategicTurningPoint {
       return false;
     }
     return prevGameState.playerMarkers().stream()
-      .filter(player -> !player.equals(lastPlayer))
-      .anyMatch(opponent -> prevGameState.board().withMove(opponent, lastMove).hasChain(opponent)); // TODO: this is not quite right if there were not enough moves left until this player's turn
+        .filter(player -> !player.equals(lastPlayer))
+        .anyMatch(
+            opponent ->
+                prevGameState
+                    .board()
+                    .withMove(opponent, lastMove)
+                    .hasChain(
+                        opponent)); // TODO: this is not quite right if there were not enough moves
+    // left until this player's turn
   }
 
   static Optional<StrategicTurningPoint> from(
@@ -83,7 +90,8 @@ public sealed interface StrategicTurningPoint {
       return Optional.of(new CenterSquareControl(gameState.lastPlayer(), gameState, moveNumber));
     }
     if (movePreventedImmediateLoss(prevGameState, gameState)) {
-      return Optional.of(new ImmediateLossPrevention(gameState.lastPlayer(), gameState, moveNumber));
+      return Optional.of(
+          new ImmediateLossPrevention(gameState.lastPlayer(), gameState, moveNumber));
     }
     return Optional.empty();
   }

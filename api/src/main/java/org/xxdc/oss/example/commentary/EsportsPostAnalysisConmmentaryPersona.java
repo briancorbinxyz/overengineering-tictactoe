@@ -10,9 +10,9 @@ public class EsportsPostAnalysisConmmentaryPersona implements CommentaryPersona 
       case StrategicTurningPoint.CenterSquareControl _ ->
           "After the %s move %s seized the high ground - in textbook tic-tac-toe strategy by taking control of the critical center square."
               .formatted(withOrdinal(turningPoint.moveNumber()), turningPoint.playerMarker());
-    case StrategicTurningPoint.ImmediateLossPrevention _ ->
-    "With the %s move of the game %s made a critical defensive play that prevented an immediate loss. Clutch!".formatted(
-            withOrdinal(turningPoint.moveNumber()), turningPoint.playerMarker());
+      case StrategicTurningPoint.ImmediateLossPrevention _ ->
+          "With the %s move of the game %s made a critical defensive play that prevented an immediate loss. Clutch!"
+              .formatted(withOrdinal(turningPoint.moveNumber()), turningPoint.playerMarker());
     };
   }
 
