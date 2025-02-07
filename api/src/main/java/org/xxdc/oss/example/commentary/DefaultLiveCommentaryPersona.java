@@ -7,7 +7,8 @@ public class DefaultLiveCommentaryPersona implements CommentaryPersona {
   @Override
   public String comment(StrategicTurningPoint turningPoint) {
     return switch (turningPoint) {
-    case StrategicTurningPoint.GameWon _ -> "Player %s has won the game!".formatted(turningPoint.playerMarker());
+      case StrategicTurningPoint.GameWon _ ->
+          "Player %s has won the game!".formatted(turningPoint.playerMarker());
       case StrategicTurningPoint.CenterSquareControl _ ->
           "Player %s has control of the center square.".formatted(turningPoint.playerMarker());
       case StrategicTurningPoint.ImmediateLossPrevention _ ->

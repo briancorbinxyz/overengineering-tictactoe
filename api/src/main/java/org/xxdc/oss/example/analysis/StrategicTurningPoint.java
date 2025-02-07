@@ -53,7 +53,8 @@ public sealed interface StrategicTurningPoint {
   /// @param playerMarker the player marker for the player who made the strategic move
   /// @param gameState the game state at the strategic turning point
   /// @param moveNumber the move number at the strategic turning point
-  public record GameWon(String playerMarker, GameState gameState, int moveNumber) implements StrategicTurningPoint {
+  public record GameWon(String playerMarker, GameState gameState, int moveNumber)
+      implements StrategicTurningPoint {
     @Override
     public PriorityLevel priorityLevel() {
       return PriorityLevel.HIGH;
@@ -90,12 +91,7 @@ public sealed interface StrategicTurningPoint {
     return prevGameState.playerMarkers().stream()
         .filter(player -> !player.equals(lastPlayer))
         .anyMatch(
-            opponent ->
-                prevGameState
-                    .board()
-                    .withMove(opponent, lastMove)
-                    .hasChain(
-                        opponent));
+            opponent -> prevGameState.board().withMove(opponent, lastMove).hasChain(opponent));
     // TODO: this is not quite right if there were not enough moves
     // left until the opponent player's turn
   }
