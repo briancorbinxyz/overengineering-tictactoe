@@ -8,18 +8,18 @@ public class Analyzers {
 
   static class GathererState {
     private GameState prevGameState;
-    private int moveCounter;
+    private int currMoveNumber;
 
     public boolean add(GameState gameState) {
       if (prevGameState == null) {
         prevGameState = gameState;
-        moveCounter =
+        currMoveNumber =
             gameState.board().dimension() * gameState.board().dimension()
-                - gameState.availableMoves().size();
-        return false;
+                - gameState.availableMoves().size() + 1;
+        return true;
       } else {
         prevGameState = gameState;
-        moveCounter++;
+        currMoveNumber++;
         return true;
       }
     }
@@ -31,14 +31,13 @@ public class Analyzers {
         GathererState::new,
         // Integrator<State, Upstream, Downstream>: discover and emit strategic turning points
         Integrator.<GathererState, GameState, StrategicTurningPoint>of(
-            (state, gameState, downstream) -> {
+            (state, currGameState, downstream) -> {
               if (state.prevGameState != null) {
-                StrategicTurningPoint.from(state.prevGameState, gameState, state.moveCounter)
+                StrategicTurningPoint.from(state.prevGameState, currGameState, state.currMoveNumber)
                     .ifPresent(downstream::push);
               }
 
-              state.add(gameState);
-              return true;
+              return state.add(currGameState);
             }));
   }
 }

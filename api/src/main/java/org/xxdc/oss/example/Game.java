@@ -11,6 +11,7 @@ import java.util.Deque;
 import java.util.Optional;
 import java.util.SequencedCollection;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Represents a game of Tic-Tac-Toe, including the game board, players, and game state. The game can
@@ -95,6 +96,17 @@ public class Game implements Serializable, AutoCloseable {
    * available, at which point the winner or tie is logged.
    */
   public void play() {
+    playWithAction(null);
+  }
+
+  /**
+   * Plays the game, rendering the board, applying player moves, and persisting the game state if
+   * enabled. The game continues until a winning player is found or there are no more moves
+   * available, at which point the winner or tie is logged.
+   *
+   * @param postMoveAction The action to perform after a move is made (if any)
+   */
+  public void playWithAction(Consumer<Game> postMoveAction) {
     try {
       GamePersistence persistence = new GamePersistence();
       File persistenceDir = gameFileDirectory();
@@ -117,6 +129,9 @@ public class Game implements Serializable, AutoCloseable {
         winningPlayer = checkWon(state);
         movesAvailable = state.hasMovesAvailable();
         currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
+        if (postMoveAction != null) {
+          postMoveAction.accept(this);
+        }
       }
 
       winningPlayer.ifPresentOrElse(
@@ -166,6 +181,10 @@ public class Game implements Serializable, AutoCloseable {
   /** Returns the history of the game, including all moves made. */
   public SequencedCollection<GameState> history() {
     return gameState;
+  }
+
+  public int moveNumber() {
+    return moveNumber;
   }
 
   private Optional<String> checkWon(GameState state) {

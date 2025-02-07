@@ -1,7 +1,6 @@
 package org.xxdc.oss.example.analysis;
 
 import java.util.Optional;
-
 import org.xxdc.oss.example.GameState;
 
 /// A strategic turning point in a game of Tic-Tac-Toe.
@@ -26,34 +25,39 @@ public sealed interface StrategicTurningPoint {
   PriorityLevel priorityLevel();
 
   /// A strategic turning point where the player has control of the center square.
-  /// 
+  ///
   /// @param playerMarker the player marker for the player who made the strategic move
   /// @param gameState the game state at the strategic turning point
   /// @param moveNumber the move number at the strategic turning point
   public record CenterSquareControl(String playerMarker, GameState gameState, int moveNumber)
-      implements StrategicTurningPoint { 
+      implements StrategicTurningPoint {
     @Override
     public PriorityLevel priorityLevel() {
       return PriorityLevel.MEDIUM;
     }
   }
 
+  /// Check for a strategic turning point where the player has control of the center square.
+  /// @param prevGameState the game state before the strategic move
+  /// @param gameState the game state after the strategic move
+  /// @param moveNumber the move number at the strategic turning point
+  /// @return an optional strategic turning point
   static boolean moveTakesCenterSquareControl(GameState prevGameState, GameState gameState) {
-    if (gameState.board().dimension() % 2 == 0) { // Only odd dimensions can have a center square
+    // Only boards with odd dimensions can have a center square
+    if (gameState.board().dimension() % 2 == 0) {
       return false;
     }
     int dimension = gameState.board().dimension();
     int centerLocation = dimension * (dimension / 2) + (dimension / 2);
     return prevGameState.board().isValidMove(centerLocation)
-      && !gameState.board().isValidMove(centerLocation);
+        && !gameState.board().isValidMove(centerLocation);
   }
 
   static Optional<StrategicTurningPoint> from(
       GameState prevGameState, GameState gameState, int moveNumber) {
-        if (moveTakesCenterSquareControl(prevGameState, gameState)) {
-          return Optional.of(new CenterSquareControl(gameState.lastPlayer(), gameState, moveNumber));
-        }
-        return Optional.empty();
+    if (moveTakesCenterSquareControl(prevGameState, gameState)) {
+      return Optional.of(new CenterSquareControl(gameState.lastPlayer(), gameState, moveNumber));
+    }
+    return Optional.empty();
   }
-  
 }

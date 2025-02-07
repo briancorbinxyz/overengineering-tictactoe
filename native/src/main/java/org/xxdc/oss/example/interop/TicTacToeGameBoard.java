@@ -329,7 +329,7 @@ class TicTacToeGameBoard implements GameBoard {
   @Override
   public boolean hasPlayer(String playerMarker, int location) {
     return Optional.ofNullable(getPlayerMarkerAtIndex(location))
-      .filter(playerMarker::equals)
-      .isPresent();
+        .filter(playerMarker::equals)
+        .isPresent();
   }
 }

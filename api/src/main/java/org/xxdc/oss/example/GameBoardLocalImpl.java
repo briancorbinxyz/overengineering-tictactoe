@@ -147,9 +147,9 @@ public record GameBoardLocalImpl(int dimension, String[] content)
   @Override
   public boolean hasPlayer(String playerMarker, int location) {
     return location >= 0
-      && location < content.length
-      && content[location] != null
-      && content[location].equals(playerMarker);
+        && location < content.length
+        && content[location] != null
+        && content[location].equals(playerMarker);
   }
 
   private String[] getBoardCopy() {
@@ -157,5 +157,4 @@ public record GameBoardLocalImpl(int dimension, String[] content)
     System.arraycopy(content, 0, boardCopy, 0, boardCopy.length);
     return boardCopy;
   }
-
 }

@@ -46,6 +46,46 @@ public class GameBoardTest {
     assertEquals(gameBoard.availableMoves().size(), 0);
   }
 
+  @Test
+  public void testCanCorrectlyIdentifyOccupiedSquares() {
+    var gameBoard =
+        createBoardWith(
+            new String[][] {
+              {"X", "O", "X"},
+              {"O", "X", "O"},
+              {"X", "O", "X"}
+            });
+    assertTrue(gameBoard.hasPlayer("X", 0));
+    assertTrue(gameBoard.hasPlayer("O", 1));
+    assertTrue(gameBoard.hasPlayer("X", 2));
+    assertTrue(gameBoard.hasPlayer("O", 3));
+    assertTrue(gameBoard.hasPlayer("X", 4));
+    assertTrue(gameBoard.hasPlayer("O", 5));
+    assertTrue(gameBoard.hasPlayer("X", 6));
+    assertTrue(gameBoard.hasPlayer("O", 7));
+    assertTrue(gameBoard.hasPlayer("X", 8));
+  }
+
+  @Test
+  public void doesNotIncorrectlyIdentifyOccupiedSquares() {
+    var gameBoard =
+        createBoardWith(
+            new String[][] {
+              {"_", "O", "X"},
+              {"O", "X", "O"},
+              {"X", "O", "X"}
+            });
+    assertFalse(gameBoard.hasPlayer("X", 0));
+    assertFalse(gameBoard.hasPlayer("X", 1));
+    assertFalse(gameBoard.hasPlayer("O", 2));
+    assertFalse(gameBoard.hasPlayer("X", 3));
+    assertFalse(gameBoard.hasPlayer("O", 4));
+    assertFalse(gameBoard.hasPlayer("X", 5));
+    assertFalse(gameBoard.hasPlayer("O", 6));
+    assertFalse(gameBoard.hasPlayer("X", 7));
+    assertFalse(gameBoard.hasPlayer("O", 8));
+  }
+
   // _ X O
   // O X O
   // X O X

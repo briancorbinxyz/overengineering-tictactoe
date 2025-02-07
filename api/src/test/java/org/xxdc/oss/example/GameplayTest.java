@@ -12,7 +12,6 @@ public class GameplayTest {
 
   @Test
   public void test_game_with_two_bot_players() {
-    var gameOld = new Game(3, false, newBotPlayer("X"), newBotPlayer("O"));
     var game =
         new Game(
             3,
