@@ -1,6 +1,7 @@
 package org.xxdc.oss.example.analysis;
 
 import java.util.Optional;
+
 import org.xxdc.oss.example.GameState;
 
 /// A strategic turning point in a game of Tic-Tac-Toe.
@@ -37,6 +38,13 @@ public sealed interface StrategicTurningPoint {
     }
   }
 
+  public record ImmediateLossPrevention(String playerMarker, GameState gameState, int moveNumber) implements StrategicTurningPoint {
+    @Override
+    public PriorityLevel priorityLevel() {
+      return PriorityLevel.HIGH;
+    }
+  }
+
   /// Check for a strategic turning point where the player has control of the center square.
   /// @param prevGameState the game state before the strategic move
   /// @param gameState the game state after the strategic move
@@ -53,10 +61,29 @@ public sealed interface StrategicTurningPoint {
         && !gameState.board().isValidMove(centerLocation);
   }
 
+  /// Check for a strategic turning point where the player is about to lose.
+  /// @param prevGameState the game state before the strategic move
+  /// @param gameState the game state after the strategic move
+  /// @param moveNumber the move number at the strategic turning point
+  /// @return an optional strategic turning point
+  static boolean movePreventedImmediateLoss(GameState prevGameState, GameState gameState) {
+    String lastPlayer = gameState.lastPlayer();
+    int lastMove = gameState.lastMove();
+    if (gameState.availableMoves().isEmpty()) { // Game is over
+      return false;
+    }
+    return prevGameState.playerMarkers().stream()
+      .filter(player -> !player.equals(lastPlayer))
+      .anyMatch(opponent -> prevGameState.board().withMove(opponent, lastMove).hasChain(opponent)); // TODO: this is not quite right if there were not enough moves left until this player's turn
+  }
+
   static Optional<StrategicTurningPoint> from(
       GameState prevGameState, GameState gameState, int moveNumber) {
     if (moveTakesCenterSquareControl(prevGameState, gameState)) {
       return Optional.of(new CenterSquareControl(gameState.lastPlayer(), gameState, moveNumber));
+    }
+    if (movePreventedImmediateLoss(prevGameState, gameState)) {
+      return Optional.of(new ImmediateLossPrevention(gameState.lastPlayer(), gameState, moveNumber));
     }
     return Optional.empty();
   }

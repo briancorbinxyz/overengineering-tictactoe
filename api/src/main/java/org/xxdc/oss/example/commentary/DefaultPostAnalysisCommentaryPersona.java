@@ -10,6 +10,9 @@ public class DefaultPostAnalysisCommentaryPersona implements CommentaryPersona {
       case StrategicTurningPoint.CenterSquareControl _ ->
           "Player %s took control of the center square after move %s."
               .formatted(turningPoint.playerMarker(), turningPoint.moveNumber());
+      case StrategicTurningPoint.ImmediateLossPrevention _ ->
+            "Player %s made a move that prevented an immediate loss.".formatted(
+              turningPoint.playerMarker());
     };
   }
 }
