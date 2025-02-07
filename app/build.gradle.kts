@@ -125,3 +125,40 @@ tasks.register("installGitHook") {
 tasks.named("build") {
     dependsOn("installGitHook")
 }
+
+// TODO: Disable preview features on the branch when the next JDK is released
+val enablePreviewFeatures = true
+val standardArgs = listOf(
+    "--enable-native-access=ALL-UNNAMED",
+    "-XX:+UseZGC"
+)
+
+tasks.named<Test>("test") {
+    jvmArgs = if (enablePreviewFeatures) {
+        listOf("--enable-preview") + standardArgs
+    } else {
+        standardArgs
+    }
+}
+
+if (enablePreviewFeatures) {
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.addAll(listOf("--enable-preview"))
+    }
+    
+    tasks.withType<JavaExec>().configureEach {
+        jvmArgs("--enable-preview")
+    }
+    
+    tasks.withType<Javadoc>() {
+        (options as StandardJavadocDocletOptions).apply {
+            addBooleanOption("-enable-preview", true)    
+            source = "23"
+        }
+    }
+
+    application {
+        applicationDefaultJvmArgs = listOf("--enable-preview")
+    }
+
+}

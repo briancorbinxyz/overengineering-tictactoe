@@ -97,6 +97,7 @@
             "name": "App",
             "request": "launch",
             "mainClass": "org.xxdc.oss.example.App",
+            "vmArgs": "-XX:+UseZGC --enable-preview",
             "projectName": "app",
         },
         {

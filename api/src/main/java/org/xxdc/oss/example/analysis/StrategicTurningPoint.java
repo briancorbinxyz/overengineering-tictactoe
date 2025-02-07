@@ -25,7 +25,6 @@ public sealed interface StrategicTurningPoint {
   PriorityLevel priorityLevel();
 
   /// A strategic turning point where the player has control of the center square.
-  ///
   /// @param playerMarker the player marker for the player who made the strategic move
   /// @param gameState the game state at the strategic turning point
   /// @param moveNumber the move number at the strategic turning point
@@ -64,7 +63,6 @@ public sealed interface StrategicTurningPoint {
   /// Check for a strategic turning point where the player has control of the center square.
   /// @param prevGameState the game state before the strategic move
   /// @param gameState the game state after the strategic move
-  /// @param moveNumber the move number at the strategic turning point
   /// @return true if the strategic turning point is a center square control
   static boolean moveTakesCenterSquareControl(GameState prevGameState, GameState gameState) {
     // Only boards with odd dimensions can have a center square
@@ -80,7 +78,6 @@ public sealed interface StrategicTurningPoint {
   /// Check for a strategic turning point where the player is about to lose.
   /// @param prevGameState the game state before the strategic move
   /// @param gameState the game state after the strategic move
-  /// @param moveNumber the move number at the strategic turning point
   /// @return true if the player is about to lose, false otherwise
   static boolean movePreventedImmediateLoss(GameState prevGameState, GameState gameState) {
     String lastPlayer = gameState.lastPlayer();
