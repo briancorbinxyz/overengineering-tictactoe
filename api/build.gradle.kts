@@ -24,7 +24,6 @@ dependencies {
     testRuntimeOnly("org.slf4j:slf4j-api:2.0.13")
     testRuntimeOnly("org.slf4j:slf4j-jdk-platform-logging:2.0.13")
 
-
     // JDK23: JMH (Third-Party) Not required, added for benchmarking
     // https://github.com/openjdk/jmh
     testImplementation("org.openjdk.jmh:jmh-core:1.37")
@@ -92,10 +91,13 @@ publishing {
 
 // TODO: Disable preview features on the branch when the next JDK is released
 val enablePreviewFeatures = true
-val standardArgs = listOf(
-    "--enable-native-access=ALL-UNNAMED",
+
+val collectorArgs = listOf(
     "-XX:+UseZGC"
 )
+val standardArgs = listOf(
+    "--enable-native-access=ALL-UNNAMED",
+) + collectorArgs
 
 tasks.named<Test>("test") {
     jvmArgs = if (enablePreviewFeatures) {
@@ -117,7 +119,7 @@ if (enablePreviewFeatures) {
     tasks.withType<Javadoc>() {
         (options as StandardJavadocDocletOptions).apply {
             addBooleanOption("-enable-preview", true)    
-            source = "23"
+            source = "24" 
         }
     }
 }

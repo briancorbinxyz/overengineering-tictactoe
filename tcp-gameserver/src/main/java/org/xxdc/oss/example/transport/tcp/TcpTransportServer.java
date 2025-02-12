@@ -7,12 +7,7 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.Socket;
 import org.xxdc.oss.example.GameState;
-import org.xxdc.oss.example.transport.DuplexMessageHandler;
-import org.xxdc.oss.example.transport.MessageHandler;
-import org.xxdc.oss.example.transport.SecureDuplexMessageHandler;
-import org.xxdc.oss.example.transport.TransportConfiguration;
-import org.xxdc.oss.example.transport.TransportException;
-import org.xxdc.oss.example.transport.TransportServer;
+import org.xxdc.oss.example.transport.*;
 
 /** A {@link TransportServer} implementation that uses TCP sockets. */
 /**
@@ -30,8 +25,8 @@ public class TcpTransportServer implements TransportServer {
 
   /**
    * Constructs a new {@link TcpTransportServer} instance with the provided {@link Socket}. This
-   * constructor initializes the {@link SecureDuplexMessageHandler.Server} with a {@link
-   * DuplexMessageHandler} that uses the input and output streams of the provided socket.
+   * constructor initializes the {@link SecureKyberServer} with a {@link DuplexMessageHandler} that
+   * uses the input and output streams of the provided socket.
    *
    * @param socket the {@link Socket} to use for the transport server
    * @throws TransportException if an {@link IOException} occurs while initializing the message
@@ -41,7 +36,7 @@ public class TcpTransportServer implements TransportServer {
     this.socket = socket;
     try {
       this.handler =
-          new SecureDuplexMessageHandler.Server(
+          new SecureKyberServer(
               new DuplexMessageHandler(
                   new ObjectOutputStream(socket.getOutputStream()),
                   new ObjectInputStream(socket.getInputStream())));

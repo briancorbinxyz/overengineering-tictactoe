@@ -32,6 +32,16 @@ fun Project.configureSpotless() {
     
     extensions.configure<SpotlessExtension> {
         java {
+            // TODO: Remove once googleJavaFormat understands modern switch expressions
+            // Step 'google-java-format' found problem in 'src/main/java/org/xxdc/oss/example/GamePersistence.java':
+            // 77:27: error: : or -> expected
+            // com.google.googlejavaformat.java.FormatterException: 77:27: error: : or -> expected
+            targetExclude(
+                "**/GamePersistence.java",
+                "**/GameClient.java",
+                "**/**Persona.java",
+                "**/PlayerPrinter.java",
+            )
             googleJavaFormat("1.25.2")
                 .reflowLongStrings()
             removeUnusedImports()
@@ -62,7 +72,7 @@ testing {
 
 val projectVersion by extra("1.4.0")
 
-public val jdkVersion = 23
+public val jdkVersion = 24
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {

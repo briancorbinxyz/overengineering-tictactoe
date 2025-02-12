@@ -80,7 +80,7 @@ public sealed interface StrategicTurningPoint {
   /// @param gameState the game state after the strategic move
   /// @return true if the player is about to lose, false otherwise
   static boolean movePreventedImmediateLoss(GameState prevGameState, GameState gameState) {
-    String lastPlayer = gameState.lastPlayer();
+    var lastPlayer = gameState.lastPlayer();
     int lastMove = gameState.lastMove();
     if (gameState.availableMoves().isEmpty()) { // Game is over
       return false;
