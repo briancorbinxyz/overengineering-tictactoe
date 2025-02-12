@@ -1,9 +1,5 @@
 package org.xxdc.oss.example.transport;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
-import org.xxdc.oss.example.security.KyberKEMProvider;
-
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.security.*;
@@ -20,7 +16,6 @@ public final class SecureModuleLatticeClient extends SecureDuplexMessageHandler 
 
   private static final System.Logger log =
       System.getLogger(MethodHandles.lookup().lookupClass().getName());
-
 
   /**
    * Constructs a new `SecureClientMessageHandler` instance with the given `RemoteMessageHandler`.
