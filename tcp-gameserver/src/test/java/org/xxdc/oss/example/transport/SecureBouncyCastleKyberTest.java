@@ -1,11 +1,11 @@
 package org.xxdc.oss.example.transport;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 import java.io.*;
 import org.testng.annotations.Test;
 
-public class SecureKyberTest {
+public class SecureBouncyCastleKyberTest {
 
   @Test
   public void test_secure_key_exchange() throws IOException {
@@ -21,7 +21,7 @@ public class SecureKyberTest {
             () -> {
               try {
                 var server =
-                    new SecureKyberServer(
+                    new SecureBouncyCastleKyberServer(
                         new DuplexMessageHandler(
                             new ObjectOutputStream(serverOut), new ObjectInputStream(serverIn)));
                 server.init();
@@ -34,7 +34,7 @@ public class SecureKyberTest {
         .start();
 
     var client =
-        new SecureKyberClient(
+        new SecureBouncyCastleKyberClient(
             new DuplexMessageHandler(
                 new ObjectOutputStream(clientOut), new ObjectInputStream(clientIn)));
 

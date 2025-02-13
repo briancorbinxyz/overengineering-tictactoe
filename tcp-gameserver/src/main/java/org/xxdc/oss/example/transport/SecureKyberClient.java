@@ -5,27 +5,17 @@ import java.lang.invoke.MethodHandles;
 import java.security.*;
 import javax.crypto.KEM;
 import javax.crypto.SecretKey;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
-import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
-import org.xxdc.oss.example.security.KyberKEMProvider;
 
 /**
  * Represents a secure message handler for the client side of a secure communication channel. This
  * class extends the `SecureMessageHandler` class and is responsible for initializing the secure
  * channel, exchanging the shared secret key with the server, and providing methods for sending and
- * receiving encrypted messages. Uses non-JDK Kyber for PQC.
+ * receiving encrypted messages. Uses ML-KEM (Kyber) for PQC.
  */
 public final class SecureKyberClient extends SecureDuplexMessageHandler {
 
   private static final System.Logger log =
       System.getLogger(MethodHandles.lookup().lookupClass().getName());
-
-  private void registerSecurityProviders() {
-    Security.addProvider(new BouncyCastleProvider());
-    Security.addProvider(new BouncyCastlePQCProvider());
-    Security.addProvider(new KyberKEMProvider());
-  }
 
   /**
    * Constructs a new `SecureClientMessageHandler` instance with the given `RemoteMessageHandler`.
@@ -34,7 +24,6 @@ public final class SecureKyberClient extends SecureDuplexMessageHandler {
    */
   public SecureKyberClient(DuplexMessageHandler handler) {
     super(handler);
-    registerSecurityProviders();
   }
 
   /**
@@ -88,13 +77,11 @@ public final class SecureKyberClient extends SecureDuplexMessageHandler {
           IOException,
           InvalidAlgorithmParameterException,
           InvalidKeyException {
-    var kem = KEM.getInstance("Kyber", "BCPQC.KEM");
+    var kem = KEM.getInstance("ML-KEM-1024");
     var publicKey = retrieveKey();
-    var paramSpec = KyberParameterSpec.kyber1024;
-    var encapsulator = kem.newEncapsulator(publicKey, paramSpec, null);
+    var encapsulator = kem.newEncapsulator(publicKey);
     var encapsulated = encapsulator.encapsulate();
     handler.sendBytes(encapsulated.encapsulation());
-    handler.sendBytes(encapsulated.params());
     return encapsulated.key();
   }
 

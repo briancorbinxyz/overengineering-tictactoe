@@ -4,21 +4,30 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.security.*;
 import java.security.spec.InvalidParameterSpecException;
-import java.security.spec.NamedParameterSpec;
 import javax.crypto.DecapsulateException;
 import javax.crypto.KEM;
 import javax.crypto.SecretKey;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
+import org.bouncycastle.pqc.jcajce.spec.KyberParameterSpec;
+import org.xxdc.oss.example.security.KyberKEMProvider;
 
 /**
  * Represents a secure message handler for the server side of a secure communication channel. This
  * class extends the `SecureMessageHandler` class and is responsible for initializing the secure
  * channel, exchanging the shared secret key with the client, and providing methods for sending and
- * receiving encrypted messages uses ML-KEM for PQC.
+ * receiving encrypted messages uses non-JDK Kyber for PQC.
  */
-public final class SecureModuleLatticeServer extends SecureDuplexMessageHandler {
+public final class SecureBouncyCastleKyberServer extends SecureDuplexMessageHandler {
 
   private static final System.Logger log =
       System.getLogger(MethodHandles.lookup().lookupClass().getName());
+
+  private void registerSecurityProviders() {
+    Security.addProvider(new BouncyCastleProvider());
+    Security.addProvider(new BouncyCastlePQCProvider());
+    Security.addProvider(new KyberKEMProvider());
+  }
 
   /**
    * Constructs a new `SecureServerMessageHandler` instance with the given `RemoteMessageHandler`.
@@ -26,8 +35,9 @@ public final class SecureModuleLatticeServer extends SecureDuplexMessageHandler 
    * @param remoteMessageHandler the `RemoteMessageHandler` to use for sending and receiving
    *     messages
    */
-  public SecureModuleLatticeServer(DuplexMessageHandler remoteMessageHandler) {
+  public SecureBouncyCastleKyberServer(DuplexMessageHandler remoteMessageHandler) {
     super(remoteMessageHandler);
+    registerSecurityProviders();
   }
 
   /**
@@ -63,7 +73,7 @@ public final class SecureModuleLatticeServer extends SecureDuplexMessageHandler 
   }
 
   /**
-   * Exchanges the shared secret key with the client using the ML-KEM key encapsulation mechanism
+   * Exchanges the shared secret key with the client using the Kyber key encapsulation mechanism
    * (KEM).
    *
    * @return the shared secret key
@@ -88,23 +98,23 @@ public final class SecureModuleLatticeServer extends SecureDuplexMessageHandler 
     // Receiver side
     var encapsulated = handler.receiveBytes();
     var encapsulatedParams = handler.receiveBytes();
-    var kem = KEM.getInstance("ML-KEM-1024");
-    var params = AlgorithmParameters.getInstance("ML-KEM");
+    var kem = KEM.getInstance("Kyber", "BCPQC.KEM");
+    var params = AlgorithmParameters.getInstance("Kyber");
     params.init(encapsulatedParams);
-    var paramSpec = params.getParameterSpec(NamedParameterSpec.class);
+    var paramSpec = params.getParameterSpec(KyberParameterSpec.class);
     var decapsulator = kem.newDecapsulator(keyPair.getPrivate(), paramSpec);
     return decapsulator.decapsulate(encapsulated);
   }
 
   /**
-   * Generates a new ML-KEM key pair and publishes the public key to the client.
+   * Generates a new Kyber key pair and publishes the public key to the client.
    *
    * @return the generated key pair
    * @throws NoSuchAlgorithmException if the specified algorithm is not available
    * @throws IOException if there is an error during the key publication process
    */
   private KeyPair generateKeyPair() throws NoSuchAlgorithmException, IOException {
-    var keyPairGen = KeyPairGenerator.getInstance("ML-KEM-1024");
+    var keyPairGen = KeyPairGenerator.getInstance("Kyber");
     return keyPairGen.generateKeyPair();
   }
 

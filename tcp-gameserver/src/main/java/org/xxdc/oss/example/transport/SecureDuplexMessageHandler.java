@@ -14,7 +14,8 @@ import javax.crypto.DecapsulateException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public abstract class SecureDuplexMessageHandler implements MessageHandler {
 
@@ -74,12 +75,13 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
     checkInitialized();
     try {
       var cipher = newCipherInstance();
-      var iv = new byte[16];
+      var iv = new byte[12];
       var random = new SecureRandom();
       random.nextBytes(iv);
-      var ivSpec = new IvParameterSpec(iv);
-
-      cipher.init(Cipher.ENCRYPT_MODE, sharedKey, ivSpec);
+      var ivSpec = new GCMParameterSpec(128, iv);
+      // Derive AES key (use only first 16 or 32 bytes for AES-128/AES-256)
+      var aesKey = new SecretKeySpec(sharedKey.getEncoded(), 0, 32, "AES");
+      cipher.init(Cipher.ENCRYPT_MODE, aesKey, ivSpec);
       var ciphertext = cipher.doFinal(message.getBytes());
       var ivAndCiphertext = new byte[iv.length + ciphertext.length];
       System.arraycopy(iv, 0, ivAndCiphertext, 0, iv.length);
@@ -116,9 +118,9 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
     checkInitialized();
     try {
       var ivAndCiphertext = handler.receiveBytes();
-      var iv = new byte[16];
+      var iv = new byte[12];
       System.arraycopy(ivAndCiphertext, 0, iv, 0, iv.length);
-      IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+      var ivParameterSpec = new GCMParameterSpec(128, iv);
 
       // Extract encrypted part
       var ciphertextSize = ivAndCiphertext.length - iv.length;
@@ -126,7 +128,8 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
       System.arraycopy(ivAndCiphertext, iv.length, ciphertext, 0, ciphertextSize);
 
       var cipher = newCipherInstance();
-      cipher.init(Cipher.DECRYPT_MODE, sharedKey, ivParameterSpec);
+      var aesKey = new SecretKeySpec(sharedKey.getEncoded(), 0, 32, "AES");
+      cipher.init(Cipher.DECRYPT_MODE, aesKey, ivParameterSpec);
       var decryptedText = cipher.doFinal(ciphertext);
       return new String(decryptedText);
     } catch (NoSuchAlgorithmException
@@ -148,7 +151,7 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
 
   private Cipher newCipherInstance()
       throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException {
-    return Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
+    return Cipher.getInstance("AES/GCM/NoPadding");
   }
 
   private void checkInitialized() {

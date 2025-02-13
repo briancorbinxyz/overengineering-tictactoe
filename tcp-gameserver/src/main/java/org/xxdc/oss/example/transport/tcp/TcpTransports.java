@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import org.xxdc.oss.example.Player;
 import org.xxdc.oss.example.transport.DuplexMessageHandler;
-import org.xxdc.oss.example.transport.SecureKyberClient;
+import org.xxdc.oss.example.transport.SecureBouncyCastleKyberClient;
 
 /** A utility class for creating transport clients and servers. */
 public class TcpTransports {
@@ -25,7 +25,7 @@ public class TcpTransports {
   public static <P extends Player> TcpTransportClient<P> newTcpTransportClient(
       P player, Socket socket) throws IOException {
     return new TcpTransportClient<P>(
-        new SecureKyberClient(
+        new SecureBouncyCastleKyberClient(
             new DuplexMessageHandler(
                 new ObjectOutputStream(socket.getOutputStream()),
                 new ObjectInputStream(socket.getInputStream()))),

@@ -25,8 +25,8 @@ public class TcpTransportServer implements TransportServer {
 
   /**
    * Constructs a new {@link TcpTransportServer} instance with the provided {@link Socket}. This
-   * constructor initializes the {@link SecureKyberServer} with a {@link DuplexMessageHandler} that
-   * uses the input and output streams of the provided socket.
+   * constructor initializes the {@link SecureBouncyCastleKyberServer} with a {@link
+   * DuplexMessageHandler} that uses the input and output streams of the provided socket.
    *
    * @param socket the {@link Socket} to use for the transport server
    * @throws TransportException if an {@link IOException} occurs while initializing the message
