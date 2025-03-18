@@ -14,6 +14,7 @@ Developed to pair with the ongoing blog post: [Road to JDK 25 - Over-Engineering
 https://openjdk.org/projects/jdk/24/
 - **JEP485**:   Stream Gatherers
 - **JEP496**:   Quantum-Resistant Module-Lattice-Based Key Encapsulation Mechanism
+- **JEP484**:   Class-File API
 
 https://openjdk.org/projects/jdk/23/
 
