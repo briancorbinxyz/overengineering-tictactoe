@@ -17,9 +17,11 @@ import org.xxdc.oss.example.commentary.EsportsPostAnalysisConmmentaryPersona;
 /// See: [JEP 483](https://openjdk.org/jeps/483)
 ///
 /// 1. Record AOT Configuration
-/// `java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf -cp %classpath% org.xxdc.oss.example.AppTrainer`
+/// `java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf -cp %classpath%
+// org.xxdc.oss.example.AppTrainer`
 /// 2. Record AOT Cache
-/// `java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot -cp %classpath% org.xxdc.oss.example.AppTrainer`
+/// `java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot -cp %classpath%
+// org.xxdc.oss.example.AppTrainer`
 /// 3. Run the app with the AOT Cache
 /// `java -XX:AOTCache=app.aot -cp %classpath% org.xxdc.oss.example.AppTrainer`
 public class AppTrainer {
