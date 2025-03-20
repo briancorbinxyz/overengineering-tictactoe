@@ -77,3 +77,37 @@ tasks.named<Test>("test") {
     // WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")
 }
+
+val enablePreviewFeatures = true
+
+val collectorArgs = listOf(
+    "-XX:+UseZGC"
+)
+val standardArgs = listOf(
+    "--enable-native-access=ALL-UNNAMED",
+) + collectorArgs
+
+tasks.named<Test>("test") {
+    jvmArgs = if (enablePreviewFeatures) {
+        listOf("--enable-preview") + standardArgs
+    } else {
+        standardArgs
+    }
+}
+
+if (enablePreviewFeatures) {
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.addAll(listOf("--enable-preview"))
+    }
+
+    tasks.withType<JavaExec>().configureEach {
+        jvmArgs("--enable-preview")
+    }
+
+    tasks.withType<Javadoc>() {
+        (options as StandardJavadocDocletOptions).apply {
+            addBooleanOption("-enable-preview", true)
+            source = "24"
+        }
+    }
+}
