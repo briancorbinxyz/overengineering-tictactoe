@@ -9,7 +9,9 @@ import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
+import java.util.SequencedCollection;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Represents a game of Tic-Tac-Toe, including the game board, players, and game state. The game can
@@ -77,11 +79,34 @@ public class Game implements Serializable, AutoCloseable {
   }
 
   /**
+   * Constructs a new {@link Game} instance with a 3x3 game board, persistence disabled, and a bot
+   * player as player 'X' and a bot player as player 'O'.
+   */
+  public static Game ofBots() {
+    return new Game(
+        3,
+        false,
+        new PlayerNode.Local<>("X", new BotPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer()));
+  }
+
+  /**
    * Plays the game, rendering the board, applying player moves, and persisting the game state if
    * enabled. The game continues until a winning player is found or there are no more moves
    * available, at which point the winner or tie is logged.
    */
   public void play() {
+    playWithAction(null);
+  }
+
+  /**
+   * Plays the game, rendering the board, applying player moves, and persisting the game state if
+   * enabled. The game continues until a winning player is found or there are no more moves
+   * available, at which point the winner or tie is logged.
+   *
+   * @param postMoveAction The action to perform after a move is made (if any)
+   */
+  public void playWithAction(Consumer<Game> postMoveAction) {
     try {
       GamePersistence persistence = new GamePersistence();
       File persistenceDir = gameFileDirectory();
@@ -104,6 +129,9 @@ public class Game implements Serializable, AutoCloseable {
         winningPlayer = checkWon(state);
         movesAvailable = state.hasMovesAvailable();
         currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
+        if (postMoveAction != null) {
+          postMoveAction.accept(this);
+        }
       }
 
       winningPlayer.ifPresentOrElse(
@@ -114,6 +142,49 @@ public class Game implements Serializable, AutoCloseable {
     } catch (Exception e) {
       throw new GameServiceException("Failure whilst playing game: " + e.getMessage(), e);
     }
+  }
+
+  /**
+   * Returns the unique identifier for this game instance (Deprecated).
+   *
+   * @return the game ID
+   * @deprecated use {@link #id()} instead
+   */
+  @Deprecated(since = "1.5.0", forRemoval = true)
+  public UUID getGameId() {
+    return gameId;
+  }
+
+  /**
+   * Returns the unique identifier for this game instance.
+   *
+   * @return the game ID
+   */
+  public UUID id() {
+    return gameId;
+  }
+
+  @Override
+  public void close() throws Exception {
+    playerNodes.close();
+  }
+
+  /**
+   * Returns the number of players in the game.
+   *
+   * @return the number of players
+   */
+  public int numberOfPlayers() {
+    return playerNodes.playerMarkerList().size();
+  }
+
+  /** Returns the history of the game, including all moves made. */
+  public SequencedCollection<GameState> history() {
+    return gameState;
+  }
+
+  public int moveNumber() {
+    return moveNumber;
   }
 
   private Optional<String> checkWon(GameState state) {
@@ -133,20 +204,6 @@ public class Game implements Serializable, AutoCloseable {
   private GameState pushGameState(GameState state) {
     gameState.add(state);
     return state;
-  }
-
-  /**
-   * Returns the unique identifier for this game instance.
-   *
-   * @return the game ID
-   */
-  public UUID getGameId() {
-    return gameId;
-  }
-
-  @Override
-  public void close() throws Exception {
-    playerNodes.close();
   }
 
   private void renderBoard() {

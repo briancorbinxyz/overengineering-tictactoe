@@ -53,6 +53,15 @@ public interface GameBoard extends JsonSerializable {
   }
 
   /**
+   * Checks if the given player is present at the given location on the game board.
+   *
+   * @param playerMarker the marker representing the player to check
+   * @param location the location on the game board to check
+   * @return true if the player is present at the given location, false otherwise
+   */
+  boolean hasPlayer(String playerMarker, int location);
+
+  /**
    * Checks if the given player has a winning chain of connected game pieces on the game board.
    *
    * @param playerMarker the marker representing the player to check for a chain

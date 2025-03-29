@@ -7,14 +7,8 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.Socket;
 import org.xxdc.oss.example.GameState;
-import org.xxdc.oss.example.transport.DuplexMessageHandler;
-import org.xxdc.oss.example.transport.MessageHandler;
-import org.xxdc.oss.example.transport.SecureDuplexMessageHandler;
-import org.xxdc.oss.example.transport.TransportConfiguration;
-import org.xxdc.oss.example.transport.TransportException;
-import org.xxdc.oss.example.transport.TransportServer;
+import org.xxdc.oss.example.transport.*;
 
-/** A {@link TransportServer} implementation that uses TCP sockets. */
 /**
  * A {@link TransportServer} implementation that uses TCP sockets to handle communication between a
  * client and server. This class is responsible for initializing the socket connection, sending game
@@ -26,11 +20,11 @@ public class TcpTransportServer implements TransportServer {
 
   private final Socket socket;
 
-  private transient MessageHandler handler;
+  private final MessageHandler handler;
 
   /**
    * Constructs a new {@link TcpTransportServer} instance with the provided {@link Socket}. This
-   * constructor initializes the {@link SecureDuplexMessageHandler.Server} with a {@link
+   * constructor initializes the {@link SecureBouncyCastleKyberServer} with a {@link
    * DuplexMessageHandler} that uses the input and output streams of the provided socket.
    *
    * @param socket the {@link Socket} to use for the transport server
@@ -41,7 +35,7 @@ public class TcpTransportServer implements TransportServer {
     this.socket = socket;
     try {
       this.handler =
-          new SecureDuplexMessageHandler.Server(
+          new SecureKyberServer(
               new DuplexMessageHandler(
                   new ObjectOutputStream(socket.getOutputStream()),
                   new ObjectInputStream(socket.getInputStream())));

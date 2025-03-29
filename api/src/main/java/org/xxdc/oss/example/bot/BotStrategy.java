@@ -8,7 +8,7 @@ import org.xxdc.oss.example.GameState;
  * An interface representing a bot strategy for a game returning a move for the current game state.
  */
 public sealed interface BotStrategy
-    permits AlphaBeta, Minimax, MaxN, Random, Paranoid, MonteCarloTreeSearch {
+    permits AlphaBeta, Minimax, MaxN, Random, Paranoid, MonteCarloTreeSearch, Custom {
 
   /**
    * Returns the best move for the current game state.

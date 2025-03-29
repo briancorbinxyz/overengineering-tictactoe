@@ -6,7 +6,7 @@
             "workingDirectory": "${workspaceFolder}",
             "vmArgs": [
                 "--enable-native-access=ALL-UNNAMED",
-                "-Djava.library.path=${env:LIB_PATH}",
+                "-Djava.library.path=${env:LIB_PATH}"
             ],
             "env": {
                 "LIB_PATH": "${workspaceFolder}/app/build/cargo/debug",

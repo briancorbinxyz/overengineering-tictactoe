@@ -19,7 +19,15 @@ import org.testng.annotations.Test;
  *
  * <p>Note: This may fail if the Kyber KEM algorithm is not registered with the Java Security API
  * due to java security provider issues and or if the jar file has not been signed with the correct
- * key. The Temurin JDK does not worry about this.
+ * key. E.g.
+ *
+ * <p>Note: This may fail if the Kyber KEM algorithm is not registered with the Java Security API
+ * due to java security provider issues and or if the jar file has not been signed with the correct
+ * key. E.g.
+ *
+ * <p>java.security.NoSuchProviderException: JCE cannot authenticate the provider BCPQC.KEM
+ *
+ * <p>The Temurin and Open JDK (Java.net) does not worry about this.
  */
 public class KyberKEMSpiTest {
 

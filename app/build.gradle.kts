@@ -125,3 +125,70 @@ tasks.register("installGitHook") {
 tasks.named("build") {
     dependsOn("installGitHook")
 }
+
+// JEP483: Ahead-of-Time Class Loading & Linking
+// Print classpath to more easily enable AOT setup
+// java --enable-native-access=ALL-UNNAMED --enable-preview -cp "$(gradle -q printClasspath)" org.xxdc.oss.example.App
+//
+// https://openjdk.org/jeps/483
+// 1. Record AOT Configuration
+// java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf --enable-native-access=ALL-UNNAMED --enable-preview  -cp "$(gradle -q printClasspath)" org.xxdc.oss.example.AppTrainer
+// 2. Record AOT Cache
+// java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot --enable-native-access=ALL-UNNAMED --enable-preview -cp "$(gradle -q printClasspath)"
+// 3. Run the app with the AOT Cache
+// java -XX:AOTCache=app.aot -cp "$(gradle -q printClasspath)" --enable-native-access=ALL-UNNAMED --enable-preview org.xxdc.oss.example.AppTrainer
+// or
+// java -XX:AOTCache=app.aot -cp "$(gradle -q printClasspath)" --enable-native-access=ALL-UNNAMED --enable-preview  org.xxdc.oss.example.App
+tasks.register("printClasspath") {
+    doLast {
+        //val runtimeClasspath = configurations.runtimeClasspath.get().asPath
+        val runtimeClasspath = sourceSets.main.get().runtimeClasspath.asPath
+        println(runtimeClasspath)
+    }
+}
+// NB: AOT cache cannot be created if there are non-empty directories in the classpath
+tasks.register("buildClasspath") {
+    dependsOn("jar") // Ensure the JAR is built before printing the classpath
+    doLast {
+        val jarPath = tasks.named("jar").get().outputs.files.singleFile.absolutePath
+        val runtimeClasspath = configurations.runtimeClasspath.get().asPath
+        println("$jarPath:$runtimeClasspath")
+    }
+}
+
+// TODO: Disable preview features on the branch when the next JDK is released
+val enablePreviewFeatures = true
+val standardArgs = listOf(
+    "--enable-native-access=ALL-UNNAMED",
+    "-XX:+UseZGC"
+)
+
+tasks.named<Test>("test") {
+    jvmArgs = if (enablePreviewFeatures) {
+        listOf("--enable-preview") + standardArgs
+    } else {
+        standardArgs
+    }
+}
+
+if (enablePreviewFeatures) {
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.addAll(listOf("--enable-preview"))
+    }
+    
+    tasks.withType<JavaExec>().configureEach {
+        jvmArgs("--enable-preview")
+    }
+    
+    tasks.withType<Javadoc>() {
+        (options as StandardJavadocDocletOptions).apply {
+            addBooleanOption("-enable-preview", true)    
+            source = "24"
+        }
+    }
+
+    application {
+        applicationDefaultJvmArgs = listOf("--enable-preview")
+    }
+
+}

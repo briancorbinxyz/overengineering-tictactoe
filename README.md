@@ -5,11 +5,17 @@ Over-Engineering Tic-Tac-Toe
 
 Tic-Tac-Toe in Java deliberately over-engineered to apply features of Java introduced over time.
 
-Developed to pair with the ongoing blog post: [Road to JDK 25 - Over-Engineering Tic-Tac-Toe](https://thelifeof.briancorbin.xyz/Library/03-Resources/Road-to-JDK-25---Over-Engineering-Tic-Tac-Toe!) also serialized to Medium @ [Road to JDK 25 - Over-Engineering Tic-Tac-Toe On Medium](https://briancorbinxyz.medium.com/list/road-to-jdk-25-d0f656f66a8f)
+Developed to pair with the ongoing blog post: [Road to JDK 25 - Over-Engineering Tic-Tac-Toe](https://sympatheticengineering.com/Library/03-Resources/Road-to-JDK-25---Over-Engineering-Tic-Tac-Toe!) also serialized to Medium @ [Road to JDK 25 - Over-Engineering Tic-Tac-Toe On Medium](https://briancorbinxyz.medium.com/list/road-to-jdk-25-d0f656f66a8f)
 
 ---
 
 ### Features
+
+https://openjdk.org/projects/jdk/24/
+- **JEP496**:   Quantum-Resistant Module-Lattice-Based Key Encapsulation Mechanism
+- **JEP485**:   Stream Gatherers
+- **JEP483**:   Ahead-of-Time Class Loading & Linking
+- **JEP484**:   Class-File API
 
 https://openjdk.org/projects/jdk/23/
 
@@ -73,7 +79,7 @@ The following algorithms are used by the AI BOT in this project - for a detailed
 
 - To run the single game application, use the following command: `./gradlew run`
 
-- If you don't have Java 23 installed on your system you can install it first with [SDKMAN](https://sdkman.io/):
+- If you don't have Java installed on your system you can install it first with [SDKMAN](https://sdkman.io/) to build with a JDK 24 toolchain:
 
 ```bash
 curl -s "https://get.sdkman.io" | bash

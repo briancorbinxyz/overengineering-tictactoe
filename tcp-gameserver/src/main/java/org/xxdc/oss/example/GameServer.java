@@ -80,7 +80,7 @@ public class GameServer {
       cause = cause.getCause();
     }
     switch (cause) {
-      case SocketTimeoutException _ ->
+      case SocketTimeoutException se ->
           log.log(Level.INFO, "Server connection timed out after {0}ms.", CONNECTION_TIMEOUT);
       default -> log.log(Level.ERROR, "Unexpected exception: {0}", e.getMessage(), e);
     }

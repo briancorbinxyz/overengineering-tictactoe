@@ -3,10 +3,14 @@
  */
 package org.xxdc.oss.example;
 
+import static org.xxdc.oss.example.analysis.Analyzers.strategicTurningPoints;
+
 import java.io.File;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.xxdc.oss.example.bot.BotStrategy;
+import org.xxdc.oss.example.commentary.EsportsLiveCommentaryPersona;
+import org.xxdc.oss.example.commentary.EsportsPostAnalysisConmmentaryPersona;
 
 /** A simple java tic-tac-toe game. */
 public class App {
@@ -14,14 +18,33 @@ public class App {
   private static final Logger log = System.getLogger(App.class.getName());
 
   /**
-   * Runs the game.
+   * Runs the game with deefault settings and commentary.
    *
    * @throws Exception if there is an error whilst playing the game
    */
   public void run() throws Exception {
-    var game = newStandardGame();
-    game.play();
-    game.close();
+    try (var game = newStandardGame()) {
+      game.playWithAction(this::logLiveCommentary);
+      logPostAnalysisCommentary(game);
+    }
+  }
+
+  private void logLiveCommentary(Game game) {
+    var commentary = new EsportsLiveCommentaryPersona();
+    game.history().stream()
+        .skip(game.moveNumber() - 1) // latest move state changes only
+        .gather(strategicTurningPoints())
+        .map(commentary::comment)
+        .forEach(l -> log.log(Level.INFO, "\"{0}\"", l));
+  }
+
+  private void logPostAnalysisCommentary(Game game) {
+    log.log(Level.INFO, "Post-Game Analysis:");
+    var commentary = new EsportsPostAnalysisConmmentaryPersona();
+    game.history().stream()
+        .gather(strategicTurningPoints())
+        .map(commentary::comment)
+        .forEach(l -> log.log(Level.INFO, "- \"{0}\"", l));
   }
 
   /**
