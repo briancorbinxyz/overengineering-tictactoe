@@ -79,12 +79,12 @@ The following algorithms are used by the AI BOT in this project - for a detailed
 
 - To run the single game application, use the following command: `./gradlew run`
 
-- If you don't have Java 24 installed on your system you can install it first with [SDKMAN](https://sdkman.io/):
+- If you don't have Java installed on your system you can install it first with [SDKMAN](https://sdkman.io/) to build with a JDK 24 toolchain:
 
 ```bash
 curl -s "https://get.sdkman.io" | bash
 
-sdk install java 24-tem
+sdk install java 23-tem
 
 ./gradlew run
 ```
