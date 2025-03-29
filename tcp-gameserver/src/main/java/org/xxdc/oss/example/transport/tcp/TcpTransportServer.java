@@ -9,7 +9,6 @@ import java.net.Socket;
 import org.xxdc.oss.example.GameState;
 import org.xxdc.oss.example.transport.*;
 
-/** A {@link TransportServer} implementation that uses TCP sockets. */
 /**
  * A {@link TransportServer} implementation that uses TCP sockets to handle communication between a
  * client and server. This class is responsible for initializing the socket connection, sending game
@@ -21,7 +20,7 @@ public class TcpTransportServer implements TransportServer {
 
   private final Socket socket;
 
-  private transient MessageHandler handler;
+  private final MessageHandler handler;
 
   /**
    * Constructs a new {@link TcpTransportServer} instance with the provided {@link Socket}. This
