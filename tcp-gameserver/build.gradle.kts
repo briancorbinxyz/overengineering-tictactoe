@@ -74,25 +74,32 @@ publishing {
     repositories {
         // Publish to GitHub Packages
         // https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-java-packages-with-gradle
-        maven {
-            name = "Sonatype"
-            url = uri(
-                if (version.toString().endsWith("SNAPSHOT"))
-                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                else
-                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            )
-            credentials {
-                username = project.findProperty("sonatype.user") as String? ?: System.getenv("SONATYPE_USER")
-                password = project.findProperty("sonatype.key") as String? ?: System.getenv("SONATYPE_TOKEN")
+        val targetRepo: String? = findProperty("repo") as String?
+        if (targetRepo == null || targetRepo == "Sonatype") {
+            maven {
+                name = "Sonatype"
+                url = uri(
+                    if (version.toString().endsWith("SNAPSHOT"))
+                        //"https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                        "https://central.sonatype.com/repository/maven-snapshots/"
+                    else
+                       // "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                        "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2"
+                )
+                credentials {
+                    username = project.findProperty("sonatype.user") as String? ?: System.getenv("SONATYPE_USER")
+                    password = project.findProperty("sonatype.key") as String? ?: System.getenv("SONATYPE_TOKEN")
+                }
             }
         }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        if (targetRepo == null || targetRepo == "GitHubPackages") {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
+                credentials {
+                    username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                }
             }
         }
     }
@@ -143,19 +150,16 @@ val signingKeyId = System.getenv("SIGNING_KEY_ID") ?: findProperty("signing.keyI
 
 val isPublishing = gradle.startParameter.taskNames.any { it.contains("publish", ignoreCase = true) }
 
-val shouldSign = isPublishing && signingKey != null && signingPassword != null
+val shouldSign = signingKey != null && signingPassword != null
 
 logger.lifecycle("🔐 Signing check:")
 logger.lifecycle("  • isPublishing: $isPublishing")
 logger.lifecycle("  • signingKeyId: ${signingKeyId != null}")
 logger.lifecycle("  • signingKey present: ${signingKey != null}")
 logger.lifecycle("  • signingPassword present: ${signingPassword != null}")
-
-if (shouldSign) {
-    signing {
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(publishing.publications)
-    }
-} else {
-    logger.lifecycle("⚠️ Skipping signing: Not publishing or signing credentials are incomplete.")
+logger.lifecycle("  • shouldSign: $shouldSign")
+signing {
+    setRequired({ isPublishing && shouldSign })
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign(configurations.runtimeElements.get())
 }
