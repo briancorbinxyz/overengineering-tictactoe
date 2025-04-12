@@ -80,8 +80,8 @@ publishing {
                     "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             )
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = project.findProperty("sonatype.user") as String? ?: System.getenv("SONATYPE_USER")
+                password = project.findProperty("sonatype.key") as String? ?: System.getenv("SONATYPE_TOKEN")
             }
         }
     }
