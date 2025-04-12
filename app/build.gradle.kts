@@ -72,7 +72,7 @@ publishing {
             }
         }
         maven {
-            name = "OSSRH"
+            name = "Sonatype"
             url = uri(
                 if (version.toString().endsWith("SNAPSHOT"))
                     "https://s01.oss.sonatype.org/content/repositories/snapshots/"
@@ -117,13 +117,20 @@ publishing {
     }
 }
 // Signing
-signing {
-    useInMemoryPgpKeys(
-        findProperty("signing.keyId") as String?,
-        findProperty("signing.key") as String?,
-        findProperty("signing.password") as String?
-    )
-    sign(publishing.publications["maven"])
+afterEvaluate {
+    // Check if we are running any kind of publish task
+    val isPublishing = gradle.startParameter.taskNames.any { it.contains("publish", ignoreCase = true) }
+
+    if (isPublishing && project.hasProperty("signing.key")) {
+        signing {
+            useInMemoryPgpKeys(
+                findProperty("signing.keyId") as String?,
+                findProperty("signing.key") as String?,
+                findProperty("signing.password") as String?
+            )
+            sign(publishing.publications["maven"])
+        }
+    }
 }
 // Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
 tasks.register("installGitHook") {

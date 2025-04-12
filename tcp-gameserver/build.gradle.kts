@@ -1,5 +1,6 @@
 plugins {
     id("buildlogic.java-library-conventions")
+    signing
 }
 
 dependencies {
@@ -22,6 +23,22 @@ java {
     withSourcesJar()
 }
 
+// Signing
+afterEvaluate {
+    // Check if we are running any kind of publish task
+    val isPublishing = gradle.startParameter.taskNames.any { it.contains("publish", ignoreCase = true) }
+
+    if (isPublishing && project.hasProperty("signing.key")) {
+        signing {
+            useInMemoryPgpKeys(
+                findProperty("signing.keyId") as String?,
+                findProperty("signing.key") as String?,
+                findProperty("signing.password") as String?
+            )
+            sign(publishing.publications["maven"])
+        }
+    }
+}
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 publishing {
     repositories {
@@ -30,6 +47,19 @@ publishing {
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+        maven {
+            name = "Sonatype"
+            url = uri(
+                if (version.toString().endsWith("SNAPSHOT"))
+                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                else
+                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            )
             credentials {
                 username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
                 password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
