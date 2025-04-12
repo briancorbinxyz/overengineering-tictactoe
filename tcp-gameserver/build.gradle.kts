@@ -1,3 +1,6 @@
+import java.util.*
+import org.gradle.api.Action
+
 plugins {
     id("buildlogic.java-library-conventions")
     signing
@@ -21,81 +24,6 @@ dependencies {
 java {
     withJavadocJar()
     withSourcesJar()
-}
-
-// Signing
-afterEvaluate {
-    // Check if we are running any kind of publish task
-    val isPublishing = gradle.startParameter.taskNames.any { it.contains("publish", ignoreCase = true) }
-
-    if (isPublishing && project.hasProperty("signing.key")) {
-        signing {
-            useInMemoryPgpKeys(
-                findProperty("signing.keyId") as String?,
-                findProperty("signing.key") as String?,
-                findProperty("signing.password") as String?
-            )
-            sign(publishing.publications["maven"])
-        }
-    }
-}
-// https://docs.gradle.org/current/userguide/publishing_maven.html
-publishing {
-    repositories {
-        // Publish to GitHub Packages
-        // https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-java-packages-with-gradle
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-        maven {
-            name = "Sonatype"
-            url = uri(
-                if (version.toString().endsWith("SNAPSHOT"))
-                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                else
-                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            )
-            credentials {
-                username = project.findProperty("sonatype.user") as String? ?: System.getenv("SONATYPE_USER")
-                password = project.findProperty("sonatype.key") as String? ?: System.getenv("SONATYPE_TOKEN")
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "org.xxdc.oss.example"
-            artifactId = "tictactoe-tcp-gameserver"
-            from(components["java"])
-            pom {
-                name.set("tictactoe")
-                description.set("An Over-Engineered Tic Tac Toe Game API")
-                url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                    developers {
-                        developer {
-                            id.set("briancorbinxyz")
-                            name.set("Brian Corbin")
-                            email.set("mail@briancorbin.xyz")
-                        }
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/briancorbinxyz/overengineering-tictactoe.git")
-                    developerConnection.set("scm:git:ssh://github.com/briancorbinxyz/overengineering-tictactoe.git")
-                    url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
-                }
-            }
-        }
-    }
 }
 
 tasks.named<Test>("test") {
@@ -140,4 +68,94 @@ if (enablePreviewFeatures) {
             source = "24"
         }
     }
+}
+// https://docs.gradle.org/current/userguide/publishing_maven.html
+publishing {
+    repositories {
+        // Publish to GitHub Packages
+        // https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-java-packages-with-gradle
+        maven {
+            name = "Sonatype"
+            url = uri(
+                if (version.toString().endsWith("SNAPSHOT"))
+                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                else
+                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            )
+            credentials {
+                username = project.findProperty("sonatype.user") as String? ?: System.getenv("SONATYPE_USER")
+                password = project.findProperty("sonatype.key") as String? ?: System.getenv("SONATYPE_TOKEN")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "org.xxdc.oss.example"
+            artifactId = "tictactoe-tcp-gameserver"
+            from(components["java"])
+            pom {
+                name.set("tictactoe")
+                description.set("An Over-Engineered Tic Tac Toe Game API")
+                url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                    developers {
+                        developer {
+                            id.set("briancorbinxyz")
+                            name.set("Brian Corbin")
+                            email.set("mail@briancorbin.xyz")
+                        }
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/briancorbinxyz/overengineering-tictactoe.git")
+                    developerConnection.set("scm:git:ssh://github.com/briancorbinxyz/overengineering-tictactoe.git")
+                    url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
+                }
+            }
+        }
+    }
+}
+
+fun decodeKey(raw: String): String =
+    if (raw.contains("-----BEGIN PGP PRIVATE KEY BLOCK-----")) {
+        raw
+    } else {
+        String(Base64.getDecoder().decode(raw))
+    }
+
+val rawSigningKey = System.getenv("SIGNING_KEY") ?: findProperty("signing.key") as String?
+val signingKey = rawSigningKey?.let(::decodeKey)
+
+val signingPassword = System.getenv("SIGNING_PASSWORD") ?: findProperty("signing.password") as String?
+val signingKeyId = System.getenv("SIGNING_KEY_ID") ?: findProperty("signing.keyId") as String?
+
+val isPublishing = gradle.startParameter.taskNames.any { it.contains("publish", ignoreCase = true) }
+
+val shouldSign = isPublishing && signingKey != null && signingPassword != null
+
+logger.lifecycle("🔐 Signing check:")
+logger.lifecycle("  • isPublishing: $isPublishing")
+logger.lifecycle("  • signingKeyId: ${signingKeyId != null}")
+logger.lifecycle("  • signingKey present: ${signingKey != null}")
+logger.lifecycle("  • signingPassword present: ${signingPassword != null}")
+
+if (shouldSign) {
+    signing {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(publishing.publications)
+    }
+} else {
+    logger.lifecycle("⚠️ Skipping signing: Not publishing or signing credentials are incomplete.")
 }
