@@ -4,6 +4,7 @@ plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id("buildlogic.java-application-conventions")
     id("org.graalvm.buildtools.native") version "0.10.2"
+    signing
 }
 
 dependencies {
@@ -70,6 +71,19 @@ publishing {
                 password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
             }
         }
+        maven {
+            name = "OSSRH"
+            url = uri(
+                if (version.toString().endsWith("SNAPSHOT"))
+                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                else
+                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            )
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
     publications {
         create<MavenPublication>("maven") {
@@ -101,6 +115,15 @@ publishing {
             }
         }
     }
+}
+// Signing
+signing {
+    useInMemoryPgpKeys(
+        findProperty("signing.keyId") as String?,
+        findProperty("signing.key") as String?,
+        findProperty("signing.password") as String?
+    )
+    sign(publishing.publications["maven"])
 }
 // Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
 tasks.register("installGitHook") {
@@ -192,3 +215,4 @@ if (enablePreviewFeatures) {
     }
 
 }
+
