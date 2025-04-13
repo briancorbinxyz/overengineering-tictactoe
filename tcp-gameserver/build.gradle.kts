@@ -158,8 +158,9 @@ logger.lifecycle("  • signingKeyId: ${signingKeyId != null}")
 logger.lifecycle("  • signingKey present: ${signingKey != null}")
 logger.lifecycle("  • signingPassword present: ${signingPassword != null}")
 logger.lifecycle("  • shouldSign: $shouldSign")
-signing {
-    setRequired({ isPublishing && shouldSign })
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(configurations.runtimeElements.get())
+if (isPublishing && shouldSign) {
+    signing {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(configurations.runtimeElements.get())
+    }
 }

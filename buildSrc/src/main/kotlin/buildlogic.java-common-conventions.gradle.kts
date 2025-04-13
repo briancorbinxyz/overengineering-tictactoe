@@ -70,7 +70,7 @@ testing {
     }
 }
 
-val projectVersion by extra("2.0.9")
+val projectVersion by extra("2.0.11")
 
 public val jdkVersion = 24
 // Apply a specific Java toolchain to ease working on different environments.
