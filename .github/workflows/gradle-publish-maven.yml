@@ -43,9 +43,9 @@ jobs:
       env:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+        SONATYPE_USER: ${{ vars.SONATYPE_USER }}
         SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
-        SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+        SIGNING_KEY_ID: ${{ vars.SIGNING_KEY_ID }}
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
         SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
