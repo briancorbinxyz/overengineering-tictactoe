@@ -1,10 +1,13 @@
-import java.io.File
 import java.util.*
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id("buildlogic.java-library-conventions")
-    signing
+    // Apply the maven-publish plugin from com.vanniktech for publishing to repositories
+    id("com.vanniktech.maven.publish")
 }
+
+group = "org.xxdc.oss.example"
 
 val libPath = "native/src/main/rust/target/debug"
 val osName = System.getProperty("os.name").lowercase()
@@ -40,13 +43,6 @@ tasks.register<JavaExec>("jmh") {
     args = listOf("org.xxdc.oss.example.interop.benchmark.PlayerIdsBenchmark")
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-
-
 // TODO: Disable preview features on the branch when the next JDK is released
 val enablePreviewFeatures = true
 
@@ -81,97 +77,36 @@ if (enablePreviewFeatures) {
         }
     }
 }
-// https://docs.gradle.org/current/userguide/publishing_maven.html
-publishing {
-    repositories {
-        // Publish to GitHub Packages
-        // https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-java-packages-with-gradle
-        val targetRepo: String? = findProperty("repo") as String?
-        if (targetRepo == null || targetRepo == "Sonatype") {
-            maven {
-                name = "Sonatype"
-                url = uri(
-                    if (version.toString().endsWith("SNAPSHOT"))
-                    //"https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                        "https://central.sonatype.com/repository/maven-snapshots/"
-                    else
-                    // "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                        "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2"
-                )
-                credentials {
-                    username = project.findProperty("sonatype.user") as String? ?: System.getenv("SONATYPE_USER")
-                    password = project.findProperty("sonatype.key") as String? ?: System.getenv("SONATYPE_TOKEN")
-                }
-            }
-        }
-        if (targetRepo == null || targetRepo == "GitHubPackages") {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
-                credentials {
-                    username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                    password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-                }
-            }
-        }
+
+// Publishing
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    val signingKey = (findProperty("signingInMemoryKey") ?: findProperty("signing.key")) as String?
+    //if (signingKey != null) {
+    if (false) {
+        signAllPublications()
     }
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "org.xxdc.oss.example"
-            artifactId = "tictactoe-api"
-            from(components["java"])
-            pom {
-                name.set("tictactoe")
-                description.set("An Over-Engineered Tic Tac Toe Game API")
-                url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                    developers {
-                        developer {
-                            id.set("briancorbinxyz")
-                            name.set("Brian Corbin")
-                            email.set("mail@briancorbin.xyz")
-                        }
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/briancorbinxyz/overengineering-tictactoe.git")
-                    developerConnection.set("scm:git:ssh://github.com/briancorbinxyz/overengineering-tictactoe.git")
-                    url.set("https://github.com/briancorbinxyz/overengineering-tictactoe")
-                }
-            }
-        }
+
+    coordinates (
+        project.group as String?,
+        "tictactoe-api",
+        project.version as String?
+    )
+    pom {
+        name.set("tictactoe-api")
+        description.set("An Over-Engineered Tic Tac Toe Game API")
     }
 }
-fun decodeKey(raw: String): String =
-    if (raw.contains("-----BEGIN PGP PRIVATE KEY BLOCK-----")) {
-        raw
-    } else {
-        String(Base64.getDecoder().decode(raw))
-    }
 
-val rawSigningKey = System.getenv("SIGNING_KEY") ?: findProperty("signing.key") as String?
-val signingKey = rawSigningKey?.let(::decodeKey)
-
-val signingPassword = System.getenv("SIGNING_PASSWORD") ?: findProperty("signing.password") as String?
-val signingKeyId = System.getenv("SIGNING_KEY_ID") ?: findProperty("signing.keyId") as String?
-
-val isPublishing = gradle.startParameter.taskNames.any { it.contains("publish", ignoreCase = true) }
-
-val shouldSign = signingKey != null && signingPassword != null
-
-logger.lifecycle("🔐 Signing check:")
-logger.lifecycle("  • isPublishing: $isPublishing")
-logger.lifecycle("  • signingKeyId: ${signingKeyId != null}")
-logger.lifecycle("  • signingKey present: ${signingKey != null}")
-logger.lifecycle("  • signingPassword present: ${signingPassword != null}")
-logger.lifecycle("  • shouldSign: $shouldSign")
-if (isPublishing && shouldSign) {
-    signing {
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(configurations.runtimeElements.get())
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/briancorbinxyz/overengineering-tictactoe")
+            credentials {
+                username = findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }

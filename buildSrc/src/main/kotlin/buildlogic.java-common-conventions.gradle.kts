@@ -70,7 +70,7 @@ testing {
     }
 }
 
-val projectVersion by extra("2.0.13")
+val projectVersion by extra("2.0.14")
 
 public val jdkVersion = 24
 // Apply a specific Java toolchain to ease working on different environments.
@@ -80,4 +80,37 @@ java {
         vendor = JvmVendorSpec.ADOPTIUM
     }
 }
-version = "$projectVersion-jdk${jdkVersion}"
+
+val isSnapshot = false
+version = if (isSnapshot) {
+    "$projectVersion-jdk${jdkVersion}-SNAPSHOT"
+} else {
+    "$projectVersion-jdk${jdkVersion}"
+}
+
+// Signing Checks
+tasks.register("checkSigningSetup") {
+    group = "verification"
+    description = "Verifies that signing-related environment variables are set."
+
+    doLast {
+        val requiredEnvVars = listOf(
+            "ORG_GRADLE_PROJECT_signingInMemoryKey",
+            "ORG_GRADLE_PROJECT_signingInMemoryKeyId",
+            "ORG_GRADLE_PROJECT_signingInMemoryKeyPassword"
+        )
+
+        val missing = requiredEnvVars.filter { System.getenv(it).isNullOrBlank() }
+
+        if (missing.isNotEmpty()) {
+            throw GradleException(
+                "❌ Missing required environment variables for signing: ${missing.joinToString()}\n" +
+                        "Ensure these are set in your environment or CI configuration."
+            )
+        } else {
+            println("✔ All required signing environment variables are set.")
+        }
+    }
+}
+
+

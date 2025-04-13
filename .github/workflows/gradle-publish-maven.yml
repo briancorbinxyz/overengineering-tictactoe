@@ -22,10 +22,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 23
+    - name: Set up JDK 24
       uses: actions/setup-java@v4
       with:
-        java-version: '23'
+        java-version: '24'
         distribution: 'temurin'
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
@@ -39,13 +39,12 @@ jobs:
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
     - name: Publish to Sonatype (Maven)
-      run: ./gradlew publish -Prepo=Sonatype
+      run: ./gradlew publishAllPublicationsToMavenCentralRepository
       env:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONATYPE_USER: ${{ vars.SONATYPE_USER }}
-        SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
-        SIGNING_KEY_ID: ${{ vars.SIGNING_KEY_ID }}
-        SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-        SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-
+        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ vars.SONATYPE_USER }}
+        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_TOKEN }}
+        ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ vars.SIGNING_KEY_ID }}
+        ORG_GRADLE_PROJECT_singingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+        ORG_GRADLE_PROJECT_singingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
