@@ -7,6 +7,7 @@ plugins {
     id("buildlogic.java-application-conventions")
     id("org.graalvm.buildtools.native") version "0.10.2"
     id("com.vanniktech.maven.publish")
+    id("signing")
 }
 
 group = "org.xxdc.oss.example"
@@ -149,10 +150,9 @@ if (enablePreviewFeatures) {
 
 // Publishing
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     val signingKey = (findProperty("signingInMemoryKey") ?: findProperty("signing.key")) as String?
-    //if (signingKey != null) {
-    if (false) {
+    if (signingKey != null) {
         signAllPublications()
     }
 
@@ -178,4 +178,9 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications)
 }
