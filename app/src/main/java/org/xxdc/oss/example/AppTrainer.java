@@ -9,7 +9,7 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.xxdc.oss.example.bot.BotStrategy;
 import org.xxdc.oss.example.commentary.EsportsLiveCommentaryPersona;
-import org.xxdc.oss.example.commentary.EsportsPostAnalysisConmmentaryPersona;
+import org.xxdc.oss.example.commentary.EsportsPostAnalysisCommentaryPersona;
 
 /// A simple java tic-tac-toe game with a bot playing another bot for training
 /// the JDK for AOT class loading and linking. NB: Uses bots so not all paths are
@@ -56,7 +56,7 @@ public class AppTrainer {
 
   private void logPostAnalysisCommentary(Game game) {
     log.log(Level.INFO, "Post-Game Analysis:");
-    var commentary = new EsportsPostAnalysisConmmentaryPersona();
+    var commentary = new EsportsPostAnalysisCommentaryPersona();
     game.history().stream()
         .gather(strategicTurningPoints())
         .map(commentary::comment)

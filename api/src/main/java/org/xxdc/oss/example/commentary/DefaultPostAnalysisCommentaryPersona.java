@@ -2,6 +2,9 @@ package org.xxdc.oss.example.commentary;
 
 import org.xxdc.oss.example.analysis.StrategicTurningPoint;
 
+/**
+ * Persona that provides post-game analysis commentary on a strategic turning point in the game.
+ */
 public class DefaultPostAnalysisCommentaryPersona implements CommentaryPersona {
 
   @Override

@@ -6,8 +6,11 @@ import java.lang.constant.ConstantDescs;
 import java.lang.constant.MethodTypeDesc;
 import java.lang.invoke.MethodHandles;
 
+/// Naive FIFO bot implementation that implements the CustomBotStrategy interface.
+/// This bot uses a FIFO (First-In-First-Out) strategy to make moves on the game board.
 public class NaiveFifoGenerator {
 
+  /// Generates a new instance of the NaiveFifoGenerator class.
   public static CustomBotStrategy newGeneratedBot() {
     try {
       byte[] classBytes = generateBotClass();
@@ -19,6 +22,7 @@ public class NaiveFifoGenerator {
     }
   }
 
+  /// Generates the bytecode for the NaiveFifoGenerator class.
   private static byte[] generateBotClass() {
     return ClassFile.of()
         .build(

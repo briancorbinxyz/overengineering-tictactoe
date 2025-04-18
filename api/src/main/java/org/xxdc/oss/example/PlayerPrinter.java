@@ -3,7 +3,7 @@ package org.xxdc.oss.example;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-/** Provides a utility to generate a player identifier string for a given `PlayerNode`. */
+/// Provides a utility to generate a player identifier string for a given `PlayerNode`.
 public class PlayerPrinter {
 
   /**

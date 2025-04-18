@@ -4,7 +4,10 @@ import java.util.stream.Gatherer;
 import java.util.stream.Gatherer.Integrator;
 import org.xxdc.oss.example.GameState;
 
+/** A collection of analyzers for gathering data points from the game state. */
 public class Analyzers {
+
+  private Analyzers() {}
 
   static class GathererState {
     private GameState prevGameState;

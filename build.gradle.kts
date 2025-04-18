@@ -51,4 +51,3 @@ tasks.register("checkSigningEnvSetup") {
     }
 }
 
-

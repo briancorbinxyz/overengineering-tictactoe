@@ -6,7 +6,8 @@ import org.xxdc.oss.example.GameState;
 /// A strategic turning point in a game of Tic-Tac-Toe.
 public sealed interface StrategicTurningPoint {
 
-  static enum PriorityLevel {
+  /// Priority/severity level of the strategic turning point.
+  enum PriorityLevel {
     HIGH,
     MEDIUM,
     LOW

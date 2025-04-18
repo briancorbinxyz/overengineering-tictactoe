@@ -10,7 +10,7 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import org.xxdc.oss.example.bot.BotStrategy;
 import org.xxdc.oss.example.commentary.EsportsLiveCommentaryPersona;
-import org.xxdc.oss.example.commentary.EsportsPostAnalysisConmmentaryPersona;
+import org.xxdc.oss.example.commentary.EsportsPostAnalysisCommentaryPersona;
 
 /** A simple java tic-tac-toe game. */
 public class App {
@@ -40,7 +40,7 @@ public class App {
 
   private void logPostAnalysisCommentary(Game game) {
     log.log(Level.INFO, "Post-Game Analysis:");
-    var commentary = new EsportsPostAnalysisConmmentaryPersona();
+    var commentary = new EsportsPostAnalysisCommentaryPersona();
     game.history().stream()
         .gather(strategicTurningPoints())
         .map(commentary::comment)

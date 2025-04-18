@@ -4,6 +4,9 @@ import static org.xxdc.oss.example.analysis.StrategicTurningPoint.*;
 
 import org.xxdc.oss.example.analysis.StrategicTurningPoint;
 
+/**
+ * Persona that provides energetic, esports-style commentary on a strategic turning point in the game.
+ */
 public class EsportsLiveCommentaryPersona implements CommentaryPersona {
 
   @Override

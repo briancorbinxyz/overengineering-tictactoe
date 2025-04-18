@@ -7,17 +7,16 @@ import java.util.function.ToIntFunction;
 import org.xxdc.oss.example.transport.TransportConfiguration;
 import org.xxdc.oss.example.transport.TransportServer;
 
-/**
- * The `PlayerNode` interface represents a player in a game. It provides methods to get the player's
- * marker and apply the player's next move to the game state.
- *
- * <p>The `Local` implementation of `PlayerNode` represents a local player, where the player's logic
- * is implemented directly in the application.
- *
- * <p>The `Remote` implementation of `PlayerNode` represents a remote player, where the player's
- * logic is implemented in a separate process and communicated with the application through a
- * transport mechanism.
- */
+/// The `PlayerNode` interface represents a player in a game. It provides methods to get the
+// player's
+/// marker and apply the player's next move to the game state.
+///
+/// The `Local` implementation of `PlayerNode` represents a local player, where the player's logic
+/// is implemented directly in the application.
+///
+/// The `Remote` implementation of `PlayerNode` represents a remote player, where the player's
+/// logic is implemented in a separate process and communicated with the application through a
+/// transport mechanism.
 public sealed interface PlayerNode extends ToIntFunction<GameState> {
 
   /**

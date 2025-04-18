@@ -73,7 +73,8 @@ if (enablePreviewFeatures) {
     
     tasks.withType<Javadoc>() {
         (options as StandardJavadocDocletOptions).apply {
-            addBooleanOption("-enable-preview", true)    
+            addStringOption("Xmaxwarns", "1")
+            addBooleanOption("-enable-preview", true)
             source = "24"
         }
     }
