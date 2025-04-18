@@ -49,4 +49,4 @@ jobs:
         ORG_GRADLE_PROJECT_singingInMemoryKey: ${{ secrets.SIGNING_KEY }}
         ORG_GRADLE_PROJECT_singingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
         ORG_GRADLE_PROJECT_signing_gnupg_keyName: ${{ vars.SIGNING_KEY_ID }}
-        ORG_GRADLE_PROJECT_singing_gnupg_passphrase: ${{ secrets.SIGNING_PASSWORD }}
+        ORG_GRADLE_PROJECT_signing_gnupg_passphrase: ${{ secrets.SIGNING_PASSWORD }}
