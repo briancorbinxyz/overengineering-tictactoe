@@ -61,7 +61,8 @@ public class Game implements Serializable, AutoCloseable {
     this.moveNumber = 0;
     this.gameState = new ArrayDeque<>();
     this.gameState.add(
-        new GameState(GameBoard.withDimension(size), this.playerNodes.playerMarkerList(), 0));
+        new GameState(
+            gameId, GameBoard.withDimension(size), this.playerNodes.playerMarkerList(), 0));
     this.persistenceEnabled = persistenceEnabled;
   }
 
@@ -142,17 +143,6 @@ public class Game implements Serializable, AutoCloseable {
     } catch (Exception e) {
       throw new GameServiceException("Failure whilst playing game: " + e.getMessage(), e);
     }
-  }
-
-  /**
-   * Returns the unique identifier for this game instance (Deprecated).
-   *
-   * @return the game ID
-   * @deprecated use {@link #id()} instead
-   */
-  @Deprecated(since = "1.5.0", forRemoval = true)
-  public UUID getGameId() {
-    return gameId;
   }
 
   /**

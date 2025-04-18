@@ -3,6 +3,7 @@ package org.xxdc.oss.example;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Represents the current state of a game, including the game board, player markers, and the index
@@ -11,13 +12,18 @@ import java.util.List;
  * Implements the JsonSerializable and Serializable interfaces, allowing the game state to be
  * serialized and deserialized.
  *
+ * @param gameId The unique game id
  * @param board The game board.
  * @param playerMarkers The list of player markers.
  * @param currentPlayerIndex The index of the current player in the {@code playerMarkers} list.
  * @param lastMove The index of the last move made on the game board.
  */
 public record GameState(
-    GameBoard board, List<String> playerMarkers, int currentPlayerIndex, int lastMove)
+    java.util.UUID gameId,
+    GameBoard board,
+    List<String> playerMarkers,
+    int currentPlayerIndex,
+    int lastMove)
     implements JsonSerializable, Serializable {
 
   /**
@@ -25,12 +31,14 @@ public record GameState(
    * the index of the current player. The last move index is set to -1 to indicate that no move has
    * been made yet.
    *
+   * @param gameId The unique game id
    * @param board The game board.
    * @param playerMarkers The list of player markers.
    * @param currentPlayerIndex The index of the current player in the {@code playerMarkers} list.
    */
-  public GameState(GameBoard board, List<String> playerMarkers, int currentPlayerIndex) {
-    this(board, playerMarkers, currentPlayerIndex, -1);
+  public GameState(
+      UUID gameId, GameBoard board, List<String> playerMarkers, int currentPlayerIndex) {
+    this(gameId, board, playerMarkers, currentPlayerIndex, -1);
   }
 
   /**
@@ -43,6 +51,7 @@ public record GameState(
    */
   public GameState(GameState state) {
     this(
+        state.gameId,
         state.board,
         new ArrayList<>(state.playerMarkers),
         state.currentPlayerIndex,
@@ -108,7 +117,8 @@ public record GameState(
   public String asJsonString() {
     StringBuilder json = new StringBuilder();
     json.append("{");
-    if (playerMarkers.size() > 0) {
+    json.append("\"gameId\":\"").append(gameId).append("\",");
+    if (!playerMarkers.isEmpty()) {
       json.append("\"playerMarkers\":[\"")
           .append(String.join("\",\"", playerMarkers))
           .append("\"],");
@@ -131,7 +141,7 @@ public record GameState(
   public GameState afterPlayerMoves(int move) {
     GameBoard newBoard = board.withMove(currentPlayer(), move);
     int newCurrentPlayerIndex = (currentPlayerIndex + 1) % playerMarkers.size();
-    return new GameState(newBoard, playerMarkers, newCurrentPlayerIndex, move);
+    return new GameState(gameId, newBoard, playerMarkers, newCurrentPlayerIndex, move);
   }
 
   /**

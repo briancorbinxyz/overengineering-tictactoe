@@ -5,6 +5,7 @@ import static org.testng.Assert.assertTrue;
 import static org.xxdc.oss.example.TestData.*;
 
 import java.util.List;
+import java.util.UUID;
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
@@ -38,10 +39,16 @@ public class AlphaBetaTest {
               {"O", "O", "_"}
             });
 
-    assertEquals(new AlphaBeta(new GameState(board[0], List.of("X", "O"), 1)).bestMove(), 2);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 1)).bestMove(),
+        2);
     Assert.assertTrue(board[1].withMove("X", 8).hasChain("X"));
-    assertEquals(new AlphaBeta(new GameState(board[2], List.of("X", "O"), 1)).bestMove(), 8);
-    assertEquals(new AlphaBeta(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 1)).bestMove(),
+        8);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 1)).bestMove(),
+        8);
   }
 
   @Test
@@ -89,12 +96,24 @@ public class AlphaBetaTest {
               {"O", "X", "_"},
               {"O", "_", "_"}
             });
-    assertEquals(new AlphaBeta(new GameState(board[0], List.of("X", "O"), 0)).bestMove(), 2);
-    assertEquals(new AlphaBeta(new GameState(board[1], List.of("X", "O"), 0)).bestMove(), 8);
-    assertEquals(new AlphaBeta(new GameState(board[2], List.of("X", "O"), 0)).bestMove(), 7);
-    assertEquals(new AlphaBeta(new GameState(board[3], List.of("X", "O"), 1)).bestMove(), 5);
-    assertEquals(new AlphaBeta(new GameState(board[4], List.of("X", "O"), 1)).bestMove(), 8);
-    assertEquals(new AlphaBeta(new GameState(board[5], List.of("X", "O"), 1)).bestMove(), 0);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 0)).bestMove(),
+        2);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 0)).bestMove(),
+        8);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 0)).bestMove(),
+        7);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[3], List.of("X", "O"), 1)).bestMove(),
+        5);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[4], List.of("X", "O"), 1)).bestMove(),
+        8);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board[5], List.of("X", "O"), 1)).bestMove(),
+        0);
   }
 
   @Test
@@ -106,7 +125,8 @@ public class AlphaBetaTest {
               {"♣", "♠", "_"},
               {"♣", "_", "_"}
             });
-    assertEquals(new AlphaBeta(new GameState(board, List.of("♣", "♠"), 1)).bestMove(), 8);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board, List.of("♣", "♠"), 1)).bestMove(), 8);
   }
 
   @Test
@@ -120,7 +140,7 @@ public class AlphaBetaTest {
             });
     Assert.assertThrows(
         IllegalArgumentException.class,
-        () -> new AlphaBeta(new GameState(board, List.of("♣", "♠", "♦"), 1)));
+        () -> new AlphaBeta(new GameState(UUID.randomUUID(), board, List.of("♣", "♠", "♦"), 1)));
   }
 
   @Test
@@ -134,7 +154,8 @@ public class AlphaBetaTest {
               {"♣", "♠", "_", "_"},
               {"_", "♠", "_", "_"}
             });
-    assertEquals(new AlphaBeta(new GameState(board, List.of("♣", "♠"), 1)).bestMove(), 1);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board, List.of("♣", "♠"), 1)).bestMove(), 1);
   }
 
   @Ignore(
@@ -151,7 +172,7 @@ public class AlphaBetaTest {
               {"_", "_", "_", "_"},
               {"_", "_", "_", "_"}
             });
-    GameState state = new GameState(board, List.of("♣", "♠"), 1);
+    GameState state = new GameState(UUID.randomUUID(), board, List.of("♣", "♠"), 1);
     BotStrategyConfig config = BotStrategyConfig.newBuilder().maxDepth(3).build();
     assertTrue(new AlphaBeta(state, config).bestMove() > 0);
   }
@@ -165,7 +186,8 @@ public class AlphaBetaTest {
               {"O", "_", "_"},
               {"O", "X", "X"}
             });
-    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 4);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board, List.of("O", "X"), 0)).bestMove(), 4);
   }
 
   @Test
@@ -177,6 +199,7 @@ public class AlphaBetaTest {
               {"X", "X", "_"},
               {"_", "_", "_"}
             });
-    assertEquals(new AlphaBeta(new GameState(board, List.of("O", "X"), 0)).bestMove(), 2);
+    assertEquals(
+        new AlphaBeta(new GameState(UUID.randomUUID(), board, List.of("O", "X"), 0)).bestMove(), 2);
   }
 }

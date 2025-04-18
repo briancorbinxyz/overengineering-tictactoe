@@ -5,6 +5,7 @@ import static org.testng.Assert.assertTrue;
 import static org.xxdc.oss.example.TestData.*;
 
 import java.util.List;
+import java.util.UUID;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xxdc.oss.example.bot.BotStrategyConfig;
@@ -39,12 +40,18 @@ public class MonteCarloTreeSearchTest {
             });
 
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[0], List.of("X", "O"), 1)).bestMove(), 2);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 1))
+            .bestMove(),
+        2);
     Assert.assertTrue(board[1].withMove("X", 8).hasChain("X"));
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 8);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 1))
+            .bestMove(),
+        8);
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[2], List.of("X", "O"), 1)).bestMove(), 8);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 1))
+            .bestMove(),
+        8);
   }
 
   @Test
@@ -93,17 +100,29 @@ public class MonteCarloTreeSearchTest {
               {"O", "_", "_"}
             });
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[0], List.of("X", "O"), 0)).bestMove(), 2);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 0))
+            .bestMove(),
+        2);
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[1], List.of("X", "O"), 0)).bestMove(), 8);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 0))
+            .bestMove(),
+        8);
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[2], List.of("X", "O"), 0)).bestMove(), 7);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 0))
+            .bestMove(),
+        7);
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[3], List.of("X", "O"), 1)).bestMove(), 5);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[3], List.of("X", "O"), 1))
+            .bestMove(),
+        5);
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[4], List.of("X", "O"), 1)).bestMove(), 8);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[4], List.of("X", "O"), 1))
+            .bestMove(),
+        8);
     assertEquals(
-        new MonteCarloTreeSearch(new GameState(board[5], List.of("X", "O"), 1)).bestMove(), 0);
+        new MonteCarloTreeSearch(new GameState(UUID.randomUUID(), board[5], List.of("X", "O"), 1))
+            .bestMove(),
+        0);
   }
 
   @Test
@@ -118,7 +137,7 @@ public class MonteCarloTreeSearchTest {
             });
     var mcts =
         new MonteCarloTreeSearch(
-            new GameState(board, List.of("/", "X", "O"), 0),
+            new GameState(UUID.randomUUID(), board, List.of("/", "X", "O"), 0),
             BotStrategyConfig.newBuilder().maxTimeMillis(1000L).build());
     assertEquals(mcts.bestMove(), 8);
     // Monte Carlo Tree Search will be able to predict the player '/'
@@ -127,19 +146,19 @@ public class MonteCarloTreeSearchTest {
     // due to the next opponent being expected to block.
     assertEquals(
         new MonteCarloTreeSearch(
-                new GameState(board, List.of("X", "/", "O"), 0),
+                new GameState(UUID.randomUUID(), board, List.of("X", "/", "O"), 0),
                 BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build())
             .bestMove(),
         8);
     assertEquals(
         new MonteCarloTreeSearch(
-                new GameState(board, List.of("X", "O", "/"), 0),
+                new GameState(UUID.randomUUID(), board, List.of("X", "O", "/"), 0),
                 BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build())
             .bestMove(),
         8);
     assertEquals(
         new MonteCarloTreeSearch(
-                new GameState(board, List.of("O", "/", "X"), 0),
+                new GameState(UUID.randomUUID(), board, List.of("O", "/", "X"), 0),
                 BotStrategyConfig.newBuilder().maxTimeMillis(1_000L).build())
             .bestMove(),
         8);
@@ -158,7 +177,7 @@ public class MonteCarloTreeSearchTest {
             });
     var mcts =
         new MonteCarloTreeSearch(
-            new GameState(board, List.of("O", "X"), 0),
+            new GameState(UUID.randomUUID(), board, List.of("O", "X"), 0),
             BotStrategyConfig.newBuilder().maxIterations(1).build());
     assertTrue(List.of(1, 4, 5).contains(mcts.bestMove()));
   }
@@ -176,7 +195,7 @@ public class MonteCarloTreeSearchTest {
             });
     var mcts =
         new MonteCarloTreeSearch(
-            new GameState(board, List.of("O", "X"), 0),
+            new GameState(UUID.randomUUID(), board, List.of("O", "X"), 0),
             BotStrategyConfig.newBuilder().maxIterations(1000).build());
     assertEquals(mcts.bestMove(), 4);
   }
