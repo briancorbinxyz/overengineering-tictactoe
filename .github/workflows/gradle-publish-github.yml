@@ -44,8 +44,8 @@ jobs:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ vars.SIGNING_KEY_ID }}
-        ORG_GRADLE_PROJECT_singingInMemoryKey: ${{ secrets.SIGNING_KEY }}
-        ORG_GRADLE_PROJECT_singingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+        ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+        ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
         ORG_GRADLE_PROJECT_signing_gnupg_keyName: ${{ vars.SIGNING_KEY_ID }}
         ORG_GRADLE_PROJECT_signing_gnupg_passphrase: ${{ secrets.SIGNING_PASSWORD }}
 
