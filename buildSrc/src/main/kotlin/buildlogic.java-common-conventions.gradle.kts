@@ -70,7 +70,7 @@ testing {
     }
 }
 
-val projectVersion by extra("2.1.0")
+val projectVersion by extra("2.1.1")
 
 public val jdkVersion = 24
 // Apply a specific Java toolchain to ease working on different environments.
@@ -81,7 +81,7 @@ java {
     }
 }
 
-val isSnapshot = true
+val isSnapshot = false
 version = if (isSnapshot) {
     "$projectVersion-jdk${jdkVersion}-SNAPSHOT"
 } else {
