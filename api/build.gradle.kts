@@ -112,6 +112,8 @@ publishing {
 }
 
 signing {
-    useGpgCmd()
+    if (project.hasProperty("useGpg")) {
+        useGpgCmd()
+    }
     sign(publishing.publications)
 }
