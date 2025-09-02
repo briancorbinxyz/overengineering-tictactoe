@@ -59,9 +59,15 @@ tasks.run.configure {
 
 // Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
 tasks.register("installGitHook") {
+    val projectRootDir = project.rootDir // Capture project.rootDir at configuration time
+
     doLast {
-        val hooksDir = file("${rootDir}/.git/hooks")
+        val hooksDir = projectRootDir.resolve(".git/hooks")
         val preCommitFile = File(hooksDir, "pre-commit")
+
+        if (!hooksDir.exists()) {
+            hooksDir.mkdirs() // Create the hooks directory if it doesn't exist
+        }
 
         if (!preCommitFile.exists()) {
             preCommitFile.writeText(
@@ -71,9 +77,9 @@ tasks.register("installGitHook") {
                 """.trimIndent()
             )
             preCommitFile.setExecutable(true)
-            println("Pre-commit hook installed.")
+            logger.lifecycle("Pre-commit hook installed.")
         } else {
-            println("Pre-commit hook already exists.")
+            logger.lifecycle("Pre-commit hook already exists.")
         }
     }
 }
