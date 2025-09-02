@@ -16,7 +16,7 @@
           </compositeBuild>
         </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="temurin-23" />
+        <option name="gradleJvm" value="temurin-24" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -27,6 +27,7 @@
             <option value="$PROJECT_DIR$/tcp-gameserver" />
           </set>
         </option>
+        <option name="resolveExternalAnnotations" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

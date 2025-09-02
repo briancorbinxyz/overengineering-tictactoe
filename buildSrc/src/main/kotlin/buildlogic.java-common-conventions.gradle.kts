@@ -37,6 +37,7 @@ fun Project.configureSpotless() {
             // 77:27: error: : or -> expected
             // com.google.googlejavaformat.java.FormatterException: 77:27: error: : or -> expected
             targetExclude(
+                "**/AppLite.java",
                 "**/GamePersistence.java",
                 "**/GameClient.java",
                 "**/**Persona.java",
