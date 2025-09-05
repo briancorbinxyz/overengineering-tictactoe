@@ -9,6 +9,19 @@ Developed to pair with the ongoing blog post: [Road to JDK 25 - Over-Engineering
 
 ---
 
+### Algorithms
+
+The following algorithms are used by the AI BOT in this project - for a detailed discussion see [Road to JDK 25 - An Algorithmic Interlude](https://briancorbinxyz.medium.com/over-engineering-tic-tac-toe-an-algorithmic-interlude-8af3aa13173a):
+
+- [Random](https://en.wikipedia.org/wiki/Randomness) See: [Random.java](api/src/main/java/org/xxdc/oss/example/bot/Random.java)
+- [Minimax](https://en.wikipedia.org/wiki/Minimax) See: [Minimax.java](api/src/main/java/org/xxdc/oss/example/bot/Minimax.java)
+- [Minimax w. Alpha-Beta](https://en.wikipedia.org/wiki/Alpha-beta_pruning) See: [AlphaBeta.java](api/src/main/java/org/xxdc/oss/example/bot/AlphaBeta.java)
+- [MaxN](https://en.wikipedia.org/wiki/Maxn_algorithm) See: [MaxN.java](api/src/main/java/org/xxdc/oss/example/bot/MaxN.java)
+- [Paranoid](https://en.wikipedia.org/wiki/Paranoid_AI) See: [Paranoid.java](api/src/main/java/org/xxdc/oss/example/bot/Paranoid.java)
+- [Monte Carlo Tree Search](https://en.wikipedia.org/wiki/Monte_Carlo_method) See [MonteCarloTreeSearch.java](api/src/main/java/org/xxdc/oss/example/bot/MonteCarloTreeSearch.java)
+
+---
+
 ### Features
 
 https://openjdk.org/projects/jdk/25/
@@ -73,8 +86,8 @@ https://openjdk.org/projects/jdk/18/
 
 - **JEP400**:	UTF-8 by Default
   - Source files and runtime default charset assume UTF-8; no special handling required.
-- **JEP408**:	Simple Web Server
-  - Not used in this project; server components use TCP sockets.
+- **JEP408**:	Simple Web Server (See: [serve.sh](app/scripts/serve.sh))
+  - Uses JDK's built-in `jwebserver` via helper script to serve static files locally; see Quick Start below.
 - **JEP413**:	Code Snippets in Java API Documentation (See: [Player.java](api/src/main/java/org/xxdc/oss/example/Player.java))
   - Uses `@snippet` to embed example usage directly in Javadoc.
 - **JEP421**:	Deprecate Finalization for Removal (See: [TicTacToeGameBoard.java](native/src/main/java/org/xxdc/oss/example/interop/TicTacToeGameBoard.java))
@@ -82,7 +95,7 @@ https://openjdk.org/projects/jdk/18/
 
 https://openjdk.org/projects/jdk/17/
 
-- **JEP421**:	Deprecate Finalization for Removal
+- **JEP421**:	Deprecate Finalization for Removal (See: [TicTacToeGameBoard.java](native/src/main/java/org/xxdc/oss/example/interop/TicTacToeGameBoard.java))
   - Uses `Cleaner` over finalization for native resource management.
 - **JEP409**:	Sealed Classes (See: [StrategicTurningPoint.java](api/src/main/java/org/xxdc/oss/example/analysis/StrategicTurningPoint.java))
   - `StrategicTurningPoint` is a sealed interface with record implementations.
@@ -91,20 +104,6 @@ https://openjdk.org/projects/jdk/17/
     - Example tasks: `./gradlew :app:nativeCompile`, `./gradlew :app:nativeRun`
 - **JEP415**:	Context-Specific Deserialization Filters (See: [GamePersistence.java](api/src/main/java/org/xxdc/oss/example/GamePersistence.java))
   - Applies an `ObjectInputFilter` before deserialization and uses guarded checks.
-
----
-
-### Algorithms
-
-The following algorithms are used by the AI BOT in this project - for a detailed discussion see [Road to JDK 25 - An Algorithmic Interlude](https://briancorbinxyz.medium.com/over-engineering-tic-tac-toe-an-algorithmic-interlude-8af3aa13173a):
-
-- [Random](https://en.wikipedia.org/wiki/Randomness) See: [Random.java](api/src/main/java/org/xxdc/oss/example/bot/Random.java)
-- [Minimax](https://en.wikipedia.org/wiki/Minimax) See: [Minimax.java](api/src/main/java/org/xxdc/oss/example/bot/Minimax.java)
-- [Minimax w. Alpha-Beta](https://en.wikipedia.org/wiki/Alpha-beta_pruning) See: [AlphaBeta.java](api/src/main/java/org/xxdc/oss/example/bot/AlphaBeta.java)
-- [MaxN](https://en.wikipedia.org/wiki/Maxn_algorithm) See: [MaxN.java](api/src/main/java/org/xxdc/oss/example/bot/MaxN.java)
-- [Paranoid](https://en.wikipedia.org/wiki/Paranoid_AI) See: [Paranoid.java](api/src/main/java/org/xxdc/oss/example/bot/Paranoid.java)
-- [Monte Carlo Tree Search](https://en.wikipedia.org/wiki/Monte_Carlo_method) See [MonteCarloTreeSearch.java](api/src/main/java/org/xxdc/oss/example/bot/MonteCarloTreeSearch.java)
-
 
 ---
 
@@ -134,9 +133,10 @@ sdk install java 24-tem
 
 #### Simple Web Server (JEP 408)
 
-- Serve the project directory (e.g., to host `index.html`) using JDK’s built-in `jwebserver`:
+- Serve the project directory (e.g., to host `index.html`) using JDK’s built-in `jwebserver` via the helper script `serve.sh` (wraps `jwebserver`). Usage: `serve.sh <port> <directory>`:
 
 ```bash
+# Serve current directory on port 8000
 app/scripts/serve.sh 8000 .
 # then open http://localhost:8000
 ```
