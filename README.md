@@ -14,6 +14,7 @@ Developed to pair with the ongoing blog post: [Road to JDK 25 - Over-Engineering
 https://openjdk.org/projects/jdk/25/
 
 - **JEP512**:   Compact Source Files and Instance Main Methods
+- **JEP506**:   Scoped Values
 
 https://openjdk.org/projects/jdk/24/
 - **JEP496**:   Quantum-Resistant Module-Lattice-Based Key Encapsulation Mechanism

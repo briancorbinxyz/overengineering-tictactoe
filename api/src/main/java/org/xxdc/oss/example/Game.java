@@ -22,6 +22,8 @@ public class Game implements Serializable, AutoCloseable {
 
   private static final Logger log = System.getLogger(Game.class.getName());
 
+  private static final ScopedValue<GameContext> gameContext = ScopedValue.newInstance();
+
   private static final long serialVersionUID = 1L;
 
   private final UUID gameId;
@@ -61,8 +63,7 @@ public class Game implements Serializable, AutoCloseable {
     this.moveNumber = 0;
     this.gameState = new ArrayDeque<>();
     this.gameState.add(
-        new GameState(
-            gameId, GameBoard.withDimension(size), this.playerNodes.playerMarkerList(), 0));
+        new GameState(GameBoard.withDimension(size), this.playerNodes.playerMarkerList(), 0));
     this.persistenceEnabled = persistenceEnabled;
   }
 
@@ -108,41 +109,49 @@ public class Game implements Serializable, AutoCloseable {
    * @param postMoveAction The action to perform after a move is made (if any)
    */
   public void playWithAction(Consumer<Game> postMoveAction) {
-    try {
-      GamePersistence persistence = new GamePersistence();
-      File persistenceDir = gameFileDirectory();
-      GameState state = currentGameState();
-      boolean movesAvailable = state.hasMovesAvailable();
-      PlayerNode currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
-      Optional<String> winningPlayer = checkWon(state);
+    ScopedValue.where(gameContext, newGameContext())
+        .run(
+            () -> {
+              try {
+                GamePersistence persistence = new GamePersistence();
+                File persistenceDir = gameFileDirectory();
+                GameState state = currentGameState();
+                boolean movesAvailable = state.hasMovesAvailable();
+                PlayerNode currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
+                Optional<String> winningPlayer = checkWon(state);
 
-      // Print Initial Setup
-      playerNodes.render();
-      while (winningPlayer.isEmpty() && movesAvailable) {
-        renderBoard();
-        log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
-        moveNumber += 1;
-        var newState = state.afterPlayerMoves(currentPlayer.applyAsInt(state));
-        state = pushGameState(newState);
-        if (persistenceEnabled && state.board() instanceof Serializable) {
-          persistence.saveTo(gameFile(persistenceDir), this);
-        }
-        winningPlayer = checkWon(state);
-        movesAvailable = state.hasMovesAvailable();
-        currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
-        if (postMoveAction != null) {
-          postMoveAction.accept(this);
-        }
-      }
+                // Print Initial Setup
+                playerNodes.render();
+                while (winningPlayer.isEmpty() && movesAvailable) {
+                  renderBoard();
+                  log.log(Level.DEBUG, "Current Player: {0}", currentPlayer.playerMarker());
+                  moveNumber += 1;
+                  var newState = state.afterPlayerMoves(currentPlayer.applyAsInt(state));
+                  state = pushGameState(newState);
+                  if (persistenceEnabled && state.board() instanceof Serializable) {
+                    persistence.saveTo(gameFile(persistenceDir), this);
+                  }
+                  winningPlayer = checkWon(state);
+                  movesAvailable = state.hasMovesAvailable();
+                  currentPlayer = playerNodes.byIndex(state.currentPlayerIndex());
+                  if (postMoveAction != null) {
+                    postMoveAction.accept(this);
+                  }
+                }
 
-      winningPlayer.ifPresentOrElse(
-          p -> log.log(Level.INFO, "Winner: Player {0}!", p),
-          () -> log.log(Level.INFO, "Tie Game!"));
-      renderBoard();
-      close();
-    } catch (Exception e) {
-      throw new GameServiceException("Failure whilst playing game: " + e.getMessage(), e);
-    }
+                winningPlayer.ifPresentOrElse(
+                    p -> log.log(Level.INFO, "Winner: Player {0}!", p),
+                    () -> log.log(Level.INFO, "Tie Game!"));
+                renderBoard();
+                close();
+              } catch (Exception e) {
+                throw new GameServiceException("Failure whilst playing game: " + e.getMessage(), e);
+              }
+            });
+  }
+
+  private GameContext newGameContext() {
+    return new GameContext.Builder().id(id().toString()).build();
   }
 
   /**
@@ -173,8 +182,18 @@ public class Game implements Serializable, AutoCloseable {
     return gameState;
   }
 
+  /** Returns the current move number. */
   public int moveNumber() {
     return moveNumber;
+  }
+
+  /** Returns the current game context, if any. */
+  public static Optional<GameContext> gameContext() {
+    return gameContext.isBound() ? Optional.of(gameContext.get()) : Optional.empty();
+  }
+
+  public static boolean isGameContextSet() {
+    return gameContext.isBound();
   }
 
   private Optional<String> checkWon(GameState state) {
@@ -188,7 +207,7 @@ public class Game implements Serializable, AutoCloseable {
   }
 
   private File gameFile(File persistenceDir) {
-    return new File(persistenceDir, String.valueOf(gameId) + "." + moveNumber + ".game");
+    return new File(persistenceDir, gameId + "." + moveNumber + ".game");
   }
 
   private GameState pushGameState(GameState state) {
