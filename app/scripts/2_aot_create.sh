@@ -1,2 +1,8 @@
 #!/usr/bin/env sh
-java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot --enable-native-access=ALL-UNNAMED --enable-preview  -cp "$(gradle -q buildClasspath)" org.xxdc.oss.example.AppTrainer
+java -XX:AOTMode=create \
+  -XX:AOTConfiguration=app.aotconf \
+  -XX:AOTCache=app.aot \
+  --enable-native-access=ALL-UNNAMED \
+  --enable-preview \
+  -cp "$(gradle -q buildClasspath)" \
+  org.xxdc.oss.example.AppTrainer

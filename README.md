@@ -31,6 +31,9 @@ https://openjdk.org/projects/jdk/25/
   - How to run: [run_lite.sh](app/scripts/run_lite.sh)
 - **JEP506**:   Scoped Values (See: [Game.java](api/src/main/java/org/xxdc/oss/example/Game.java), [GameTest.java](api/src/test/java/org/xxdc/oss/example/GameTest.java))
   - Uses `ScopedValue` to bind a per-play `GameContext` (see: [GameContext.java](api/src/main/java/org/xxdc/oss/example/GameContext.java)) with `id` and `createdAt`, scoped strictly to `play()` execution; verified in tests.
+- **JEP514**:   Ahead-of-Time Command-Line Ergonomics (See: [2a_aot_record_create_one_step.sh](app/scripts/2a_aot_record_create_one_step.sh))
+  - One-step AOT workflow using `-XX:AOTCacheOutput=app.aot` to record and create in a single invocation. Production runs use `-XX:AOTCache=app.aot` (see: [3a_aot_run.sh](app/scripts/3a_aot_run.sh)).
+  - Optional: Set `JDK_AOT_VM_OPTIONS` to pass options that apply only during the cache creation phase.
 
 https://openjdk.org/projects/jdk/24/
 
@@ -129,6 +132,46 @@ sdk install java 24-tem
 ```bash
 ./gradlew :app:nativeCompile
 ./gradlew :app:nativeRun
+```
+
+#### AOT Quick Start (JDK24+)
+
+- Requires a JDK with AOT cache support. For the one-step workflow (JEP 514), use JDK 25+.
+
+- One-step record+create (JDK25+):
+
+```bash
+# Create AOT cache in a single invocation (produces app.aot)
+app/scripts/2a_aot_record_create_one_step.sh
+
+# Run with the generated AOT cache
+app/scripts/3a_aot_run.sh
+```
+
+- Two-step workflow (works on JDK24+):
+
+```bash
+# 1) Record training configuration
+app/scripts/1_aot_record.sh
+
+# 2) Create the AOT cache (produces app.aot)
+app/scripts/2_aot_create.sh
+
+# 3) Run with the AOT cache
+app/scripts/3a_aot_run.sh
+```
+
+- Optional (JEP 514): Pass flags only for the create phase by setting `JDK_AOT_VM_OPTIONS`:
+
+```bash
+export JDK_AOT_VM_OPTIONS="-Xms512m -Xmx512m"
+app/scripts/2a_aot_record_create_one_step.sh
+```
+
+- Benchmark (optional): Requires `hyperfine` (see project page: https://github.com/sharkdp/hyperfine). Ensure you've created the AOT cache first using the steps above (one-step or two-step), then run:
+
+```bash
+hyperfine -n standard './scripts/bench.sh' -n aot './scripts/bench.sh --aot'
 ```
 
 #### Simple Web Server (JEP 408)
