@@ -3,7 +3,7 @@ package org.xxdc.oss.example;
 import java.util.Objects;
 
 /// The context of a game.
-public record GameContext(String id) {
+public record GameContext(String id, long createdAt) {
 
   /// A builder for creating a game context.
   public static final class Builder {
@@ -18,7 +18,7 @@ public record GameContext(String id) {
     /// Builds the game context.
     public GameContext build() {
       Objects.requireNonNull(id);
-      return new GameContext(id);
+      return new GameContext(id, System.currentTimeMillis());
     }
   }
 }

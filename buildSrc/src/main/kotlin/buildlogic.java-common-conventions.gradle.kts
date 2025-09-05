@@ -42,6 +42,7 @@ fun Project.configureSpotless() {
                 "**/GameClient.java",
                 "**/**Persona.java",
                 "**/PlayerPrinter.java",
+                "**/GameContextTest.java",
             )
             googleJavaFormat("1.25.2")
                 .reflowLongStrings()
