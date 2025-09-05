@@ -23,7 +23,8 @@ public class AnalyzersTest {
     var strategicTurningPoints = states.stream().gather(strategicTurningPoints()).toList();
 
     assertEquals(strategicTurningPoints.size(), 1);
-    assertTrue(strategicTurningPoints.getFirst() instanceof StrategicTurningPoint.CenterSquareControl);
+    assertTrue(
+        strategicTurningPoints.getFirst() instanceof StrategicTurningPoint.CenterSquareControl);
   }
 
   @Test
