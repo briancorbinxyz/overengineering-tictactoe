@@ -36,6 +36,8 @@ public class Game implements Serializable, AutoCloseable {
 
   private int moveNumber;
 
+  private final transient Consumer<GameContext.Builder> contextCustomizer;
+
   /**
    * Constructs a new {@link Game} instance with a 3x3 game board, persistence enabled, and a human
    * player as player 'X' and a bot player as player 'O'.
@@ -43,7 +45,8 @@ public class Game implements Serializable, AutoCloseable {
   public Game() {
     this(
         3,
-        true,
+        false,
+        (Consumer<GameContext.Builder>) null,
         new PlayerNode.Local<>("X", new HumanPlayer()),
         new PlayerNode.Local<>("O", new BotPlayer()));
   }
@@ -58,6 +61,18 @@ public class Game implements Serializable, AutoCloseable {
    *     implementation.
    */
   public Game(int size, boolean persistenceEnabled, PlayerNode... players) {
+    this(size, persistenceEnabled, (Consumer<GameContext.Builder>) null, players);
+  }
+
+  /**
+   * Constructs a new {@link Game} with the ability to customize the {@link GameContext} before it
+   * is built, allowing callers to enrich metadata.
+   */
+  public Game(
+      int size,
+      boolean persistenceEnabled,
+      Consumer<GameContext.Builder> contextCustomizer,
+      PlayerNode... players) {
     this.playerNodes = PlayerNodes.of(players);
     this.gameId = UUID.randomUUID();
     this.moveNumber = 0;
@@ -65,6 +80,20 @@ public class Game implements Serializable, AutoCloseable {
     this.gameState.add(
         new GameState(GameBoard.withDimension(size), this.playerNodes.playerMarkerList(), 0));
     this.persistenceEnabled = persistenceEnabled;
+    this.contextCustomizer = contextCustomizer;
+  }
+
+  /**
+   * Convenience constructor with default size and persistence flags, but allowing context
+   * customization.
+   */
+  public Game(Consumer<GameContext.Builder> contextCustomizer) {
+    this(
+        3,
+        false,
+        contextCustomizer,
+        new PlayerNode.Local<>("X", new HumanPlayer()),
+        new PlayerNode.Local<>("O", new BotPlayer()));
   }
 
   /**
@@ -151,7 +180,11 @@ public class Game implements Serializable, AutoCloseable {
   }
 
   private GameContext newGameContext() {
-    return new GameContext.Builder().id(id().toString()).build();
+    var builder = new GameContext.Builder().id(id().toString());
+    if (contextCustomizer != null) {
+      contextCustomizer.accept(builder);
+    }
+    return builder.build();
   }
 
   /**

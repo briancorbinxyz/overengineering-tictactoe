@@ -74,6 +74,16 @@ tasks.run.configure {
     standardInput = System.`in`
 }
 
+// Convenience task to run the lightweight HTTP+Game demo entrypoint
+tasks.register<JavaExec>("runLiteHttp") {
+    group = "application"
+    description = "Run the AppLiteHttp demo that performs an HTTP GET then plays a game"
+    mainClass.set("org.xxdc.oss.example.AppLiteHttp")
+    classpath = sourceSets.main.get().runtimeClasspath
+    // Allow interactive input if needed
+    standardInput = System.`in`
+}
+
 // Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
 tasks.register("installGitHook") {
     val projectRootDir = project.rootDir // Capture project.rootDir at configuration time

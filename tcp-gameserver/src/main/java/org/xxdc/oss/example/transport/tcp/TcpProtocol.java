@@ -2,7 +2,6 @@ package org.xxdc.oss.example.transport.tcp;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.xxdc.oss.example.GameBoard;
@@ -50,17 +49,10 @@ public class TcpProtocol {
   public static final String NEXT_MOVE_JSON_FORMAT =
       "{" + "\"version\":1," + "\"message\":\"nextMove\"," + "\"state\":%s" + "}";
 
-  /**
-   * A regular expression pattern that matches a JSON string representing a "next move" message. The
-   * pattern captures the following groups: 1. The version number as an integer 2. The message type
-   * as a string 3. The game ID as a string 4. The player markers as a comma-separated string 5. The
-   * index of the current player as an integer 6. The dimension of the game board as an integer 7.
-   * The content of the game board as a comma-separated string
-   */
   public static final Pattern NEXT_MOVE_JSON_PATTERN =
       Pattern.compile(
           "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\","
-              + "\\\"state\\\":\\{\\\"gameId\\\":\\\"([^\\\"]+)\\\",\\\"playerMarkers\\\":\\[(.*)\\],\\\"currentPlayerIndex\\\":(\\d+),"
+              + "\\\"state\\\":\\{\\\"playerMarkers\\\":\\[(.*)\\],\\\"currentPlayerIndex\\\":(\\d+),"
               + "\\\"board\\\":\\{\\\"dimension\\\":(\\d+),\\\"content\\\":\\[(.*)\\]\\}.*\\}}");
 
   /**
@@ -85,19 +77,17 @@ public class TcpProtocol {
     Matcher matcher = TcpProtocol.NEXT_MOVE_JSON_PATTERN.matcher(serverMessage);
     GameState state = null;
     if (matcher.matches()) {
-      String gameId = matcher.group(3);
-      String[] playerMarkers = matcher.group(4).replace("\"", "").split(",");
-      int currentPlayerIndex = Integer.parseInt(matcher.group(5));
-      int dimension = Integer.parseInt(matcher.group(6));
+      String[] playerMarkers = matcher.group(3).replace("\"", "").split(",");
+      int currentPlayerIndex = Integer.parseInt(matcher.group(4));
+      int dimension = Integer.parseInt(matcher.group(5));
       var board = GameBoard.withDimension(dimension);
-      String[] rawContent = matcher.group(7).split(",");
+      String[] rawContent = matcher.group(6).split(",");
       for (int i = 0; i < rawContent.length; i++) {
         if (rawContent[i] != null && !rawContent[i].equals("null")) {
           board = board.withMove(rawContent[i].replace("\"", ""), i);
         }
       }
-      state =
-          new GameState(UUID.fromString(gameId), board, List.of(playerMarkers), currentPlayerIndex);
+      state = new GameState(board, List.of(playerMarkers), currentPlayerIndex);
     }
     return Optional.ofNullable(state);
   }

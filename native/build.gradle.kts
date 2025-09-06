@@ -1,4 +1,5 @@
 import java.util.*
+import java.io.File
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
@@ -37,6 +38,13 @@ testing {
 val osName = System.getProperty("os.name").lowercase()
 val osArch = System.getProperty("os.arch").lowercase()
 
+fun isOnPath(cmd: String): Boolean {
+    val path = System.getenv("PATH") ?: return false
+    val suffix = if (osName.contains("win")) ".exe" else ""
+    return path.split(File.pathSeparator).any { dir -> File(dir, cmd + suffix).canExecute() }
+}
+val hasCargo = isOnPath("cargo")
+
 val cargoBuildDir = file("${layout.buildDirectory.get()}/cargo")
 
 val libPath = when {
@@ -57,6 +65,7 @@ val libName = System.mapLibraryName("xxdc_oss_tictactoe")
 // Rust Build Start
 //
 tasks.register<Exec>("formatRust") {
+    onlyIf { hasCargo }
     workingDir = file("src/main/rust")
     commandLine = listOf("cargo", "fmt")
 }
@@ -66,6 +75,7 @@ tasks.register<Exec>("cargoFmt") {
 }
 
 tasks.register<Exec>("buildRust") {
+    onlyIf { hasCargo }
     // https://doc.rust-lang.org/cargo/reference/environment-variables.html
     environment("CARGO_TARGET_DIR", cargoBuildDir.absolutePath)
     workingDir = file("src/main/rust")
@@ -77,7 +87,7 @@ tasks.register<Exec>("cargoBuild") {
 }
 
 tasks.named("compileJava") {
-    dependsOn("buildRust")
+    if (hasCargo) dependsOn("buildRust")
 }
 // clean up the Rust build artifacts
 tasks.register<Delete>("cleanRust") {
@@ -87,22 +97,25 @@ tasks.named("clean") {
     dependsOn("cleanRust")
 }
 tasks.named("build") {
-    dependsOn("formatRust")
+    if (hasCargo) dependsOn("formatRust")
 }
 tasks.register<Copy>("copyLib") {
+    onlyIf { hasCargo }
     from(libPath)
     into("src/main/resources/native")
     include(libName)
 }
 tasks.named("processResources") {
-    dependsOn("copyLib")
+    if (hasCargo) dependsOn("copyLib")
 }
 java {
     withSourcesJar()
 }
 tasks.named("sourcesJar") {
-    dependsOn(tasks.named("copyLib"))
-    inputs.files(tasks.named("copyLib").get().outputs.files)
+    if (hasCargo) {
+        dependsOn(tasks.named("copyLib"))
+        inputs.files(tasks.named("copyLib").get().outputs.files)
+    }
 }
 //
 // Rust Build End

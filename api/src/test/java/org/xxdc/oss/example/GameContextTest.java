@@ -26,14 +26,14 @@ public class GameContextTest {
 
   private String describeContext(Object o) {
     return switch (o) {
-      case GameContext(String id, long createdAt) -> "GameContext[id=%s, createdAt=%d]".formatted(id, createdAt);
+      case GameContext(String id, long createdAt, _) -> "GameContext[id=%s, createdAt=%d]".formatted(id, createdAt);
       default -> "Unknown";
     };
   }
 
   private String validateContext(Object o) {
     return switch (o) {
-      case GameContext(String id, long createdAt) when id != null && !id.isBlank() -> "valid";
+      case GameContext(String id, _, _) when id != null && !id.isBlank() -> "valid";
       case GameContext _ -> "invalid";
       default -> "unknown";
     };

@@ -29,6 +29,17 @@ https://openjdk.org/projects/jdk/25/
 - **JEP512**:   Compact Source Files and Instance Main Methods
   - See: [AppLite.java](app/src/main/java/org/xxdc/oss/example/AppLite.java) — compact source file with a top-level `main`.
   - How to run: [run_lite.sh](app/scripts/run_lite.sh)
+- **JEP511**:   Module Import Declarations
+  - See: `AppLiteHttp.java` uses `import module java.net.http;` to simplify imports while using the JDK HTTP client.
+    - File: [AppLiteHttp.java](app/src/main/java/org/xxdc/oss/example/AppLiteHttp.java)
+    - How to run: [run_lite_http.sh](app/scripts/run_lite_http.sh)
+  - Example (jshell):
+    ```java
+    import module java.net.http;
+    var client = HttpClient.newHttpClient();
+    var res = client.send(HttpRequest.newBuilder(java.net.URI.create("https://example.com")).build(), HttpResponse.BodyHandlers.ofString());
+    System.out.println(res.statusCode());
+    ```
 - **JEP506**:   Scoped Values (See: [Game.java](api/src/main/java/org/xxdc/oss/example/Game.java), [GameTest.java](api/src/test/java/org/xxdc/oss/example/GameTest.java))
   - Uses `ScopedValue` to bind a per-play `GameContext` (see: [GameContext.java](api/src/main/java/org/xxdc/oss/example/GameContext.java)) with `id` and `createdAt`, scoped strictly to `play()` execution; verified in tests.
 - **JEP514**:   Ahead-of-Time Command-Line Ergonomics (See: [2a_aot_record_create_one_step.sh](app/scripts/2a_aot_record_create_one_step.sh))
@@ -113,6 +124,8 @@ https://openjdk.org/projects/jdk/17/
 ### Quick Start
 
 - To run the single game application, use the following command: `./gradlew run`
+
+- To run the lite HTTP demo (JEP 511 + java.net.http), use: `app/scripts/run_lite_http.sh`
 
 - If you don't have Java installed on your system you can install it first with [SDKMAN](https://sdkman.io/) to build with a JDK 24 toolchain:
 
