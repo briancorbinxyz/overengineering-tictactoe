@@ -1,5 +1,7 @@
 package org.xxdc.oss.example;
 
+import java.util.Objects;
+
 /** Represents an exception that can occur when using the game service. */
 public class GameServiceException extends RuntimeException {
 
@@ -21,6 +23,7 @@ public class GameServiceException extends RuntimeException {
    * @param cause the underlying cause of the exception
    */
   public GameServiceException(String message, Throwable cause) {
+    Objects.requireNonNull(cause);
     super(message, cause);
   }
 }

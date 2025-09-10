@@ -40,6 +40,8 @@ https://openjdk.org/projects/jdk/25/
     var res = client.send(HttpRequest.newBuilder(java.net.URI.create("https://example.com")).build(), HttpResponse.BodyHandlers.ofString());
     System.out.println(res.statusCode());
     ```
+- **JEP513**:   Flexible Constructor Bodies
+  - Allows statements before `super(...)`. Example: [GameServiceException.java](api/src/main/java/org/xxdc/oss/example/GameServiceException.java) validates `cause` before `super(message, cause)`.
 - **JEP506**:   Scoped Values (See: [Game.java](api/src/main/java/org/xxdc/oss/example/Game.java), [GameTest.java](api/src/test/java/org/xxdc/oss/example/GameTest.java))
   - Uses `ScopedValue` to bind a per-play `GameContext` (see: [GameContext.java](api/src/main/java/org/xxdc/oss/example/GameContext.java)) with `id` and `createdAt`, scoped strictly to `play()` execution; verified in tests.
 - **JEP514**:   Ahead-of-Time Command-Line Ergonomics (See: [2a_aot_record_create_one_step.sh](app/scripts/2a_aot_record_create_one_step.sh))
