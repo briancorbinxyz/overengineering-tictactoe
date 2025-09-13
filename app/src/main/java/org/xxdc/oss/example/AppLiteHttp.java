@@ -1,7 +1,5 @@
 import org.xxdc.oss.example.Game;
 
-import static java.io.IO.println;
-
 import java.net.URI;
 import module java.net.http;
 
@@ -18,7 +16,7 @@ void main() {
       int status = res.statusCode();
       long latencyMs = (System.nanoTime() - t0) / 1_000_000;
       String message = status == 200 ? res.body() : ("status=" + status);
-      println("[Lite] " + message);
+      IO.println("[Lite] " + message);
 
       try (var game =
           new Game(
@@ -30,12 +28,12 @@ void main() {
                       .put("http.message", message))) {
         game.playWithAction(
             g -> {
-              if (g.moveNumber() == 1) Game.gameContext().ifPresent(c -> println(c));
+              if (g.moveNumber() == 1) Game.gameContext().ifPresent(c -> IO.println(c));
             });
       }
     } catch (Exception e) {
-      println("[Lite] Failed; ending game");
-      println(e.getMessage());
+      IO.println("[Lite] Failed; ending game");
+      IO.println(e.getMessage());
       e.printStackTrace();
     }
   }

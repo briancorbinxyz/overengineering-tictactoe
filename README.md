@@ -47,6 +47,9 @@ https://openjdk.org/projects/jdk/25/
 - **JEP514**:   Ahead-of-Time Command-Line Ergonomics (See: [2a_aot_record_create_one_step.sh](app/scripts/2a_aot_record_create_one_step.sh))
   - One-step AOT workflow using `-XX:AOTCacheOutput=app.aot` to record and create in a single invocation. Production runs use `-XX:AOTCache=app.aot` (see: [3a_aot_run.sh](app/scripts/3a_aot_run.sh)).
   - Optional: Set `JDK_AOT_VM_OPTIONS` to pass options that apply only during the cache creation phase.
+ - **JEP510**:   Key Derivation Function API (HKDF)
+   - Use HKDF-SHA256 (`javax.crypto.KDF`) to derive AES-GCM keys from the Kyber KEM secret (no raw slicing).
+   - See: [SecureDuplexMessageHandler.java](tcp-gameserver/src/main/java/org/xxdc/oss/example/transport/SecureDuplexMessageHandler.java)
 
 https://openjdk.org/projects/jdk/24/
 

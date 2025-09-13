@@ -106,3 +106,22 @@ signing {
     }
     sign(publishing.publications)
 }
+
+// Convenience tasks to print/build classpath similar to :app
+// Enables scripts to run with: gradle -q :tcp-gameserver:buildClasspath
+tasks.register("printClasspath") {
+    doLast {
+        val runtimeClasspath = sourceSets.main.get().runtimeClasspath.asPath
+        println(runtimeClasspath)
+    }
+}
+
+// NB: AOT cache cannot be created if there are non-empty directories in the classpath
+tasks.register("buildClasspath") {
+    dependsOn("jar") // Ensure the JAR is built before printing the classpath
+    doLast {
+        val jarPath = tasks.named("jar").get().outputs.files.singleFile.absolutePath
+        val runtimeClasspath = configurations.runtimeClasspath.get().asPath
+        println("$jarPath:$runtimeClasspath")
+    }
+}

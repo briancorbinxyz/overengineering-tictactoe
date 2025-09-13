@@ -45,7 +45,7 @@ fun Project.configureSpotless() {
                 "**/PlayerPrinter.java",
                 "**/GameContextTest.java",
             )
-            googleJavaFormat("1.25.2")
+            googleJavaFormat("1.27.0")
                 .reflowLongStrings()
             removeUnusedImports()
         }
@@ -75,12 +75,13 @@ testing {
 
 val projectVersion by extra("3.0.0")
 
-val jdkVersion = 24
+val jdkVersion = 25
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
-        vendor = JvmVendorSpec.ADOPTIUM
+        // Disable vendor check, enabling use of early access JDKs
+        // vendor = JvmVendorSpec.ADOPTIUM
     }
 }
 
