@@ -81,7 +81,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
         // Disable vendor check, enabling use of early access JDKs
-        // vendor = JvmVendorSpec.ADOPTIUM
+        vendor = JvmVendorSpec.AZUL
     }
 }
 

@@ -132,12 +132,12 @@ https://openjdk.org/projects/jdk/17/
 
 - To run the lite HTTP demo (JEP 511 + java.net.http), use: `app/scripts/run_lite_http.sh`
 
-- If you don't have Java installed on your system you can install it first with [SDKMAN](https://sdkman.io/) to build with a JDK 24 toolchain:
+- If you don't have Java installed on your system you can install it first with [SDKMAN](https://sdkman.io/) to build with a JDK 25 toolchain:
 
 ```bash
 curl -s "https://get.sdkman.io" | bash
 
-sdk install java 24-tem
+sdk install java 25-zulu
 
 ./gradlew run
 ```
