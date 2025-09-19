@@ -36,6 +36,23 @@ graalvmNative {
                 languageVersion = java.toolchain.languageVersion
                 vendor = JvmVendorSpec.matching("Oracle")
             }
+            // Enable preview features for native-image build and hosted JVM
+            buildArgs.add("--enable-preview")
+            jvmArgs.add("--enable-preview")
+            // Initialize SLF4J JDK platform logging: default to run time, but allow specific
+            // SystemLoggerFinder class at build time to avoid image-heap object errors
+            buildArgs.add("--initialize-at-run-time=org.slf4j.jdk.platform.logging")
+            buildArgs.add("--initialize-at-build-time=org.slf4j.jdk.platform.logging.SLF4JSystemLoggerFinder")
+            buildArgs.add("--initialize-at-build-time=org.slf4j.jdk.platform.logging.SLF4JPlatformLoggerFactory")
+            buildArgs.add("--initialize-at-build-time=org.slf4j.jdk.platform.logging.SLF4JPlatformLogger")
+            // Initialize Logback at run time to avoid opening resources during image build
+            buildArgs.add("--initialize-at-run-time=ch.qos.logback")
+            // But allow the core logger classes at build time to avoid image-heap object errors
+            buildArgs.add("--initialize-at-build-time=ch.qos.logback.classic.Logger")
+            buildArgs.add("--initialize-at-build-time=ch.qos.logback.classic.LoggerContext")
+            buildArgs.add("--initialize-at-build-time=ch.qos.logback.classic.spi.TurboFilterList")
+            // (Optional) Trace for diagnosing remaining instantiations during image build
+            // buildArgs.add("--trace-object-instantiation=ch.qos.logback.classic.Logger")
         }
     }
 }
@@ -57,11 +74,27 @@ tasks.run.configure {
     standardInput = System.`in`
 }
 
+// Convenience task to run the lightweight HTTP+Game demo entrypoint
+tasks.register<JavaExec>("runLiteHttp") {
+    group = "application"
+    description = "Run the AppLiteHttp demo that performs an HTTP GET then plays a game"
+    mainClass.set("org.xxdc.oss.example.AppLiteHttp")
+    classpath = sourceSets.main.get().runtimeClasspath
+    // Allow interactive input if needed
+    standardInput = System.`in`
+}
+
 // Install a pre-commit hook to run the Gradle task "spotlessApply" before committing changes.
 tasks.register("installGitHook") {
+    val projectRootDir = project.rootDir // Capture project.rootDir at configuration time
+
     doLast {
-        val hooksDir = file("${rootDir}/.git/hooks")
+        val hooksDir = projectRootDir.resolve(".git/hooks")
         val preCommitFile = File(hooksDir, "pre-commit")
+
+        if (!hooksDir.exists()) {
+            hooksDir.mkdirs() // Create the hooks directory if it doesn't exist
+        }
 
         if (!preCommitFile.exists()) {
             preCommitFile.writeText(
@@ -71,9 +104,9 @@ tasks.register("installGitHook") {
                 """.trimIndent()
             )
             preCommitFile.setExecutable(true)
-            println("Pre-commit hook installed.")
+            logger.lifecycle("Pre-commit hook installed.")
         } else {
-            println("Pre-commit hook already exists.")
+            logger.lifecycle("Pre-commit hook already exists.")
         }
     }
 }

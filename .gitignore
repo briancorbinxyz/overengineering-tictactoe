@@ -37,3 +37,6 @@ Cargo.lock
 */bin/
 native/src/main/resources/native/
 buildSrc/.kotlin
+
+# Java Flight Recorder
+**/*.jfr

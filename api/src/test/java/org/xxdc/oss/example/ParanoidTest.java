@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.xxdc.oss.example.TestData.*;
 
 import java.util.List;
-import java.util.UUID;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xxdc.oss.example.bot.Paranoid;
@@ -38,17 +37,11 @@ public class ParanoidTest {
             });
 
     Assert.assertTrue(board[0].withMove("X", 2).hasChain("X"));
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 0)).bestMove(),
-        2);
+    assertEquals(new Paranoid(new GameState(board[0], List.of("X", "O"), 0)).bestMove(), 2);
     // Paranoid may not choose the winning move if it will lose next turn
     Assert.assertTrue(board[1].withMove("X", 8).hasChain("X"));
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 1)).bestMove(),
-        8);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 1)).bestMove(),
-        8);
+    assertEquals(new Paranoid(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(new Paranoid(new GameState(board[2], List.of("X", "O"), 1)).bestMove(), 8);
   }
 
   @Test
@@ -96,24 +89,12 @@ public class ParanoidTest {
               {"O", "X", "_"},
               {"O", "_", "_"}
             });
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 0)).bestMove(),
-        2);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 0)).bestMove(),
-        8);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 0)).bestMove(),
-        7);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[3], List.of("X", "O"), 1)).bestMove(),
-        5);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[4], List.of("X", "O"), 1)).bestMove(),
-        8);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board[5], List.of("X", "O"), 1)).bestMove(),
-        0);
+    assertEquals(new Paranoid(new GameState(board[0], List.of("X", "O"), 0)).bestMove(), 2);
+    assertEquals(new Paranoid(new GameState(board[1], List.of("X", "O"), 0)).bestMove(), 8);
+    assertEquals(new Paranoid(new GameState(board[2], List.of("X", "O"), 0)).bestMove(), 7);
+    assertEquals(new Paranoid(new GameState(board[3], List.of("X", "O"), 1)).bestMove(), 5);
+    assertEquals(new Paranoid(new GameState(board[4], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(new Paranoid(new GameState(board[5], List.of("X", "O"), 1)).bestMove(), 0);
   }
 
   @Test
@@ -126,15 +107,9 @@ public class ParanoidTest {
               {"O", "_", "/"},
               {"O", "_", "_"}
             });
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board, List.of("/", "X", "O"), 0)).bestMove(),
-        8);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board, List.of("X", "/", "O"), 0)).bestMove(),
-        8);
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board, List.of("O", "/", "X"), 0)).bestMove(),
-        8);
+    assertEquals(new Paranoid(new GameState(board, List.of("/", "X", "O"), 0)).bestMove(), 8);
+    assertEquals(new Paranoid(new GameState(board, List.of("X", "/", "O"), 0)).bestMove(), 8);
+    assertEquals(new Paranoid(new GameState(board, List.of("O", "/", "X"), 0)).bestMove(), 8);
   }
 
   @Test
@@ -147,8 +122,6 @@ public class ParanoidTest {
               {"X", "_", "X"},
               {"O", "_", "_"}
             });
-    assertEquals(
-        new Paranoid(new GameState(UUID.randomUUID(), board, List.of("O", "X", "/"), 0)).bestMove(),
-        4);
+    assertEquals(new Paranoid(new GameState(board, List.of("O", "X", "/"), 0)).bestMove(), 4);
   }
 }

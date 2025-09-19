@@ -12,10 +12,11 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.DecapsulateException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KDF;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.HKDFParameterSpec;
 
 public abstract class SecureDuplexMessageHandler implements MessageHandler {
 
@@ -24,6 +25,8 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
   protected final DuplexMessageHandler handler;
 
   protected SecretKey sharedKey;
+
+  private SecretKey aesKey;
 
   protected boolean initialized = false;
 
@@ -79,9 +82,8 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
       var random = new SecureRandom();
       random.nextBytes(iv);
       var ivSpec = new GCMParameterSpec(128, iv);
-      // Derive AES key (use only first 16 or 32 bytes for AES-128/AES-256)
-      var aesKey = new SecretKeySpec(sharedKey.getEncoded(), 0, 32, "AES");
-      cipher.init(Cipher.ENCRYPT_MODE, aesKey, ivSpec);
+      var aes = getOrDeriveAesKey();
+      cipher.init(Cipher.ENCRYPT_MODE, aes, ivSpec);
       var ciphertext = cipher.doFinal(message.getBytes());
       var ivAndCiphertext = new byte[iv.length + ciphertext.length];
       System.arraycopy(iv, 0, ivAndCiphertext, 0, iv.length);
@@ -128,8 +130,8 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
       System.arraycopy(ivAndCiphertext, iv.length, ciphertext, 0, ciphertextSize);
 
       var cipher = newCipherInstance();
-      var aesKey = new SecretKeySpec(sharedKey.getEncoded(), 0, 32, "AES");
-      cipher.init(Cipher.DECRYPT_MODE, aesKey, ivParameterSpec);
+      var aes = getOrDeriveAesKey();
+      cipher.init(Cipher.DECRYPT_MODE, aes, ivParameterSpec);
       var decryptedText = cipher.doFinal(ciphertext);
       return new String(decryptedText);
     } catch (NoSuchAlgorithmException
@@ -158,5 +160,24 @@ public abstract class SecureDuplexMessageHandler implements MessageHandler {
     if (!initialized) {
       throw new IllegalStateException("SecureMessageHandler has not been initialized.");
     }
+  }
+
+  /**
+   * Lazily derives and caches the AES key from the shared KEM secret using HKDF via JEP 510's KDF
+   * API. Uses HKDF-Extract-then-Expand with a stable context string to produce a 256-bit key for
+   * AES-GCM.
+   */
+  private SecretKey getOrDeriveAesKey()
+      throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    if (aesKey != null) {
+      return aesKey;
+    }
+    // Instantiate HKDF (SHA-256). We bind the key to a context label for this application.
+    KDF hkdf = KDF.getInstance("HKDF-SHA256");
+    byte[] ikm = sharedKey.getEncoded();
+    byte[] info = "oe-ttt:aes-gcm:v1".getBytes();
+    var params = HKDFParameterSpec.ofExtract().addIKM(ikm).thenExpand(info, 32);
+    aesKey = hkdf.deriveKey("AES", params);
+    return aesKey;
   }
 }

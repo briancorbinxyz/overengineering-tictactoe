@@ -37,12 +37,15 @@ fun Project.configureSpotless() {
             // 77:27: error: : or -> expected
             // com.google.googlejavaformat.java.FormatterException: 77:27: error: : or -> expected
             targetExclude(
+                "**/AppLite.java",
+                "**/AppLiteHttp.java",
                 "**/GamePersistence.java",
                 "**/GameClient.java",
                 "**/**Persona.java",
                 "**/PlayerPrinter.java",
+                "**/GameContextTest.java",
             )
-            googleJavaFormat("1.25.2")
+            googleJavaFormat("1.27.0")
                 .reflowLongStrings()
             removeUnusedImports()
         }
@@ -70,14 +73,15 @@ testing {
     }
 }
 
-val projectVersion by extra("2.1.2")
+val projectVersion by extra("3.0.0")
 
-public val jdkVersion = 24
+val jdkVersion = 25
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(jdkVersion)
-        vendor = JvmVendorSpec.ADOPTIUM
+        // Disable vendor check, enabling use of early access JDKs
+        vendor = JvmVendorSpec.AZUL
     }
 }
 

@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.xxdc.oss.example.TestData.*;
 
 import java.util.List;
-import java.util.UUID;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xxdc.oss.example.bot.Minimax;
@@ -36,16 +35,10 @@ public class MinimaxTest {
               {"O", "O", "_"}
             });
 
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 1)).bestMove(),
-        2);
+    assertEquals(new Minimax(new GameState(board[0], List.of("X", "O"), 1)).bestMove(), 2);
     Assert.assertTrue(board[1].withMove("X", 8).hasChain("X"));
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 1)).bestMove(),
-        8);
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 1)).bestMove(),
-        8);
+    assertEquals(new Minimax(new GameState(board[2], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(new Minimax(new GameState(board[1], List.of("X", "O"), 1)).bestMove(), 8);
   }
 
   @Test
@@ -93,24 +86,12 @@ public class MinimaxTest {
               {"O", "X", "_"},
               {"O", "_", "_"}
             });
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[0], List.of("X", "O"), 0)).bestMove(),
-        2);
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[1], List.of("X", "O"), 0)).bestMove(),
-        8);
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[2], List.of("X", "O"), 0)).bestMove(),
-        7);
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[3], List.of("X", "O"), 1)).bestMove(),
-        5);
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[4], List.of("X", "O"), 1)).bestMove(),
-        8);
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board[5], List.of("X", "O"), 1)).bestMove(),
-        0);
+    assertEquals(new Minimax(new GameState(board[0], List.of("X", "O"), 0)).bestMove(), 2);
+    assertEquals(new Minimax(new GameState(board[1], List.of("X", "O"), 0)).bestMove(), 8);
+    assertEquals(new Minimax(new GameState(board[2], List.of("X", "O"), 0)).bestMove(), 7);
+    assertEquals(new Minimax(new GameState(board[3], List.of("X", "O"), 1)).bestMove(), 5);
+    assertEquals(new Minimax(new GameState(board[4], List.of("X", "O"), 1)).bestMove(), 8);
+    assertEquals(new Minimax(new GameState(board[5], List.of("X", "O"), 1)).bestMove(), 0);
   }
 
   @Test
@@ -122,8 +103,7 @@ public class MinimaxTest {
               {"♣", "♠", "_"},
               {"♣", "_", "_"}
             });
-    assertEquals(
-        new Minimax(new GameState(UUID.randomUUID(), board, List.of("♣", "♠"), 1)).bestMove(), 8);
+    assertEquals(new Minimax(new GameState(board, List.of("♣", "♠"), 1)).bestMove(), 8);
   }
 
   @Test
@@ -137,6 +117,6 @@ public class MinimaxTest {
             });
     Assert.assertThrows(
         IllegalArgumentException.class,
-        () -> new Minimax(new GameState(UUID.randomUUID(), board, List.of("♣", "♠", "♦"), 1)));
+        () -> new Minimax(new GameState(board, List.of("♣", "♠", "♦"), 1)));
   }
 }
