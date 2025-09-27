@@ -63,7 +63,7 @@ if (enablePreviewFeatures) {
     tasks.withType<Javadoc>() {
         (options as StandardJavadocDocletOptions).apply {
             addBooleanOption("-enable-preview", true)
-            source = "24"
+            source = "25"
         }
     }
 }

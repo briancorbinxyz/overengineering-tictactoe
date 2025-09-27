@@ -75,7 +75,7 @@ if (enablePreviewFeatures) {
         (options as StandardJavadocDocletOptions).apply {
             addStringOption("Xmaxwarns", "1")
             addBooleanOption("-enable-preview", true)
-            source = "24"
+            source = "25"
         }
     }
 }
