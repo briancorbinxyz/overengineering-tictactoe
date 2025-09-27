@@ -67,9 +67,11 @@ https://openjdk.org/projects/jdk/23/
 - **JEP467**:   Markdown Documentation Comments	(See: [Player.java](api/src/main/java/org/xxdc/oss/example/Player.java))
   - Uses Markdown-friendly documentation with `@snippet` to embed example usage.
 - **JEP474**:   ZGC: Generational Mode by Default
-  - Runtime/flag-level feature; no code changes required here.
+  - Example: Configure ZGC via JVM args in Gradle
+    - App: [app/build.gradle.kts](app/build.gradle.kts) — `applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")`
+    - TCP Game Server tests: [tcp-gameserver/build.gradle.kts](tcp-gameserver/build.gradle.kts) — `jvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "-XX:+UseZGC")`
 - **JEP471**:   Deprecate the Memory-Access Methods in sun.misc.Unsafe for Removal
-  - Not used; project favors standard APIs like FFM and `Cleaner`.
+  - Not used; examples with standard APIs: FFM ([TicTacToeGameBoard.java](native/src/main/java/org/xxdc/oss/example/interop/TicTacToeGameBoard.java), [TicTacToeLibrary.java](native/src/main/java/org/xxdc/oss/example/interop/TicTacToeLibrary.java)), Cleaner ([TicTacToeGameBoard.java](native/src/main/java/org/xxdc/oss/example/interop/TicTacToeGameBoard.java)), VarHandles ([PlayerIds.java](api/src/main/java/org/xxdc/oss/example/PlayerIds.java)).
 
 https://openjdk.org/projects/jdk/22/
 
@@ -207,3 +209,4 @@ app/scripts/serve.sh 8000 .
 ### Related
 
 - [Over-Engineering Tic-Tac-Toe - CLI](https://github.com/briancorbinxyz/overengineering-tictactoe-cli) Run overengineered tic-tac-toe from the command line
+- [Over-Engineering Tic-Tac-Toe - Microservices](https://github.com/briancorbinxyz/overengineering-tictactoe-microservices) Microservice-based version of the project
