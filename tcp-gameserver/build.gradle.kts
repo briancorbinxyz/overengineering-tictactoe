@@ -1,4 +1,5 @@
 import java.util.*
+import java.util.Base64
 
 plugins {
     id("buildlogic.java-library-conventions")
@@ -70,8 +71,7 @@ if (enablePreviewFeatures) {
 // Publishing
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
-    val skipSigning = ((findProperty("skipSigning") as String?)?.toBoolean() == true) ||
-        gradle.startParameter.taskNames.any { it.contains("publishToMavenLocal") }
+    val skipSigning = ((findProperty("skipSigning") as String?)?.toBoolean() == true)
     val signingKey = (findProperty("signingInMemoryKey") ?: findProperty("signing.key")) as String?
     if (!skipSigning && signingKey != null) {
         signAllPublications()
@@ -102,18 +102,33 @@ publishing {
 }
 
 signing {
-    val inMemoryKey = findProperty("signingInMemoryKey") as String?
+    val skipSigning = ((findProperty("skipSigning") as String?)?.toBoolean() == true)
+    if (skipSigning) {
+        logger.lifecycle("skipSigning=true; skipping signing for publications.")
+        return@signing
+    }
+
+    val inMemoryKeyBase64 = findProperty("signingInMemoryKeyBase64") as String?
+    val inMemoryKeyPlain = (findProperty("signingInMemoryKey") ?: findProperty("signing.key")) as String?
+    val inMemoryKey = when {
+        !inMemoryKeyBase64.isNullOrBlank() -> String(Base64.getDecoder().decode(inMemoryKeyBase64), Charsets.UTF_8)
+        else -> inMemoryKeyPlain
+    }
     val inMemoryKeyId = findProperty("signingInMemoryKeyId") as String?
-    val inMemoryKeyPassword = findProperty("signingInMemoryKeyPassword") as String?
+    val inMemoryKeyPassword = (findProperty("signingInMemoryKeyPassword") ?: findProperty("signing.password")) as String?
 
     if (project.hasProperty("useGpg")) {
         useGpgCmd()
         sign(publishing.publications)
     } else if (!inMemoryKey.isNullOrBlank()) {
-        useInMemoryPgpKeys(inMemoryKeyId, inMemoryKey, inMemoryKeyPassword)
-        sign(publishing.publications)
+        if (!inMemoryKeyId.isNullOrBlank()) {
+            useInMemoryPgpKeys(inMemoryKeyId, inMemoryKey, inMemoryKeyPassword)
+            sign(publishing.publications)
+        } else {
+            throw GradleException("In-memory signing key provided but signingInMemoryKeyId is missing. Provide signingInMemoryKeyId or set -PuseGpg or -PskipSigning=true.")
+        }
     } else {
-        logger.lifecycle("Signing keys not configured; skipping signing for publications.")
+        throw GradleException("Signing is required but not configured. Provide -PuseGpg or in-memory signing properties (signingInMemoryKeyBase64 or signingInMemoryKey/signing.key, signingInMemoryKeyId, and signingInMemoryKeyPassword/signing.password), or set -PskipSigning=true to skip.")
     }
 }
 
