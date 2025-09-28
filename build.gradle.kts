@@ -1,5 +1,5 @@
 plugins {
-    id("com.vanniktech.maven.publish") version "0.31.0-rc2" apply false
+    id("com.vanniktech.maven.publish") version "0.34.0" apply false
     signing
 }
 
