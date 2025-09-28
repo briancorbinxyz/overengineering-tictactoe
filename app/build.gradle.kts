@@ -1,6 +1,5 @@
 import java.io.File
 import java.util.*
-import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
@@ -183,9 +182,11 @@ if (enablePreviewFeatures) {
 
 // Publishing
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+    publishToMavenCentral(automaticRelease = true)
+    val skipSigning = ((findProperty("skipSigning") as String?)?.toBoolean() == true) ||
+        gradle.startParameter.taskNames.any { it.contains("publishToMavenLocal") }
     val signingKey = (findProperty("signingInMemoryKey") ?: findProperty("signing.key")) as String?
-    if (signingKey != null) {
+    if (!skipSigning && signingKey != null) {
         signAllPublications()
     }
 
@@ -214,8 +215,17 @@ publishing {
 }
 
 signing {
+    val inMemoryKey = findProperty("signingInMemoryKey") as String?
+    val inMemoryKeyId = findProperty("signingInMemoryKeyId") as String?
+    val inMemoryKeyPassword = findProperty("signingInMemoryKeyPassword") as String?
+
     if (project.hasProperty("useGpg")) {
         useGpgCmd()
+        sign(publishing.publications)
+    } else if (!inMemoryKey.isNullOrBlank()) {
+        useInMemoryPgpKeys(inMemoryKeyId, inMemoryKey, inMemoryKeyPassword)
+        sign(publishing.publications)
+    } else {
+        logger.lifecycle("Signing keys not configured; skipping signing for publications.")
     }
-    sign(publishing.publications)
 }
