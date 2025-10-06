@@ -13,6 +13,6 @@
         <module name="overengineering-tictactoe.api.test" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="24" />
+    <bytecodeTargetLevel target="25" />
   </component>
 </project>
