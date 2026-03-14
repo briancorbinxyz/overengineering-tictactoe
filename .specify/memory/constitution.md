@@ -1,22 +1,24 @@
 <!--
   Sync Impact Report
   ==================
-  Version change: 0.0.0 → 1.0.0 (initial ratification)
+  Version change: 1.0.0 → 1.1.0 (MINOR — new principles + modified existing)
 
-  Modified principles: N/A (first version)
+  Modified principles:
+    - I. Educational Parity with OpenJDK → removed "leverage preview
+      features where applicable" (now scoped to jdkXX branches via IX)
+    - IV. Convention-Based Build → `--enable-preview` scoped to jdkXX
+      branches only; main branch builds without preview flags
 
   Added sections:
-    - Core Principles (I through VIII)
-    - Technology & Build Standards
-    - Development Workflow & Quality Gates
-    - Governance
+    - IX. Branch Stability & JDK Versioning (new principle)
+    - X. Dependency Minimalism (new principle)
 
-  Removed sections: N/A
+  Removed sections: None
 
   Templates requiring updates:
-    - .specify/templates/plan-template.md        ✅ compatible (Constitution Check section present)
-    - .specify/templates/spec-template.md         ✅ compatible (MUST/SHOULD language aligned)
-    - .specify/templates/tasks-template.md        ✅ compatible (phase structure supports principles)
+    - .specify/templates/plan-template.md        ✅ compatible
+    - .specify/templates/spec-template.md         ✅ compatible
+    - .specify/templates/tasks-template.md        ✅ compatible
 
   Follow-up TODOs: None
 -->
@@ -30,8 +32,10 @@
 Every module and feature MUST demonstrate or reference at least one
 specific JEP (JDK Enhancement Proposal). Code MUST include comments
 or Javadoc explaining *why* a language feature is used, not merely
-*what* it does. New features MUST target the current JDK version
-(presently JDK 25) and leverage preview features where applicable.
+*what* it does. New features MUST target the current GA JDK version
+and use only finalized (non-preview) language features on the main
+branch. Preview features are permitted on `jdkXX` branches per
+Principle IX.
 
 ### II. Modular Decomposition
 
@@ -58,8 +62,10 @@ All shared build configuration MUST reside in Gradle convention
 plugins under `buildSrc/`. Module-level `build.gradle.kts` files
 MUST NOT duplicate rules already expressed in convention plugins.
 Code formatting MUST be enforced automatically via Spotless
-(Google Java Format) with a pre-commit hook. The build MUST run
-with `--enable-preview` and `--enable-native-access=ALL-UNNAMED`.
+(Google Java Format) with a pre-commit hook. The main branch MUST
+NOT enable `--enable-preview` or `--enable-native-access=ALL-UNNAMED`
+unless the features used are finalized in the target JDK. The
+`jdkXX` branches MAY enable these flags for preview feature work.
 
 ### V. Test-Driven Feature Addition
 
@@ -95,9 +101,33 @@ Artifacts MUST follow semantic versioning with a JDK suffix
 via CI. Release candidates (`-rc1`, `-rc2`) MUST be used for
 validation before final releases.
 
+### IX. Branch Stability & JDK Versioning
+
+The **main** branch MUST NOT require a JDK version that is not
+generally available (GA). The main branch MUST NOT enable or depend
+on any JEP features that are still in preview status. Feature work
+targeting a future or pre-GA JDK MUST be developed on a `jdkXX`
+branch (e.g., `jdk25`, `jdk26`). These `jdkXX` branches MAY use
+preview features, but new features added on a `jdkXX` branch MUST
+be based on new JEP features (or other enhancements) introduced in
+that specific JDK version — not arbitrary preview features from
+earlier versions. A `jdkXX` branch MUST only be merged to main once
+all features it depends on have reached final/GA status in the
+target JDK.
+
+### X. Dependency Minimalism
+
+External dependencies MUST be avoided unless they are referenced in
+application code exclusively through JDK SPIs (e.g., JCE providers,
+`java.util.spi` interfaces, `System.LoggerFinder`). Libraries that
+require direct import of third-party packages in production source
+code are prohibited. Test-only dependencies (e.g., TestNG, Logback
+for SLF4J bridge) are exempt from this rule. Build-time-only
+dependencies (e.g., Spotless, Gradle plugins) are also exempt.
+
 ## Technology & Build Standards
 
-- **Language**: Java (current: JDK 25, Azul Zulu distribution)
+- **Language**: Java (current GA: JDK 25, Azul Zulu distribution)
 - **Secondary Languages**: Kotlin (build scripts), Rust (native FFI)
 - **Build System**: Gradle 8.7+ with Kotlin DSL
 - **Test Framework**: TestNG 7.5.1
@@ -119,10 +149,13 @@ validation before final releases.
 - **CI Gate**: All tests MUST pass on GitHub Actions before a PR can
   be merged to main.
 - **PR Reviews**: All changes to main MUST go through a pull request.
-- **Preview Features**: `--enable-preview` MUST be enabled in all
-  compile and test configurations.
-- **Branch Strategy**: Feature branches (e.g., `jdk25`, `security`)
-  merged via PR to `main`.
+- **Preview Features**: `--enable-preview` MUST only be enabled on
+  `jdkXX` branches. The main branch MUST compile and test without
+  preview flags.
+- **Branch Strategy**: `jdkXX` branches (e.g., `jdk25`, `jdk26`)
+  for preview/pre-GA JDK work; merged to `main` only after all
+  dependent features reach GA. Other feature branches (e.g.,
+  `security`) merged via PR to `main`.
 - **Commit Quality**: Commit messages MUST follow Conventional Commits
   format. The body SHOULD explain *why* the change was made. Breaking
   changes MUST use `feat!:` prefix or `BREAKING CHANGE:` footer.
@@ -148,4 +181,4 @@ Complexity beyond what these principles prescribe MUST be justified
 in the plan's Complexity Tracking table. Refer to `CLAUDE.md` for
 runtime development guidance.
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-14 | **Last Amended**: 2026-03-14
+**Version**: 1.1.0 | **Ratified**: 2026-03-14 | **Last Amended**: 2026-03-14
