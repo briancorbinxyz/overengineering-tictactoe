@@ -61,7 +61,19 @@ public class Game implements Serializable, AutoCloseable {
    *     implementation.
    */
   public Game(int size, boolean persistenceEnabled, PlayerNode... players) {
-    this(size, persistenceEnabled, (Consumer<GameContext.Builder>) null, players);
+    this(size, size, persistenceEnabled, (Consumer<GameContext.Builder>) null, players);
+  }
+
+  /**
+   * Constructs a new {@link Game} with a configurable chain length (K-in-a-row to win).
+   *
+   * @param size The size of the game board (N for an N×N board).
+   * @param chainLength The number of consecutive markers required to win.
+   * @param persistenceEnabled Whether game state should be persisted to a file.
+   * @param players The player nodes for the game.
+   */
+  public Game(int size, int chainLength, boolean persistenceEnabled, PlayerNode... players) {
+    this(size, chainLength, persistenceEnabled, (Consumer<GameContext.Builder>) null, players);
   }
 
   /**
@@ -73,12 +85,31 @@ public class Game implements Serializable, AutoCloseable {
       boolean persistenceEnabled,
       Consumer<GameContext.Builder> contextCustomizer,
       PlayerNode... players) {
+    this(size, size, persistenceEnabled, contextCustomizer, players);
+  }
+
+  /**
+   * Constructs a new {@link Game} with configurable chain length and context customization.
+   *
+   * @param size The size of the game board (N for an N×N board).
+   * @param chainLength The number of consecutive markers required to win.
+   * @param persistenceEnabled Whether game state should be persisted to a file.
+   * @param contextCustomizer Optional customizer for game context metadata.
+   * @param players The player nodes for the game.
+   */
+  public Game(
+      int size,
+      int chainLength,
+      boolean persistenceEnabled,
+      Consumer<GameContext.Builder> contextCustomizer,
+      PlayerNode... players) {
     this.playerNodes = PlayerNodes.of(players);
     this.gameId = UUID.randomUUID();
     this.moveNumber = 0;
     this.gameState = new ArrayDeque<>();
     this.gameState.add(
-        new GameState(GameBoard.withDimension(size), this.playerNodes.playerMarkerList(), 0));
+        new GameState(
+            GameBoard.withDimension(size, chainLength), this.playerNodes.playerMarkerList(), 0));
     this.persistenceEnabled = persistenceEnabled;
     this.contextCustomizer = contextCustomizer;
   }

@@ -21,17 +21,29 @@ public class GameBoardNativeImpl implements GameBoard {
 
   /** Constructs a new {@code GameBoardNativeImpl} instance with a default dimension of 3. */
   public GameBoardNativeImpl() {
-    this(3);
+    this(3, 3);
   }
 
   /**
-   * Constructs a new {@code GameBoardNativeImpl} instance with the specified dimension.
+   * Constructs a new {@code GameBoardNativeImpl} instance with the specified dimension. Chain
+   * length defaults to dimension.
    *
    * @param dimension the dimension of the game board, must be a positive integer
    */
   public GameBoardNativeImpl(int dimension) {
+    this(dimension, dimension);
+  }
+
+  /**
+   * Constructs a new {@code GameBoardNativeImpl} instance with the specified dimension and chain
+   * length.
+   *
+   * @param dimension the dimension of the game board, must be a positive integer
+   * @param chainLength the number of consecutive markers required to win
+   */
+  public GameBoardNativeImpl(int dimension, int chainLength) {
     this.library = LibraryHolder.TTT.instance();
-    this.board = library.newGameBoard(dimension);
+    this.board = library.newGameBoard(dimension, chainLength);
   }
 
   @Override

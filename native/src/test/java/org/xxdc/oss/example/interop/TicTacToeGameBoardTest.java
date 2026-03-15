@@ -122,6 +122,6 @@ public class TicTacToeGameBoardTest {
     gameBoard = gameBoard.withMove("X", 2);
     assertEquals(
         gameBoard.asJsonString(),
-        "{\"dimension\":3,\"content\":[\"X\",\"X\",\"X\",null,\"O\",\"O\",null,null,null]}");
+        "{\"dimension\":3,\"chainLength\":3,\"content\":[\"X\",\"X\",\"X\",null,\"O\",\"O\",null,null,null]}");
   }
 }

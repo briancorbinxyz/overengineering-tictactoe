@@ -39,6 +39,44 @@ public class AnalyzersTest {
     assertTrue(strategicTurningPoints.isEmpty());
   }
 
+  @Test
+  public void should_skip_center_control_when_chain_length_less_than_dimension() {
+    // 5x5 board with chainLength=3: center control is NOT a turning point
+    var board = GameBoard.withDimension(5, 3);
+    var states = new ArrayList<GameState>(2);
+    var gameState = new GameState(board, List.of("X", "O"), 0);
+    states.add(gameState);
+    states.add(gameState.afterPlayerMoves(12)); // 'X' to center of 5x5
+
+    var strategicTurningPoints = states.stream().gather(strategicTurningPoints()).toList();
+
+    assertTrue(strategicTurningPoints.isEmpty());
+  }
+
+  @Test
+  public void should_detect_game_won_with_custom_chain_length() {
+    // 5x5 board with chainLength=3: X wins with 3-in-a-row
+    var board =
+        createBoardWith(
+            new String[][] {
+              {"X", "X", "_", "_", "_"},
+              {"O", "O", "_", "_", "_"},
+              {"_", "_", "_", "_", "_"},
+              {"_", "_", "_", "_", "_"},
+              {"_", "_", "_", "_", "_"}
+            },
+            3);
+    var states = new ArrayList<GameState>(2);
+    var gameState = new GameState(board, List.of("X", "O"), 0);
+    states.add(gameState);
+    states.add(gameState.afterPlayerMoves(2)); // X completes 3-in-a-row
+
+    var strategicTurningPoints = states.stream().gather(strategicTurningPoints()).toList();
+
+    assertEquals(strategicTurningPoints.size(), 1);
+    assertTrue(strategicTurningPoints.getFirst() instanceof StrategicTurningPoint.GameWon);
+  }
+
   private GameBoard emptyBoard() {
     return createBoardWith(
         new String[][] {

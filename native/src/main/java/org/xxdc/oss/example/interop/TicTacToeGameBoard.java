@@ -31,6 +31,8 @@ class TicTacToeGameBoard implements GameBoard {
 
   private final MemorySegment board;
 
+  private final int boardChainLength;
+
   private final Linker linker = Linker.nativeLinker();
 
   private final SymbolLookup libTicTacToe;
@@ -70,29 +72,34 @@ class TicTacToeGameBoard implements GameBoard {
   private MethodHandle getGameBoardHasChain;
 
   /**
-   * Constructs a new TicTacToeGameBoard instance with the specified dimension, SymbolLookup, and
-   * Cleaner.
+   * Constructs a new TicTacToeGameBoard instance with the specified dimension, chain length,
+   * SymbolLookup, and Cleaner.
    *
    * @param dimension the dimension of the game board (e.g. 3 for a 3x3 board)
+   * @param chainLength the number of consecutive markers required to win
    * @param libTicTacToe the SymbolLookup instance for looking up native functions
    * @param cleaner the Cleaner instance for managing native resources
    */
-  public TicTacToeGameBoard(int dimension, SymbolLookup libTicTacToe, Cleaner cleaner) {
+  public TicTacToeGameBoard(
+      int dimension, int chainLength, SymbolLookup libTicTacToe, Cleaner cleaner) {
     this.libTicTacToe = libTicTacToe;
+    this.boardChainLength = chainLength;
     this.playerMarkerToId = new HashMap<>();
     this.idToPlayerMarker = new HashMap<>();
     this.playerIds = new PlayerIds(1);
     this.initGameBoardMethods();
-    this.board = newGameBoard(dimension);
+    this.board = newGameBoard(dimension, chainLength);
     this.cleaner = cleaner;
     cleaner.register(this, new CleanupTask(board, freeGameBoard));
   }
 
   /**
-   * Constructs a new TicTacToeGameBoard instance with the specified board, player marker to ID
-   * mapping, ID to player marker mapping, initial player ID value, SymbolLookup, and Cleaner.
+   * Constructs a new TicTacToeGameBoard instance with the specified board, chain length, player
+   * marker to ID mapping, ID to player marker mapping, initial player ID value, SymbolLookup, and
+   * Cleaner.
    *
    * @param board the MemorySegment representing the game board
+   * @param chainLength the number of consecutive markers required to win
    * @param playerMarkerToId a map of player markers to their unique IDs
    * @param idToPlayerMarker a map of player IDs to their markers
    * @param initialValue the initial value for the next player ID
@@ -101,12 +108,14 @@ class TicTacToeGameBoard implements GameBoard {
    */
   TicTacToeGameBoard(
       MemorySegment board,
+      int chainLength,
       Map<String, Integer> playerMarkerToId,
       Map<Integer, String> idToPlayerMarker,
       int initialValue,
       SymbolLookup libTicTacToe,
       Cleaner cleaner) {
     this.libTicTacToe = libTicTacToe;
+    this.boardChainLength = chainLength;
     this.playerMarkerToId = new HashMap<>(playerMarkerToId);
     this.idToPlayerMarker = new HashMap<>(idToPlayerMarker);
     this.playerIds = new PlayerIds(initialValue);
@@ -145,6 +154,7 @@ class TicTacToeGameBoard implements GameBoard {
       MemorySegment newBoard = (MemorySegment) withMove.invoke(board, location, playerId);
       return new TicTacToeGameBoard(
           newBoard,
+          boardChainLength,
           playerMarkerToId,
           idToPlayerMarker,
           playerIds.getNextId(),
@@ -153,6 +163,11 @@ class TicTacToeGameBoard implements GameBoard {
     } catch (Throwable e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public int chainLength() {
+    return boardChainLength;
   }
 
   @Override
@@ -188,6 +203,7 @@ class TicTacToeGameBoard implements GameBoard {
     StringBuilder json = new StringBuilder();
     json.append("{");
     json.append("\"dimension\":").append(dimension).append(",");
+    json.append("\"chainLength\":").append(boardChainLength).append(",");
     json.append("\"content\":")
         .append(
             IntStream.range(0, dimension * dimension)
@@ -205,7 +221,9 @@ class TicTacToeGameBoard implements GameBoard {
             .map(
                 m ->
                     linker.downcallHandle(
-                        m, FunctionDescriptor.of(ValueLayout.ADDRESS, ValueLayout.JAVA_INT)))
+                        m,
+                        FunctionDescriptor.of(
+                            ValueLayout.ADDRESS, ValueLayout.JAVA_INT, ValueLayout.JAVA_INT)))
             .orElseThrow(
                 () -> new IllegalArgumentException("Unable to find method 'new_game_board'"));
     freeGameBoard =
@@ -279,9 +297,9 @@ class TicTacToeGameBoard implements GameBoard {
                         "Unable to find method" + " 'get_game_board_has_chain'"));
   }
 
-  private MemorySegment newGameBoard(int dimension) {
+  private MemorySegment newGameBoard(int dimension, int chainLength) {
     try {
-      return (MemorySegment) newGameBoard.invokeExact(dimension);
+      return (MemorySegment) newGameBoard.invokeExact(dimension, chainLength);
     } catch (Throwable e) {
       log.log(Level.ERROR, "Error creating new game board of dimension {0}", dimension, e);
       throw new RuntimeException(e);
