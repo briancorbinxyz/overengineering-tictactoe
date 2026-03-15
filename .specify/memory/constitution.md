@@ -1,17 +1,14 @@
 <!--
   Sync Impact Report
   ==================
-  Version change: 1.0.0 → 1.1.0 (MINOR — new principles + modified existing)
+  Version change: 1.1.0 → 1.2.0 (MINOR — existing principle materially expanded)
 
   Modified principles:
-    - I. Educational Parity with OpenJDK → removed "leverage preview
-      features where applicable" (now scoped to jdkXX branches via IX)
-    - IV. Convention-Based Build → `--enable-preview` scoped to jdkXX
-      branches only; main branch builds without preview flags
+    - I. Educational Parity with OpenJDK → added MUST requirement:
+      any newly introduced JEP MUST be documented in README.md with
+      its JEP number, title, and the module(s) demonstrating it.
 
-  Added sections:
-    - IX. Branch Stability & JDK Versioning (new principle)
-    - X. Dependency Minimalism (new principle)
+  Added sections: None
 
   Removed sections: None
 
@@ -35,7 +32,9 @@ or Javadoc explaining *why* a language feature is used, not merely
 *what* it does. New features MUST target the current GA JDK version
 and use only finalized (non-preview) language features on the main
 branch. Preview features are permitted on `jdkXX` branches per
-Principle IX.
+Principle IX. Any newly introduced JEP MUST be documented in
+`README.md` with its JEP number, title, and the module(s)
+demonstrating it.
 
 ### II. Modular Decomposition
 
@@ -181,4 +180,4 @@ Complexity beyond what these principles prescribe MUST be justified
 in the plan's Complexity Tracking table. Refer to `CLAUDE.md` for
 runtime development guidance.
 
-**Version**: 1.1.0 | **Ratified**: 2026-03-14 | **Last Amended**: 2026-03-14
+**Version**: 1.2.0 | **Ratified**: 2026-03-14 | **Last Amended**: 2026-03-14
