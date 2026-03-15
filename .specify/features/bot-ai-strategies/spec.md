@@ -5,6 +5,12 @@
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation
 
+## Clarifications
+
+### Session 2026-03-14
+
+- Q: What is the default time budget for Monte Carlo tree search? → A: 2 seconds (matching existing implementation). Tree-search strategies (minimax, alpha-beta, MaxN, paranoid) default to unbounded depth.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Bot Selects an Optimal Move (Priority: P1)
@@ -72,14 +78,14 @@ Strategies can be tuned with parameters such as maximum search depth or time bud
 - **FR-003**: Tree-search strategies MUST select a winning move when one is available within the search depth.
 - **FR-004**: Tree-search strategies MUST block an opponent's winning move when no immediate win is available.
 - **FR-005**: Strategies MUST support configurable search depth limits.
-- **FR-006**: Monte Carlo tree search MUST support time-based termination.
+- **FR-006**: Monte Carlo tree search MUST support time-based termination with a default time budget of 2 seconds.
 - **FR-007**: Strategies MUST be composable — a bot is configured by pairing a strategy with a player identity.
 
 ### Key Entities
 
 - **BotPlayer**: An automated player that delegates move selection to a strategy.
 - **BotStrategy**: The sealed set of available AI algorithms.
-- **BotStrategyConfig**: Configuration parameters (max depth, time budget).
+- **BotStrategyConfig**: Configuration parameters (max iterations, max depth, max time in milliseconds). Defaults: all unconstrained except MCTS which defaults to 2 seconds.
 
 ## Success Criteria *(mandatory)*
 

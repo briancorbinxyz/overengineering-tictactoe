@@ -5,6 +5,12 @@
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation
 
+## Clarifications
+
+### Session 2026-03-14
+
+- Q: What is the player abstraction model? → A: Player is a sealed type with variants (Human, Bot); transport (local vs. remote) is a separate orthogonal concern handled by PlayerNode.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Start and Play a Complete Game (Priority: P1)
@@ -54,14 +60,15 @@ Each game session carries a unique identity and contextual metadata (creation ti
 - **FR-003**: System MUST detect terminal game states (win or draw) and end the game.
 - **FR-004**: System MUST maintain an ordered, immutable history of all game states.
 - **FR-005**: System MUST support scoped context binding so that game metadata is available throughout the session without explicit parameter passing.
-- **FR-006**: System MUST support both local and remote player participation in the same game session.
+- **FR-006**: System MUST support both local and remote player participation in the same game session. Player type (Human, Bot) and transport mechanism (Local, Remote) are orthogonal concerns — any player type can participate via any transport.
 
 ### Key Entities
 
 - **Game**: The orchestrator of a single game session. Carries a unique ID, player references, and history.
 - **GameState**: An immutable snapshot of the board, current player, and last move at a point in time.
 - **GameContext**: Metadata record (ID, timestamp, custom key-value pairs) scoped to the game session.
-- **PlayerNode**: An abstraction representing a player's participation, either local or remote.
+- **Player**: A sealed type representing a game participant, with variants: Human and Bot. Defines move selection behavior independent of transport.
+- **PlayerNode**: An abstraction representing a player's transport mechanism, either Local (in-process) or Remote (network-connected). Orthogonal to player type.
 
 ## Success Criteria *(mandatory)*
 

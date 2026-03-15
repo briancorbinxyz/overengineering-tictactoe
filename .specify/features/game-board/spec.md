@@ -5,6 +5,12 @@
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation
 
+## Clarifications
+
+### Session 2026-03-14
+
+- Q: How is the winning chain length determined for non-3×3 boards? → A: Chain length equals the board dimension (N×N requires N-in-a-row).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Place a Move on the Board (Priority: P1)
@@ -74,8 +80,8 @@ The board can be represented as a structured text format for transmission, stora
 ### Edge Cases
 
 - What happens when a move is placed on a 1×1 board?
-- How does win detection work for boards larger than 3×3?
-- What happens when the board dimension is variable (e.g., 4×4, 5×5)?
+- For boards larger than 3×3, the winning chain length scales with the dimension (e.g., 4×4 requires 4-in-a-row).
+- Board dimension is configurable; all rules generalize based on the dimension N.
 
 ## Requirements *(mandatory)*
 
@@ -83,7 +89,7 @@ The board can be represented as a structured text format for transmission, stora
 
 - **FR-001**: System MUST support square boards of configurable dimension.
 - **FR-002**: System MUST validate moves against board boundaries and occupied positions.
-- **FR-003**: System MUST detect winning chains across rows, columns, and diagonals.
+- **FR-003**: System MUST detect winning chains across rows, columns, and diagonals. The winning chain length equals the board dimension N (i.e., on an N×N board, N-in-a-row is required to win).
 - **FR-004**: Boards MUST be immutable — placing a move returns a new board instance.
 - **FR-005**: System MUST provide a list of available (unoccupied) positions.
 - **FR-006**: System MUST support serialization of the board to a structured text format.

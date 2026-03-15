@@ -5,6 +5,13 @@
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation
 
+## Clarifications
+
+### Session 2026-03-14
+
+- Q: What should happen when a networked player disconnects mid-game? → A: Disconnected player forfeits immediately; opponent wins.
+- Q: What game state does the server transmit to clients on each turn? → A: Current board snapshot only (latest state), not full history.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Host a Game Server (Priority: P1)
@@ -64,14 +71,14 @@ Clients and server communicate using a structured message protocol. Messages car
 **Acceptance Scenarios**:
 
 1. **Given** a start event, **When** the server sends a start message, **Then** it contains the protocol version and the assigned player marker.
-2. **Given** a move request, **When** the server sends a nextMove message, **Then** it contains the serialized game state.
+2. **Given** a move request, **When** the server sends a nextMove message, **Then** it contains only the current board snapshot (not full game history).
 3. **Given** a game-over event, **When** the server sends the exit signal, **Then** the client recognizes it as the end of the session.
 
 ---
 
 ### Edge Cases
 
-- What happens if a client disconnects mid-game?
+- If a client disconnects mid-game, the disconnected player forfeits immediately and the opponent wins.
 - What happens if the server is at maximum capacity?
 - How does the server handle malformed protocol messages?
 
@@ -87,6 +94,8 @@ Clients and server communicate using a structured message protocol. Messages car
 - **FR-006**: Clients MUST support configurable maximum game count, server host, and port.
 - **FR-007**: Communication MUST follow a versioned message protocol with start, nextMove, and exit message types.
 - **FR-008**: Server MUST enforce a connection timeout (default: 30 seconds).
+- **FR-009**: If a client disconnects mid-game, the disconnected player MUST forfeit immediately and the opponent MUST be declared the winner.
+- **FR-010**: The server MUST transmit only the current board snapshot (latest state) to clients on each turn, not the full game history.
 
 ### Key Entities
 
