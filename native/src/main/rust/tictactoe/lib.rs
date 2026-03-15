@@ -61,8 +61,11 @@ pub unsafe extern "C" fn version_string(callback: Callback) {
 /// ----------------------------------------------------------------------------
 
 #[no_mangle]
-pub extern "C" fn new_game_board(dimension: u32) -> *mut tictactoe::GameBoard {
-    Box::into_raw(Box::new(tictactoe::GameBoard::new(dimension)))
+pub extern "C" fn new_game_board(dimension: u32, chain_length: u32) -> *mut tictactoe::GameBoard {
+    Box::into_raw(Box::new(tictactoe::GameBoard::new_with_chain_length(
+        dimension,
+        chain_length,
+    )))
 }
 
 #[no_mangle]
@@ -111,7 +114,7 @@ mod tests {
 
     #[test]
     fn test_ffi_can_manage_game_board_lifecycle_with_raw_pointer() {
-        let board_ptr = new_game_board(3);
+        let board_ptr = new_game_board(3, 3);
         assert!(!board_ptr.is_null());
         unsafe {
             free_game_board(board_ptr);
@@ -120,7 +123,7 @@ mod tests {
 
     #[test]
     fn test_ffi_can_get_game_board_value_at_index() {
-        let board_ptr = new_game_board(3);
+        let board_ptr = new_game_board(3, 3);
         assert!(!board_ptr.is_null());
         unsafe {
             assert_eq!(get_game_board_value_at_index(board_ptr, 0), 0);
@@ -130,7 +133,7 @@ mod tests {
 
     #[test]
     fn test_ffi_can_update_a_gameboard_immutably() {
-        let board_ptr = new_game_board(3);
+        let board_ptr = new_game_board(3, 3);
         unsafe {
             let updated_board_ptr = get_game_board_with_value_at_index(board_ptr, 4, 2);
             assert_eq!(get_game_board_value_at_index(board_ptr, 4), 0);
@@ -142,7 +145,7 @@ mod tests {
 
     #[test]
     fn test_ffi_can_check_empty_game_board_has_available_moves() {
-        let board_ptr = new_game_board(3);
+        let board_ptr = new_game_board(3, 3);
         unsafe {
             assert!(!get_game_board_is_full(board_ptr));
             free_game_board(board_ptr);
@@ -151,7 +154,7 @@ mod tests {
 
     #[test]
     fn test_ffi_can_check_full_game_board_has_no_available_moves() {
-        let mut board_ptr = new_game_board(3);
+        let mut board_ptr = new_game_board(3, 3);
         unsafe {
             for i in 0..9 {
                 board_ptr = get_game_board_with_value_at_index(board_ptr, i, i % 2 + 1);
@@ -162,7 +165,7 @@ mod tests {
 
     #[test]
     fn test_ffi_can_check_for_winning_chain() {
-        let mut board_ptr = new_game_board(3);
+        let mut board_ptr = new_game_board(3, 3);
         unsafe {
             for i in 0..3 {
                 board_ptr = get_game_board_with_value_at_index(board_ptr, i, 1);
@@ -182,20 +185,22 @@ mod tictactoe {
     #[derive(Clone)]
     pub struct GameBoard {
         dimension: u32,
+        chain_length: u32,
         content: Vec<Vec<u32>>,
     }
 
     impl GameBoard {
         pub fn new(dimension: u32) -> Self {
-            let mut content = Vec::new();
-            for _ in 0..dimension {
-                let mut row = Vec::new();
-                for _ in 0..dimension {
-                    row.push(0);
-                }
-                content.push(row);
+            Self::new_with_chain_length(dimension, dimension)
+        }
+
+        pub fn new_with_chain_length(dimension: u32, chain_length: u32) -> Self {
+            let content = vec![vec![0u32; dimension as usize]; dimension as usize];
+            GameBoard {
+                dimension,
+                chain_length,
+                content,
             }
-            GameBoard { dimension, content }
         }
 
         pub fn get_dimension(&self) -> u32 {
@@ -254,56 +259,71 @@ mod tictactoe {
         }
 
         pub fn has_chain(&self, player: u32) -> bool {
-            // rows
-            let mut chain: u32;
-            for row_index in 0..self.dimension {
-                chain = 0;
-                for col_index in 0..self.dimension {
-                    if self.get(row_index, col_index) == player {
-                        chain += 1;
-                    } else {
-                        chain = 0;
+            self.has_chain_in_rows(player)
+                || self.has_chain_in_cols(player)
+                || self.has_chain_in_diagonals(player)
+        }
+
+        fn has_chain_in_line(&self, player: u32, positions: &[(u32, u32)]) -> bool {
+            let mut chain: u32 = 0;
+            for &(r, c) in positions {
+                if self.get(r, c) == player {
+                    chain += 1;
+                    if chain >= self.chain_length {
+                        return true;
                     }
-                    if chain >= self.dimension {
+                } else {
+                    chain = 0;
+                }
+            }
+            false
+        }
+
+        fn has_chain_in_rows(&self, player: u32) -> bool {
+            for row in 0..self.dimension {
+                let positions: Vec<(u32, u32)> =
+                    (0..self.dimension).map(|col| (row, col)).collect();
+                if self.has_chain_in_line(player, &positions) {
+                    return true;
+                }
+            }
+            false
+        }
+
+        fn has_chain_in_cols(&self, player: u32) -> bool {
+            for col in 0..self.dimension {
+                let positions: Vec<(u32, u32)> =
+                    (0..self.dimension).map(|row| (row, col)).collect();
+                if self.has_chain_in_line(player, &positions) {
+                    return true;
+                }
+            }
+            false
+        }
+
+        fn has_chain_in_diagonals(&self, player: u32) -> bool {
+            let d = self.dimension;
+            let cl = self.chain_length;
+            // All downward-right diagonals (\)
+            for start_row in 0..=(d - cl) {
+                for start_col in 0..=(d - cl) {
+                    let len = d - std::cmp::max(start_row, start_col);
+                    let positions: Vec<(u32, u32)> =
+                        (0..len).map(|k| (start_row + k, start_col + k)).collect();
+                    if self.has_chain_in_line(player, &positions) {
                         return true;
                     }
                 }
             }
-            // cols
-            for col_index in 0..self.dimension {
-                chain = 0;
-                for row_index in 0..self.dimension {
-                    if self.get(row_index, col_index) == player {
-                        chain += 1;
-                    } else {
-                        chain = 0;
-                    }
-                    if chain >= self.dimension {
+            // All downward-left diagonals (/)
+            for start_row in 0..=(d - cl) {
+                for start_col in (cl - 1)..d {
+                    let len = std::cmp::min(d - start_row, start_col + 1);
+                    let positions: Vec<(u32, u32)> =
+                        (0..len).map(|k| (start_row + k, start_col - k)).collect();
+                    if self.has_chain_in_line(player, &positions) {
                         return true;
                     }
-                }
-            }
-            // diagonals
-            chain = 0;
-            for offset in 0..self.dimension {
-                if self.get(offset, offset) == player {
-                    chain += 1;
-                } else {
-                    chain = 0;
-                }
-                if chain >= self.dimension {
-                    return true;
-                }
-            }
-            chain = 0;
-            for offset in 0..self.dimension {
-                if self.get(offset, self.dimension - offset - 1) == player {
-                    chain += 1;
-                } else {
-                    chain = 0;
-                }
-                if chain >= self.dimension {
-                    return true;
                 }
             }
             false

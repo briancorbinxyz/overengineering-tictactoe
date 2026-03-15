@@ -45,13 +45,25 @@ public final class TicTacToeLibrary {
   }
 
   /**
-   * Creates a new {@link GameBoard} instance with the specified dimension.
+   * Creates a new {@link GameBoard} instance with the specified dimension. Chain length defaults to
+   * dimension.
    *
    * @param dimension the dimension of the game board (e.g. 3 for a 3x3 board)
    * @return a new {@link GameBoard} instance representing the game board
    */
   public GameBoard newGameBoard(int dimension) {
-    return new TicTacToeGameBoard(dimension, libTicTacToe, cleaner);
+    return new TicTacToeGameBoard(dimension, dimension, libTicTacToe, cleaner);
+  }
+
+  /**
+   * Creates a new {@link GameBoard} instance with the specified dimension and chain length.
+   *
+   * @param dimension the dimension of the game board (e.g. 5 for a 5x5 board)
+   * @param chainLength the number of consecutive markers required to win
+   * @return a new {@link GameBoard} instance representing the game board
+   */
+  public GameBoard newGameBoard(int dimension, int chainLength) {
+    return new TicTacToeGameBoard(dimension, chainLength, libTicTacToe, cleaner);
   }
 
   private void initLibrary() {

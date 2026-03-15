@@ -101,7 +101,8 @@ public record GameState(
         return true;
       }
     }
-    return false;
+    // Early draw detection: no winnable chain remains for any player
+    return !board.hasWinnableChain();
   }
 
   @Override

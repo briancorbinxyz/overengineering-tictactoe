@@ -70,7 +70,14 @@ public sealed interface StrategicTurningPoint {
     if (gameState.board().dimension() % 2 == 0) {
       return false;
     }
+    // Center control is most strategically significant when chain length equals dimension
+    // (standard game). When chain length < dimension, center is less critical because
+    // winning chains can be formed without passing through the center.
     int dimension = gameState.board().dimension();
+    int chainLength = gameState.board().chainLength();
+    if (chainLength < dimension) {
+      return false;
+    }
     int centerLocation = dimension * (dimension / 2) + (dimension / 2);
     return prevGameState.board().isValidMove(centerLocation)
         && !gameState.board().isValidMove(centerLocation);

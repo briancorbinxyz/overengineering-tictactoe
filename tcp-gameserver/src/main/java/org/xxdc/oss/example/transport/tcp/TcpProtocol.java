@@ -11,6 +11,10 @@ import org.xxdc.oss.example.GameState;
  * Provides utility methods for parsing and formatting JSON messages used in the TCP protocol for
  * the game. The protocol defines two main message types: "start" to indicate the game has started,
  * and "nextMove" to communicate the current game state.
+ *
+ * <p>Protocol version 2 adds chainLength support: the start message includes the chain length, and
+ * the board section of nextMove messages includes a chainLength field. Clients receiving a v1
+ * message (no chainLength) default to chainLength = dimension.
  */
 public class TcpProtocol {
 
@@ -23,51 +27,40 @@ public class TcpProtocol {
   public static final String EXIT_CODE = "{}";
 
   /**
-   * A constant representing the JSON format for a "game started" message, which includes the
-   * version, message type, and the assigned player marker.
+   * A constant representing the JSON format for a "game started" message (v2), which includes the
+   * version, message type, assigned player marker, and chain length.
    */
   public static final String GAME_STARTED_JSON_FORMAT =
-      "{" + "\"version\":1," + "\"message\":\"start\"," + "\"assignedPlayerMarker\":\"%s\"" + "}";
+      "{"
+          + "\"version\":2,"
+          + "\"message\":\"start\","
+          + "\"assignedPlayerMarker\":\"%s\","
+          + "\"chainLength\":%d"
+          + "}";
 
   /**
    * A regular expression pattern that matches a JSON string representing a "game started" message.
-   * The pattern captures the following groups: 1. The version number as an integer 2. The message
-   * type as a string 3. The assigned player marker as a string
+   * Supports both v1 (no chainLength) and v2 (with chainLength).
    */
   public static final Pattern GAME_STARTED_JSON_PATTERN =
       Pattern.compile(
-          "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\",\\\"assignedPlayerMarker\\\":\\\"([^\\\"]+)\\\".*}");
+          "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\","
+              + "\\\"assignedPlayerMarker\\\":\\\"([^\\\"]+)\\\"(?:,\\\"chainLength\\\":(\\d+))?.*}");
 
-  ///
-  /// Next Move Message
-  /// e.g.
-  ///
-  /// ```json
-  ///
-  // {"version":1,"message":"nextMove","state":{"gameId":"abc123","playerMarkers":["X","O"],"currentPlayerIndex":1,"board":{"dimension":3,"content":["X","O",null,null,"X",null,null,null,null]}}}
-  /// ```
+  /// Next Move Message (v2) — includes chainLength in the board section.
   public static final String NEXT_MOVE_JSON_FORMAT =
-      "{" + "\"version\":1," + "\"message\":\"nextMove\"," + "\"state\":%s" + "}";
+      "{" + "\"version\":2," + "\"message\":\"nextMove\"," + "\"state\":%s" + "}";
 
   public static final Pattern NEXT_MOVE_JSON_PATTERN =
       Pattern.compile(
           "\\{\\\"version\\\":(\\d+),\\\"message\\\":\\\"([^\\\"]+)\\\","
               + "\\\"state\\\":\\{\\\"playerMarkers\\\":\\[(.*)\\],\\\"currentPlayerIndex\\\":(\\d+),"
-              + "\\\"board\\\":\\{\\\"dimension\\\":(\\d+),\\\"content\\\":\\[(.*)\\]\\}.*\\}}");
+              + "\\\"board\\\":\\{\\\"dimension\\\":(\\d+)(?:,\\\"chainLength\\\":(\\d+))?"
+              + ",\\\"content\\\":\\[(.*)\\]\\}.*\\}}");
 
   /**
-   * Parses a JSON string representing a "next move" message and returns a {@link GameState} object
-   * containing the parsed information.
-   *
-   * <p>The JSON string is expected to have the following format (with no whitespace):
-   *
-   * <p>{ "version": 1, "message": "nextMove", "state": { "gameId": "abc123", "playerMarkers": ["X",
-   * "O"], "currentPlayerIndex": 1, "board": { "dimension": 3, "content": ["X", "O", null, null,
-   * "X", null, null, null, null] } } }
-   *
-   * <p>The method extracts the game ID, player markers, the index of the current player, the
-   * dimension of the game board, and the content of the game board from the JSON string. It then
-   * creates a {@link GameState} object with this information and returns it.
+   * Parses a JSON string representing a "next move" message and returns a {@link GameState} object.
+   * Supports both v1 (no chainLength — defaults to dimension) and v2 (explicit chainLength).
    *
    * @param serverMessage the JSON string representing the "next move" message
    * @return an {@link Optional} containing the parsed {@link GameState} object, or {@link
@@ -80,8 +73,9 @@ public class TcpProtocol {
       String[] playerMarkers = matcher.group(3).replace("\"", "").split(",");
       int currentPlayerIndex = Integer.parseInt(matcher.group(4));
       int dimension = Integer.parseInt(matcher.group(5));
-      var board = GameBoard.withDimension(dimension);
-      String[] rawContent = matcher.group(6).split(",");
+      int chainLength = matcher.group(6) != null ? Integer.parseInt(matcher.group(6)) : dimension;
+      var board = GameBoard.withDimension(dimension, chainLength);
+      String[] rawContent = matcher.group(7).split(",");
       for (int i = 0; i < rawContent.length; i++) {
         if (rawContent[i] != null && !rawContent[i].equals("null")) {
           board = board.withMove(rawContent[i].replace("\"", ""), i);
@@ -96,14 +90,6 @@ public class TcpProtocol {
    * Parses a JSON string representing a "game started" message and returns the player marker
    * assigned to the client.
    *
-   * <p>The JSON string is expected to have the following format (with no whitespace):
-   *
-   * <p>{ "version": 1, "message": "gameStarted", "playerMarker": "X" }
-   *
-   * <p>The method extracts the player marker from the JSON string and returns it as an {@link
-   * Optional}. If the input string does not match the expected format, the method returns {@link
-   * Optional#empty()}.
-   *
    * @param serverMessage the JSON string representing the "game started" message
    * @return an {@link Optional} containing the player marker, or {@link Optional#empty()} if the
    *     input string does not match the expected format
@@ -115,5 +101,21 @@ public class TcpProtocol {
       playerMarker = matcher.group(3);
     }
     return Optional.ofNullable(playerMarker);
+  }
+
+  /**
+   * Parses the chain length from a "game started" v2 message. Returns the board dimension as
+   * default if the message is v1 (no chainLength field).
+   *
+   * @param serverMessage the JSON "game started" message
+   * @param defaultChainLength the default to use if chainLength is absent (typically dimension)
+   * @return the parsed chain length, or defaultChainLength if not present
+   */
+  public static int chainLengthFromStartMessage(String serverMessage, int defaultChainLength) {
+    Matcher matcher = TcpProtocol.GAME_STARTED_JSON_PATTERN.matcher(serverMessage);
+    if (matcher.matches() && matcher.group(4) != null) {
+      return Integer.parseInt(matcher.group(4));
+    }
+    return defaultChainLength;
   }
 }

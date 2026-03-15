@@ -93,6 +93,27 @@ public interface GameBoard extends JsonSerializable {
    */
   int dimension();
 
+  /**
+   * Returns the chain length required to win on this board, i.e. the number of consecutive markers
+   * a player must place in a row, column, or diagonal to win.
+   *
+   * @return the chain length required to win (defaults to board dimension)
+   */
+  default int chainLength() {
+    return dimension();
+  }
+
+  /**
+   * Checks if any player can still complete a winning chain of length {@link #chainLength()} on
+   * this board. Used for early draw detection — if no winnable chain remains, the game is a draw.
+   *
+   * @return {@code true} if at least one player can still complete a winning chain, {@code false}
+   *     otherwise
+   */
+  default boolean hasWinnableChain() {
+    return true;
+  }
+
   ///
   /// Converts the game board to a JSON string representation for serialization. Format
   /// corresponds to the following JSON schema with content as a 1D array of strings of size
@@ -113,12 +134,36 @@ public interface GameBoard extends JsonSerializable {
   String toString();
 
   /**
-   * Creates a new {@link GameBoard} instance with the given dimension.
+   * Creates a new {@link GameBoard} instance with the given dimension. The chain length defaults to
+   * the dimension (standard Tic-Tac-Toe rules where N-in-a-row is required on an N×N board).
    *
    * @param dimension the dimension of the game board, which is the number of rows or columns
    * @return a new {@link GameBoard} instance with the specified dimension
    */
   static GameBoard withDimension(int dimension) {
+    return withDimension(dimension, dimension);
+  }
+
+  /**
+   * Creates a new {@link GameBoard} instance with the given dimension and chain length. The chain
+   * length determines how many consecutive markers a player must place to win.
+   *
+   * @param dimension the dimension of the game board (N for an N×N board)
+   * @param chainLength the number of consecutive markers required to win (K-in-a-row)
+   * @return a new {@link GameBoard} instance with the specified dimension and chain length
+   * @throws IllegalArgumentException if chainLength is less than 2 or greater than dimension
+   */
+  static GameBoard withDimension(int dimension, int chainLength) {
+    if (chainLength < 2) {
+      throw new IllegalArgumentException("Chain length must be at least 2, got: " + chainLength);
+    }
+    if (chainLength > dimension) {
+      throw new IllegalArgumentException(
+          "Chain length must not exceed dimension, got chainLength="
+              + chainLength
+              + " for dimension="
+              + dimension);
+    }
     // Prefer the native implementation of the game board for performance.
     GameBoard gameBoard;
     try {
@@ -129,9 +174,11 @@ public interface GameBoard extends JsonSerializable {
             Class.forName("org.xxdc.oss.example.GameBoardNativeImpl");
         gameBoard =
             (GameBoard)
-                gameBoardNativeImplClass.getDeclaredConstructor(int.class).newInstance(dimension);
+                gameBoardNativeImplClass
+                    .getDeclaredConstructor(int.class, int.class)
+                    .newInstance(dimension, chainLength);
       } else {
-        gameBoard = new GameBoardLocalImpl(dimension);
+        gameBoard = new GameBoardLocalImpl(dimension, chainLength);
       }
     } catch (ExceptionInInitializerError
         | InstantiationException
@@ -148,7 +195,7 @@ public interface GameBoard extends JsonSerializable {
           e.getClass(),
           e.getMessage());
       useNative.set(false);
-      gameBoard = new GameBoardLocalImpl(dimension);
+      gameBoard = new GameBoardLocalImpl(dimension, chainLength);
     }
     return gameBoard;
   }
