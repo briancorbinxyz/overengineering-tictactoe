@@ -41,7 +41,7 @@
 
 - [ ] T002 Add `int chainLength()` default method to `api/src/main/java/org/xxdc/oss/example/GameBoard.java` returning `dimension()` as default. Add static factory overload `withDimension(int dimension, int chainLength)` that validates 2 ≤ chainLength ≤ dimension and throws `IllegalArgumentException` on invalid input. Existing `withDimension(int dimension)` delegates to the new overload with `chainLength = dimension`.
 
-- [ ] T003 Add `chainLength` as a record component to `api/src/main/java/org/xxdc/oss/example/GameBoardLocalImpl.java`. Update the compact constructor to validate 2 ≤ chainLength ≤ dimension. Update `withMove()` to preserve chainLength when creating a new board instance. Update `asJsonString()` to include `chainLength` in the JSON output.
+- [ ] T003 Add `chainLength` as a record component to `api/src/main/java/org/xxdc/oss/example/GameBoardLocalImpl.java`. Update the compact constructor to validate 2 ≤ chainLength ≤ dimension. Update `withMove()` to preserve chainLength when creating a new board instance. Update `asJsonString()` to include `chainLength` in the JSON output. Handle legacy deserialization: if a serialized board from a prior version lacks chainLength, default it to dimension. Update serialVersionUID if needed.
 
 - [ ] T004 Generalize `hasChain(String playerMarker)` in `api/src/main/java/org/xxdc/oss/example/GameBoardLocalImpl.java` to detect `chainLength` consecutive markers (not `dimension` consecutive markers). For each row, column, and diagonal: track a running count of consecutive matching cells, reset on mismatch, and return true when count reaches `chainLength`. This replaces the current `chain == dimension` comparisons.
 
@@ -51,7 +51,7 @@
 
 - [ ] T007 Update `api/src/main/java/org/xxdc/oss/example/Game.java` constructors to accept an optional `chainLength` parameter. Pass it to `GameBoard.withDimension(size, chainLength)`. Existing constructors default chainLength to the board dimension for backward compatibility.
 
-- [ ] T008 Write tests in `api/src/test/java/org/xxdc/oss/example/GameBoardTest.java`: (a) 3×3 board with default chainLength=3 detects wins correctly (backward compat), (b) 5×5 board with chainLength=3 detects 3-in-a-row wins across rows, columns, and diagonals, (c) 5×5 board with chainLength=3 does NOT detect 2-in-a-row as a win, (d) board creation with chainLength > dimension throws exception, (e) board creation with chainLength < 2 throws exception, (f) `withMove()` preserves chainLength, (g) `hasWinnableChain()` returns false when no K-length winning window remains.
+- [ ] T008 Write tests in `api/src/test/java/org/xxdc/oss/example/GameBoardTest.java`: (a) 3×3 board with default chainLength=3 detects wins correctly (backward compat), (b) 5×5 board with chainLength=3 detects 3-in-a-row wins across rows, columns, and diagonals, (c) 5×5 board with chainLength=3 does NOT detect 2-in-a-row as a win, (d) board creation with chainLength > dimension throws exception, (e) board creation with chainLength < 2 throws exception, (f) `withMove()` preserves chainLength, (g) `hasWinnableChain()` returns false when no K-length winning window remains, (h) chainLength is preserved identically after multiple consecutive `withMove()` calls (immutability verification for FR-010).
 
 **Checkpoint**: Core board with configurable chain length is functional. All existing 3×3 tests still pass.
 
@@ -169,7 +169,7 @@
 
 - [ ] T026 Write test in `api/src/test/java/org/xxdc/oss/example/analysis/AnalyzersTest.java`: verify turning point detection works correctly on a 5×5 board with chainLength=3.
 
-- [ ] T027 [P] Verify serialization backward compatibility: write test that creates a `GameBoardLocalImpl` with chainLength, serializes it, deserializes it, and confirms chainLength is preserved. Document any serialVersionUID changes needed.
+- [ ] T027 [P] Verify serialization backward compatibility: write test that creates a `GameBoardLocalImpl` with chainLength, serializes it, deserializes it, and confirms chainLength is preserved. Also test deserializing a legacy GameBoardLocalImpl (without chainLength field) and verify chainLength defaults to dimension. Document any serialVersionUID changes needed.
 
 - [ ] T028 [P] Run `./gradlew build` to verify all tests pass across all modules (api, app, tcp-gameserver, native).
 
