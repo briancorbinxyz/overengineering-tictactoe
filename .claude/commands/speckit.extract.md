@@ -59,40 +59,34 @@ Tests are considered authoritative evidence of system behavior.
 
 ---
 
-# Branch & Directory Convention
+# Directory Convention
 
-Each extracted feature MUST be created using the `create-new-feature.sh` script
-to ensure consistent branch naming and directory structure.
+Extraction documents **existing** features — it does NOT create new branches.
+Use `create-new-feature.sh` only when specifying *new* features via `/speckit.specify`.
 
-## How to create each feature
+## How to organize extracted features
 
-For each discovered feature, run:
+For each discovered feature, create the directory and spec file directly:
 
-```bash
-bash .specify/scripts/bash/create-new-feature.sh --json --short-name '<short-name>' '<feature description>'
+```
+specs/###-<short-name>/spec.md
 ```
 
-This script will:
-1. Auto-detect the next available branch number (e.g., `001`, `002`, ...)
-2. Create a git branch named `###-<short-name>` (e.g., `001-game-lifecycle`)
-3. Create a spec directory at `specs/###-<short-name>/`
-4. Copy the spec template into `specs/###-<short-name>/spec.md`
-5. Output JSON with `BRANCH_NAME`, `SPEC_FILE`, and `FEATURE_NUM`
+Where `###` is a zero-padded sequential number (001, 002, ...). Before assigning
+numbers, check the `specs/` directory for existing entries and continue from the
+next available number (e.g., if `specs/005-*` exists, start at `006`). The short
+name is 2–4 lowercase words, hyphen-separated.
 
-**IMPORTANT**: After creating the branch and spec file for a feature, you MUST
-switch back to the original extraction branch before creating the next feature:
-
-```bash
-git checkout <extraction-branch>
-```
-
-The extraction branch is the branch you started on (the branch active when the
-command was invoked). All feature branches should be created from this base branch.
+Do NOT:
+• Run `create-new-feature.sh` (that creates branches — unnecessary for extraction)
+• Create git branches for extracted features
+• Place specs under `.specify/features/`
 
 ## Directory structure produced
 
 ```
 specs/
+  FEATURE-INVENTORY.md
   001-game-lifecycle/
     spec.md
   002-game-board/
@@ -104,10 +98,7 @@ specs/
 
 ## Feature Inventory location
 
-The master `FEATURE-INVENTORY.md` should be placed in `specs/FEATURE-INVENTORY.md`.
-
-Do NOT create features under `.specify/features/` — use the `specs/` directory
-as established by the `create-new-feature.sh` script.
+The master `FEATURE-INVENTORY.md` MUST be placed at `specs/FEATURE-INVENTORY.md`.
 
 ---
 
@@ -182,7 +173,7 @@ Each entry must include:
 
 Feature Name
 Short Name (2–4 words, lowercase, hyphen-separated)
-Branch Name (###-short-name, as created by `create-new-feature.sh`)
+Spec Directory (###-short-name)
 Evidence (files/modules/tests)
 Confidence level
 
@@ -190,7 +181,7 @@ Example:
 
 Feature: User Authentication
 Short Name: user-auth
-Branch: 001-user-auth
+Directory: 001-user-auth
 Evidence:
 
 - /api/auth/*
@@ -230,11 +221,10 @@ As specs are generated tasks must be marked complete.
 
 # Phase 5 — Specification Generation
 
-For each feature:
+For each feature, create the directory and write the spec file directly:
 
-1. Run `create-new-feature.sh` to create the branch and spec file (see Branch & Directory Convention above)
-2. Switch back to the extraction branch
-3. Write the spec content into the created `specs/###-short-name/spec.md` file
+1. Create `specs/###-short-name/` directory
+2. Write the spec content into `specs/###-short-name/spec.md`
 
 Each spec must use the same structure as `.specify/templates/spec-template.md` and include:
 
