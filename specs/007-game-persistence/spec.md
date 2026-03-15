@@ -1,6 +1,6 @@
 # Feature Specification: Game Persistence
 
-**Feature Branch**: `feature/game-persistence`
+**Feature Branch**: `007-game-persistence`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

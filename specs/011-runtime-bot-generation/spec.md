@@ -1,6 +1,6 @@
 # Feature Specification: Runtime Bot Generation
 
-**Feature Branch**: `feature/runtime-bot-generation`
+**Feature Branch**: `011-runtime-bot-generation`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

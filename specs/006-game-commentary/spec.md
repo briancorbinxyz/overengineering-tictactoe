@@ -1,6 +1,6 @@
 # Feature Specification: Game Commentary
 
-**Feature Branch**: `feature/game-commentary`
+**Feature Branch**: `006-game-commentary`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

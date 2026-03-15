@@ -1,6 +1,6 @@
 # Feature Specification: Native Board Interop
 
-**Feature Branch**: `feature/native-board-interop`
+**Feature Branch**: `010-native-board-interop`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

@@ -1,6 +1,6 @@
 # Feature Specification: Game Board
 
-**Feature Branch**: `feature/game-board`
+**Feature Branch**: `002-game-board`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

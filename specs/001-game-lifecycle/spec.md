@@ -1,6 +1,6 @@
 # Feature Specification: Game Lifecycle Management
 
-**Feature Branch**: `feature/game-lifecycle`
+**Feature Branch**: `001-game-lifecycle`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

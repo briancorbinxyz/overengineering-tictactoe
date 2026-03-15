@@ -1,6 +1,6 @@
 # Feature Specification: Networked Multiplayer
 
-**Feature Branch**: `feature/networked-multiplayer`
+**Feature Branch**: `008-networked-multiplayer`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

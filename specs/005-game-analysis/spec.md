@@ -1,6 +1,6 @@
 # Feature Specification: Game Analysis
 
-**Feature Branch**: `feature/game-analysis`
+**Feature Branch**: `005-game-analysis`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

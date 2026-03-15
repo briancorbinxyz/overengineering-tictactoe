@@ -1,6 +1,6 @@
 # Feature Specification: Game Metadata
 
-**Feature Branch**: `feature/game-metadata`
+**Feature Branch**: `012-game-metadata`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation

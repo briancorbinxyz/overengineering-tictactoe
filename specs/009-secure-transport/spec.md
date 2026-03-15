@@ -1,6 +1,6 @@
 # Feature Specification: Secure Transport
 
-**Feature Branch**: `feature/secure-transport`
+**Feature Branch**: `009-secure-transport`
 **Created**: 2026-03-14
 **Status**: Extracted
 **Input**: Reverse-engineered from existing implementation
